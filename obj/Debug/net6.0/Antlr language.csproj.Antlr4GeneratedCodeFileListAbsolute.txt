@@ -1,0 +1,6 @@
+C:\Users\fredm\RiderProjects\P4Project\Antlr language\obj\Debug\net6.0\VestaLexer.cs
+C:\Users\fredm\RiderProjects\P4Project\Antlr language\obj\Debug\net6.0\VestaParser.cs
+C:\Users\fredm\RiderProjects\P4Project\Antlr language\obj\Debug\net6.0\VestaListener.cs
+C:\Users\fredm\RiderProjects\P4Project\Antlr language\obj\Debug\net6.0\VestaBaseListener.cs
+C:\Users\fredm\RiderProjects\P4Project\Antlr language\obj\Debug\net6.0\VestaVisitor.cs
+C:\Users\fredm\RiderProjects\P4Project\Antlr language\obj\Debug\net6.0\VestaBaseVisitor.cs
