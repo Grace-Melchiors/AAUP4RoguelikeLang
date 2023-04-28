@@ -1,10 +1,34 @@
+using System;
+using System.Text;
+
 namespace Antlr_language;
 
 public class CSharpBuilder {
-    string OutputPath = "Content/output/output" + DateTime.now() + ".cs";
+    string OutputFolder;
+    string OutputFile;
+    StringBuilder Output = new StringBuilder();
 
-    public CSharpBuilder(string outputPath) {
-        OutputPath = outputPath;
+    int[] arr;
+
+    public CSharpBuilder() {
+        OutputFolder = "Content/output";
+        OutputFile = "output" + /*DateTime.Now.ToShortDateString() +*/ ".txt";
     }
+    public CSharpBuilder(string outputFolder, string outputFile) {
+        OutputFolder = outputFolder;
+        OutputFile = outputFile;
+    }
+
+    public void AppendResult (string line) {
+        Output.Append(line);
+    }
+
+    public void OutputResult () {
+        using (StreamWriter outputFile = new StreamWriter(Path.Combine(OutputFolder, OutputFile)))
+        {
+            outputFile.WriteLine(Output.ToString());
+        }
+    }
+
 
 }

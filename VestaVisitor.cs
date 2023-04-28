@@ -78,9 +78,12 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 {
     private Dictionary<string, object> Variables { get; } = new();
     private Store store = new Store();
+	private CSharpBuilder CSB {get; set;}
+	private bool EmitCode = true;
     
-    public VestaVisitor()
+    public VestaVisitor(CSharpBuilder CSB)
     {
+		this.CSB = CSB;
         Variables["Write"] = new Func<object?[], object?>(Write);
         Variables["WriteArray"] = new Func<object?[], object?>(WriteArray);
 
@@ -205,20 +208,35 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     public override object? VisitConstant(VestaParser.ConstantContext context)
     {
-        if (context.INTEGER() is { } i)
-        {
-            return int.Parse(i.GetText());
-        }
+		if (EmitCode) {
+			if (context.INTEGER() is { } i)
+			{
+				//CSB.AppendResult(i.GetText());
+				return i.GetText();
+			}
+
+			if (context.BOOL() is { } b)
+			{
+				//CSB.AppendResult(b.GetText());
+				return b.GetText();
+			}
+			throw new NotImplementedException();
+		} else {
+			if (context.INTEGER() is { } i)
+			{
+				return int.Parse(i.GetText());
+			}
+
+			if (context.BOOL() is { } b)
+			{
+				return (b.GetText() == "true");
+			}
 
 
-        if (context.BOOL() is { } b)
-        {
-            return (b.GetText() == "true");
-        }
 
-
-
-        throw new NotImplementedException();
+			throw new NotImplementedException();
+		}
+        
     }
 
 
@@ -512,6 +530,15 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"Cannot generate values between types");
 
     }
+    /*public override object VisitExpression(VestaParser.ExpressionContext context)
+    {
+		if (EmitCode) {
+			CSB.AppendResult(context.ToString());
+			return null;
+		} else {
+        	return base.VisitExpression(context);
+		}
+    }*/
 
     public override object? VisitIfBlock(VestaParser.IfBlockContext context)
     {
@@ -522,44 +549,93 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         return null;
     }
+
+	//expression boolOp expression          #booleanExpression
+    public override object VisitBooleanExpression(VestaParser.BooleanExpressionContext context)
+    {
+		if (EmitCode) {
+			var left = Visit(context.expression(0));
+			var op = context.boolOp().GetText();
+			//context.compareOp().GetText()
+        	var right = Visit(context.expression(1));
+			return null;
+		} else {
+			return base.VisitBooleanExpression(context);
+		}
+        
+    }
     public override object? VisitWhileBlock(VestaParser.WhileBlockContext context)
     {
-
-        while (isTrue(Visit(context.expression())))
-        {
-            Visit(context.block());
- 
-        }
-
+		if (EmitCode) {
+			CSB.AppendResult("while (");
+			var i = Visit(context.expression());
+			CSB.AppendResult(i.ToString());
+			CSB.AppendResult(") {");
+			Visit(context.block());
+			CSB.AppendResult("}");
+		} else {
+			while (isTrue(Visit(context.expression())))
+			{
+				Visit(context.block());
+			}
+		}
         return null;
     }
     
     /* 'chance{' (expression ':' block)+ '}' */
     public override object? VisitChanceBlock(VestaParser.ChanceBlockContext context)
     {
-        var arrExpr = context.expression().ToArray();
-        int[] arrVal = new int[arrExpr.Length];
-        var arrBlck = context.block().ToArray();
-        int r = 0, i, counter=0;
-        for (i=0; i<arrExpr.Length; i++)
-        {
-            if (Visit(arrExpr[i]) is int n)
-            {
-                r += n;
-                arrVal[i] = n;
-            }
-            else { throw new Exception($"Chance table point values must be of type int"); }
-        }
-        Random rnd = new Random();
-        r = rnd.Next(0, r);     //Generates an integer between 0 and sum(v_0...v_n)-1
-        i = 0;
-        bool flag = false;
-        while (!flag)
-        {
-            if (arrVal[i]+counter > r) { flag = true; Visit(arrBlck[i]); }
-            else { counter += arrVal[i]; i++;}
-        }
-        return null;
+		if (EmitCode) {
+			/*var arrExpr = context.expression().ToArray();
+			int[] arrVal = new int[arrExpr.Length];
+			var arrBlck = context.block().ToArray();
+			int r = 0, i, counter=0;
+			string arrValDecl = "int[] arrVal = new int {";
+			for (i=0; i<arrExpr.Length; i++)
+			{
+				if (Visit(arrExpr[i]) is int n)
+				{
+					r += n;
+					arrVal[i] = n;
+					arrValDecl = arrValDecl + n + ",";
+				}
+				else { throw new Exception($"Chance table point values must be of type int"); }
+			}
+			arrValDecl.Substring(0, arrValDecl.Length-2);	//Remove the last ","
+			arrValDecl = arrValDecl + "};";
+			CSB.AppendResult(arrValDecl);
+			CSB.AppendResult("int r = 0, i, counter=0;");
+
+			CSB.AppendResult("Random rnd = new Random();");
+			CSB.AppendResult("r = rnd.Next(0, r);");
+			*/
+			return null;
+		} else {
+			var arrExpr = context.expression().ToArray();
+			int[] arrVal = new int[arrExpr.Length];
+			var arrBlck = context.block().ToArray();
+			int r = 0, i, counter=0;
+			for (i=0; i<arrExpr.Length; i++)
+			{
+				if (Visit(arrExpr[i]) is int n)
+				{
+					r += n;
+					arrVal[i] = n;
+				}
+				else { throw new Exception($"Chance table point values must be of type int"); }
+			}
+			Random rnd = new Random();
+			r = rnd.Next(0, r);     //Generates an integer between 0 and sum(v_0...v_n)-1
+			i = 0;
+			bool flag = false;
+			while (!flag)
+			{
+				if (arrVal[i]+counter > r) { flag = true; Visit(arrBlck[i]); }
+				else { counter += arrVal[i]; i++;}
+			}
+			return null;
+		}
+        
     }
 
 
@@ -579,20 +655,27 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     public override object? VisitCompareExpression(VestaParser.CompareExpressionContext context)
     {
-        var left = Visit(context.expression(0));
-        var right = Visit(context.expression(1));
-        
-        var op = context.compareOp().GetText();
-        return op switch
-        {
-            "==" => CompareIntFunction(left, right, (x, y) => x==y ),
-            "!=" => CompareIntFunction(left, right, (x, y) => x!=y ),
-            "<" => CompareIntFunction(left, right, (x, y) => x<y ),
-            ">" => CompareIntFunction(left, right, (x, y) => x>y ),
-            "<=" => CompareIntFunction(left, right, (x, y) => x<=y ),
-            ">=" => CompareIntFunction(left, right, (x, y) => x>=y ),
-            _ => throw new NotImplementedException()
-        };
+		if (EmitCode) {
+			var left = Visit(context.expression(0));
+			var op = context.compareOp().GetText();
+        	var right = Visit(context.expression(1));
+			return left + op + right;
+		} else {
+			var left = Visit(context.expression(0));
+			var right = Visit(context.expression(1));
+			
+			var op = context.compareOp().GetText();
+			return op switch
+			{
+				"==" => CompareIntFunction(left, right, (x, y) => x==y ),
+				"!=" => CompareIntFunction(left, right, (x, y) => x!=y ),
+				"<" => CompareIntFunction(left, right, (x, y) => x<y ),
+				">" => CompareIntFunction(left, right, (x, y) => x>y ),
+				"<=" => CompareIntFunction(left, right, (x, y) => x<=y ),
+				">=" => CompareIntFunction(left, right, (x, y) => x>=y ),
+				_ => throw new NotImplementedException()
+			};
+		}
     }
 
     private object? CompareIntFunction(object? left, object? right, Func<int?,int? , bool> comparer)

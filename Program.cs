@@ -7,6 +7,8 @@ using Antlr4.Runtime;
 var fileName = "Content/input/test.V"; // args[0]
 var fileContents = File.ReadAllText(fileName);
 
+CSharpBuilder CSB = new CSharpBuilder();
+
 
 AntlrInputStream inputStream = new AntlrInputStream(fileContents);
 var VestaLexer = new VestaLexer(inputStream);
@@ -16,5 +18,7 @@ VestaParser vestaParser = new VestaParser(commonTokenStream);
 
 var vestaContext = vestaParser.program();
 
-var visitor = new VestaVisitor();
+var visitor = new VestaVisitor(CSB);
 visitor.Visit((vestaContext));
+
+CSB.OutputResult();
