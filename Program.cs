@@ -1,10 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using Antlr_language;
-using Antlr_language.Content;
+//using Antlr_language.Content;
 using Antlr4.Runtime;
 
-var fileName = "Content\\test.V"; // args[0]
+var fileName = "Content/test.V"; // args[0]
 var fileContents = File.ReadAllText(fileName);
 
 
