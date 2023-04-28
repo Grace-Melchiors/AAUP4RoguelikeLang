@@ -4,7 +4,7 @@ using Antlr_language;
 //using Antlr_language.Content;
 using Antlr4.Runtime;
 
-var fileName = "Content/test.V"; // args[0]
+var fileName = "Content/input/test.V"; // args[0]
 var fileContents = File.ReadAllText(fileName);
 
 
