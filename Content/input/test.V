@@ -1,4 +1,5 @@
 
+var test = true + false;
 
 var case1 = 0;
 var case2 = 0;

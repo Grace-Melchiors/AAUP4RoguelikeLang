@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Diagnostics.Metrics;
 using System.Linq.Expressions;
 //using Antlr_language.Content;

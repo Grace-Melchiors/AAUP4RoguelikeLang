@@ -1,4 +1,4 @@
-// Generated from /home/theisrm/Repo/School/AAUP4RoguelikeLang/Content/Vesta.g4 by ANTLR 4.9.2
+// Generated from l:\Onedrive\Uddannelse\04-Aalborg universitet\4. semester\Project\AAUP4RoguelikeLang\content\Vesta.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -116,14 +116,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_program; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterProgram(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitProgram(this);
-		}
 	}
 
 	public final ProgramContext program() throws RecognitionException {
@@ -179,14 +171,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_line; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterLine(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitLine(this);
-		}
 	}
 
 	public final LineContext line() throws RecognitionException {
@@ -254,14 +238,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitStatement(this);
-		}
 	}
 
 	public final StatementContext statement() throws RecognitionException {
@@ -321,14 +297,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_ifBlock; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterIfBlock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitIfBlock(this);
-		}
 	}
 
 	public final IfBlockContext ifBlock() throws RecognitionException {
@@ -384,14 +352,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_elseIfBlock; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterElseIfBlock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitElseIfBlock(this);
-		}
 	}
 
 	public final ElseIfBlockContext elseIfBlock() throws RecognitionException {
@@ -441,14 +401,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_whileBlock; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterWhileBlock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitWhileBlock(this);
-		}
 	}
 
 	public final WhileBlockContext whileBlock() throws RecognitionException {
@@ -497,14 +449,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_chanceBlock; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterChanceBlock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitChanceBlock(this);
-		}
 	}
 
 	public final ChanceBlockContext chanceBlock() throws RecognitionException {
@@ -562,14 +506,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_block; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterBlock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitBlock(this);
-		}
 	}
 
 	public final BlockContext block() throws RecognitionException {
@@ -619,14 +555,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assignment; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterAssignment(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitAssignment(this);
-		}
 	}
 
 	public final AssignmentContext assignment() throws RecognitionException {
@@ -663,14 +591,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_declartion; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterDeclartion(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitDeclartion(this);
-		}
 	}
 
 	public final DeclartionContext declartion() throws RecognitionException {
@@ -712,14 +632,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_functionCall; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterFunctionCall(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitFunctionCall(this);
-		}
 	}
 
 	public final FunctionCallContext functionCall() throws RecognitionException {
@@ -794,14 +706,6 @@ public class VestaParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public ArrayIdentifierExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterArrayIdentifierExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitArrayIdentifierExpression(this);
-		}
 	}
 	public static class ArrayOperationExpressionContext extends ExpressionContext {
 		public TerminalNode IDENTIFIER() { return getToken(VestaParser.IDENTIFIER, 0); }
@@ -812,28 +716,12 @@ public class VestaParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public ArrayOperationExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterArrayOperationExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitArrayOperationExpression(this);
-		}
 	}
 	public static class ConstantExpressionContext extends ExpressionContext {
 		public ConstantContext constant() {
 			return getRuleContext(ConstantContext.class,0);
 		}
 		public ConstantExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterConstantExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitConstantExpression(this);
-		}
 	}
 	public static class ArrayExpressionContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -843,14 +731,6 @@ public class VestaParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public ArrayExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterArrayExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitArrayExpression(this);
-		}
 	}
 	public static class AdditionExpressionContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -863,40 +743,16 @@ public class VestaParser extends Parser {
 			return getRuleContext(AddOpContext.class,0);
 		}
 		public AdditionExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterAdditionExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitAdditionExpression(this);
-		}
 	}
 	public static class IdentifierExpressionContext extends ExpressionContext {
 		public TerminalNode IDENTIFIER() { return getToken(VestaParser.IDENTIFIER, 0); }
 		public IdentifierExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterIdentifierExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitIdentifierExpression(this);
-		}
 	}
 	public static class NotExpressionContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public NotExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterNotExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitNotExpression(this);
-		}
 	}
 	public static class MultiplicationExpressionContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -909,14 +765,6 @@ public class VestaParser extends Parser {
 			return getRuleContext(MultOpContext.class,0);
 		}
 		public MultiplicationExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterMultiplicationExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitMultiplicationExpression(this);
-		}
 	}
 	public static class BooleanExpressionContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -929,14 +777,6 @@ public class VestaParser extends Parser {
 			return getRuleContext(BoolOpContext.class,0);
 		}
 		public BooleanExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterBooleanExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitBooleanExpression(this);
-		}
 	}
 	public static class CompareExpressionContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -949,42 +789,18 @@ public class VestaParser extends Parser {
 			return getRuleContext(CompareOpContext.class,0);
 		}
 		public CompareExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterCompareExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitCompareExpression(this);
-		}
 	}
 	public static class ParenthesizedExpressionContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public ParenthesizedExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterParenthesizedExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitParenthesizedExpression(this);
-		}
 	}
 	public static class FunctionCallExpressionContext extends ExpressionContext {
 		public FunctionCallContext functionCall() {
 			return getRuleContext(FunctionCallContext.class,0);
 		}
 		public FunctionCallExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterFunctionCallExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitFunctionCallExpression(this);
-		}
 	}
 	public static class RandomExpressionContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -994,14 +810,6 @@ public class VestaParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public RandomExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterRandomExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitRandomExpression(this);
-		}
 	}
 
 	public final ExpressionContext expression() throws RecognitionException {
@@ -1261,14 +1069,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arrayOp; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterArrayOp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitArrayOp(this);
-		}
 	}
 
 	public final ArrayOpContext arrayOp() throws RecognitionException {
@@ -1306,14 +1106,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_multOp; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterMultOp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitMultOp(this);
-		}
 	}
 
 	public final MultOpContext multOp() throws RecognitionException {
@@ -1351,14 +1143,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_addOp; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterAddOp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitAddOp(this);
-		}
 	}
 
 	public final AddOpContext addOp() throws RecognitionException {
@@ -1396,14 +1180,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_compareOp; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterCompareOp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitCompareOp(this);
-		}
 	}
 
 	public final CompareOpContext compareOp() throws RecognitionException {
@@ -1442,14 +1218,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_boolOp; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterBoolOp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitBoolOp(this);
-		}
 	}
 
 	public final BoolOpContext boolOp() throws RecognitionException {
@@ -1480,14 +1248,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_constant; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterConstant(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitConstant(this);
-		}
 	}
 
 	public final ConstantContext constant() throws RecognitionException {
@@ -1532,14 +1292,6 @@ public class VestaParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_identifierType; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).enterIdentifierType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VestaListener ) ((VestaListener)listener).exitIdentifierType(this);
-		}
 	}
 
 	public final IdentifierTypeContext identifierType() throws RecognitionException {
