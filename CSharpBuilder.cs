@@ -19,7 +19,11 @@ public class CSharpBuilder {
         OutputFile = outputFile;
     }
 
-    public void AppendResult (string line) {
+    public void AppendLine (string line) {
+        Output.Append(line + "\n");
+    }
+    public void Append(string line)
+    {
         Output.Append(line);
     }
 

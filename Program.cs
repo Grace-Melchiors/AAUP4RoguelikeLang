@@ -18,7 +18,10 @@ VestaParser vestaParser = new VestaParser(commonTokenStream);
 
 var vestaContext = vestaParser.program();
 
-var visitor = new VestaVisitor(CSB);
+var visitor = new VestaVisitor();
 visitor.Visit((vestaContext));
 
+
 CSB.OutputResult();
+
+Console.Read();
