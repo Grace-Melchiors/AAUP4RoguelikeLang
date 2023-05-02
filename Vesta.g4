@@ -4,7 +4,7 @@ program: line* EOF;
 
 line: statement | ifBlock | whileBlock | chanceBlock;
 
-statement: (declartion|assignment|functionCall) ';';
+statement: (declaration|assignment|functionCall) ';';
 
 ifBlock: 'if' '(' expression ')' block ('else' elseIfBlock)?;
 
@@ -19,26 +19,39 @@ chanceBlock: 'chance' '{' (expression ':' block)+ '}';
 block: '{' line* '}';
 
 assignment: IDENTIFIER '=' expression;    
-declartion: 'var' IDENTIFIER '=' expression;
+declaration: 'var' IDENTIFIER '=' expression;
 
 functionCall: IDENTIFIER '(' (expression (',' expression)*)? ')';
 
 
 
 expression
-    : constant                              #constantExpression
-    | IDENTIFIER                            #identifierExpression
-    | IDENTIFIER ('[' expression ']')+      #arrayIdentifierExpression
-    | '{' (expression(','expression)*) '}'  #arrayExpression
-    | 'rand('expression ',' expression ')'  #randomExpression
-    | functionCall                          #functionCallExpression
-    | IDENTIFIER'.' arrayOp'('expression')' #arrayOperationExpression
-    | '(' expression ')'                    #parenthesizedExpression
-    | '!' expression                        #notExpression
-    | expression multOp expression          #multiplicationExpression
-    | expression addOp expression           #additionExpression
-    | expression compareOp expression       #compareExpression
-    | expression boolOp expression          #booleanExpression
+    : '(' expression ')'                                  
+    | logicalExpression                                         
+    | arithmeticExpression                                      #arithmeticExpression
+    | '{' (expression(','expression)*) '}'                      #arrayExpression
+    | functionCall                                              #functionCallArithmeticExpression                              
+    ;
+
+arithmeticExpression
+    : INTEGER                                                   #constantArithmeticExpression
+    | IDENTIFIER                                                #identifierArithmeticExpression
+    | IDENTIFIER ('[' arithmeticExpression ']')+                #arrayIdentifierArithmeticExpression
+    | 'rand('arithmeticExpression ',' arithmeticExpression ')'  #randomArithmeticExpression
+    | IDENTIFIER'.' arrayOp'('arithmeticExpression')'           #arrayOperationArithmeticExpression
+    | arithmeticExpression multOp arithmeticExpression          #multiplicationArithmeticExpression
+    | arithmeticExpression addOp arithmeticExpression           #additionArithmeticExpression
+    ;
+
+logicalExpression
+    : BOOL                                                      #constantLogicalExpression
+    | IDENTIFIER                                                #identifierLogicalExpression
+    | IDENTIFIER ('[' arithmeticExpression ']')+                #arrayIdentifierLogicalExpression
+    | functionCall                                              #functionCallLogicalExpression
+    | IDENTIFIER'.' arrayOp'('logicalExpression')'              #arrayOperationLogicalExpression
+    | '!' logicalExpression                                     #notLogicalExpression
+    | arithmeticExpression compareOp arithmeticExpression       #compareLogicalExpression
+    | logicalExpression boolOp logicalExpression                #booleanLogicalExpression
     ;
 
 arrayOp: 'remove' | 'add' ;
@@ -49,8 +62,6 @@ boolOp: BOOL_OPERATOR;
 
 
 BOOL_OPERATOR: '&&' | '||' ;
-
-constant: INTEGER | BOOL;
 
 INTEGER: [0-9]+;
 BOOL: 'true' | 'false';
