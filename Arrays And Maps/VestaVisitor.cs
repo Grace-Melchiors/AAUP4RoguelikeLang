@@ -259,6 +259,24 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         return null;
     }
+    /* | expression'.'IDENTIFIER               #mapGetLayerExpression */
+    public override object? VisitMapGetLayerExpression(VestaParser.MapGetLayerExpressionContext context)
+    {
+        object myMap = Visit(context.expression());
+        var layerName = context.IDENTIFIER().GetText();
+
+        if (myMap is Map map)
+        {
+            if (map.layers.ContainsKey(layerName))
+            {
+                return map.layers[layerName];
+            }
+
+            throw new Exception($"Unknown layer name {layerName}");
+        }
+
+        throw new Exception($"Can only get layers of maps, not type {myMap.GetType()}");
+    }
 
     /* mapDeclaration: 'map[' expression ']['expression ']' IDENTIFIER '={' mapLayer (';'mapLayer)*  '}';
        mapLayer: identifierType IDENTIFIER ('=' expression)?; */
@@ -426,10 +444,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return new ArrDesc(result ,arrResult);
     }
 
-    public override object? VisitAssignment(VestaParser.AssignmentContext context)
+    Store getStoreForVar(string varName)
     {
-        var varName = context.IDENTIFIER().GetText();
-        var value = Visit(context.expression());
         if (!store.variables.ContainsKey(varName))
         {
             Store tempStore = store;
@@ -438,38 +454,147 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                 tempStore = tempStore.previous;
                 if (tempStore.variables.ContainsKey(varName))
                 {
-                    if (tempStore.variables[varName] is Array arr) //if array need array Assign
-                    {
-                        tempStore.variables[varName] = quickAssignArr(arr, value);
-                        return null;
-                    }
-
-                    if (tempStore.variables[varName].GetType() == value.GetType()) //If not array and types match
-                    {
-                        tempStore.variables[varName] = value;
-                        return null;
-                    }
-
-                    throw new Exception(
-                        $"{value} cannot be assigned to {varName} as it is of type {value.GetType()} not {tempStore.variables[varName].GetType()}");
+                    return tempStore;
                 }
             }
-
             throw new Exception($"Variable {varName} is not defined");
         }
-        if(store.variables[varName] is Array arr2)   //if array need array Assign
-        {
-            store.variables[varName] = quickAssignArr(arr2, value);
-            return null;
-        }
-        if (store.variables[varName].GetType() == value.GetType())
-        {
-            store.variables[varName] = value;
-            return null;
-        }
-        throw new Exception(
-            $"{value} cannot be assigned to {varName} as it is of type {value.GetType()} not {store.variables[varName].GetType()}");
+        return store;
     }
+    
+    public override object? VisitBaseAssignment(VestaParser.BaseAssignmentContext context)
+    {
+        var varName = context.IDENTIFIER().GetText();
+        var value = Visit(context.expression());
+
+        var relevantStore = getStoreForVar(varName);
+        var originalValue = relevantStore.variables[varName];
+        if (originalValue is Array arr) //if array need array Assign
+        {
+            relevantStore.variables[varName] = quickAssignArr(arr, value);
+        }
+        else if(originalValue.GetType()==value.GetType())
+        {
+            relevantStore.variables[varName] = value;
+        }
+        else{
+            
+            throw new Exception(
+                        $"{value} cannot be assigned to {varName} as it is of type {value.GetType()} not {relevantStore.variables[varName].GetType()}"); }
+
+
+        return null;
+    }
+    /* arrayAssignment: IDENTIFER '[' expression (',' expression)* ']' '=' expression ; */
+    public override object? VisitArrayAssignment(VestaParser.ArrayAssignmentContext context)
+    {
+        var varName = context.IDENTIFIER().GetText();
+        var expressionArr = context.expression().ToArray();
+        var assignValue = Visit(expressionArr[expressionArr.Length - 1]); //Get last expression
+      
+        var relevantStore = getStoreForVar(varName);
+        
+        //generate list of index values
+        int[] indexArr = new int[expressionArr.Length - 1];
+        for (int i = 0; i < indexArr.Length; i++)
+        {
+            if (Visit(expressionArr[i]) is int n)
+            {
+                indexArr[i] = n;
+            }
+            else
+            {
+                throw new Exception($"Indexes must be described with integers");
+            }
+        }
+        if (relevantStore.variables[varName] is Array originalVar)
+        {
+            originalVar.SetValue( assignElementOfArr(indexArr, originalVar.GetValue(indexArr[0]), assignValue, 1), indexArr[0]);
+            relevantStore.variables[varName] = originalVar;
+            return null;
+        }
+        throw new Exception($"$Cannot get element of non array element");
+    }
+
+    object assignElementOfArr(Array dimensionsArr, object arr, object value, int dimensionCounter)
+    {
+        if (dimensionCounter == dimensionsArr.Length) //If found right element
+        {
+            return quickAssignArr(arr, value);  
+        }
+
+        if (arr is Array recursiveArr)
+        {
+            if (dimensionsArr.GetValue(dimensionCounter) is int index)
+            {
+                recursiveArr.SetValue(
+                    assignElementOfArr(dimensionsArr, recursiveArr.GetValue(index), value, dimensionCounter + 1),
+                    index);
+                return recursiveArr;
+            }
+
+            throw new Exception($"Indexes must be defined with type int");
+        }
+        throw new Exception($"Too many index references, tried to find element of type {arr.GetType()}");
+
+    }
+    
+    /* mapAssignment:  IDENTIFIER '.' IDENTIFIER ('[' expression (',' expression)* ']') '=' expression;*/
+    public override object? VisitMapAssignment(VestaParser.MapAssignmentContext context)
+    {
+        var varName = context.IDENTIFIER(0).GetText();
+        var layerName = context.IDENTIFIER(1).GetText();
+        var expressionArr = context.expression().ToArray();
+        var assignValue = Visit(expressionArr[expressionArr.Length - 1]); //Get last expression
+
+        var relevantStore = getStoreForVar(varName);
+
+        if (relevantStore.variables[varName] is not Map map)
+        {
+            throw new Exception($"Cannot get layer of type {relevantStore.variables[varName].GetType()}");
+        }
+
+        var layer = map.layers[layerName];
+
+        if (expressionArr.Length  == 1)  //If only valueExpression. Aka no index expressions
+        {
+            map.layers[layerName] = quickAssignArr(map.layers[layerName], assignValue);
+            relevantStore.variables[varName] = map;
+            return null;
+        }
+        //If index:
+        //generate list of index values
+        int[] indexArr = new int[expressionArr.Length - 1];
+        for (int i = 0; i < indexArr.Length; i++)
+        {
+            if (Visit(expressionArr[i]) is int n)
+            {
+                indexArr[i] = n;
+            }
+            else
+            {
+                throw new Exception($"Indexes must be described with integers");
+            }
+        }
+
+        if (layer is Array layerArr)
+        { //Parse as Array
+            layerArr.SetValue(assignElementOfArr(indexArr, layerArr.GetValue(indexArr[0]), assignValue, 1),
+                indexArr[0]);
+            map.layers[layerName] = layerArr;
+            relevantStore.variables[varName] = map;
+            return null;
+        }
+
+        throw new Exception($"Layers must of type array"); //I don't think this could happen but safety measures never hurt
+
+
+
+
+
+    }
+
+
 
 
     public override object? VisitConstant(VestaParser.ConstantContext context)
@@ -518,16 +643,16 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return result;
     }
-    
+
 
     public override object? VisitIdentifierExpression(VestaParser.IdentifierExpressionContext context)
     {
         var varName = context.IDENTIFIER().GetText();
-        
+
         if (!store.variables.ContainsKey(varName))
         {
             Store tempStore = store;
-            while (tempStore.previous!=null)
+            while (tempStore.previous != null)
             {
                 tempStore = tempStore.previous;
                 if (tempStore.variables.ContainsKey(varName))
@@ -538,8 +663,10 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
             throw new Exception($"Variable {varName} is not defined");
         }
+
         return store.variables[varName];
     }
+
     /*  expression ('[' expression ']')+      #arrayIdentifierExpression */
     public override object? VisitArrayIdentifierExpression(VestaParser.ArrayIdentifierExpressionContext context)
     {
@@ -585,6 +712,9 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     private object? Add(object? left, object? right)
     {
+        
+        
+        
         if (left is int l && right is int r)
         {
             return l + r;

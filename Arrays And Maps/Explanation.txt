@@ -1,5 +1,3 @@
-
-
 These have an updated syntax and code generation for arrays and maps. 
 
 They have implemented the following:
@@ -7,37 +5,27 @@ They have implemented the following:
 2. Access array elements
 3. QuickAssign Array
 4. QuickDeclare Array
-5. Map declaration (Code)
+5. Map declaration 
+6. Access map layers
 
-Missing these features
-5. Access map layers
-6. Combine maps
-
-
-
-The bug(elephant) in the room
-My syntax has been really poorly made, because I assumed Antlr would contextualize its tokens in a different way.
-This bold and ambitious assumption lead me to make several elements that are VERY alike
-Because of this it generates the wrong tokens, which means when the code visists it is with the wrong intent. 
-
-Currently layer declarations get confused for baseDeclarations, and tokens are created as such. 
-
-Example:
-
-map[2][2] myMap = {int locked};
-
-Is split into
-
-mapDeclaration: --> map[2][2] myMap = { <--
-baseDeclaration: --> int locked}; <--
+Missing features:
+7. Combine maps
+8. Assign to specific spots in code.
 
 
-Proposed solution:
-Since the syntax for the two of them are so similar, and have to be similar, I suggest they become the same. And then baseDeclaration does something different.
+arr1= 
+{{1,1,1}
+{1,1,1}
+{1,1,1}
+};
 
-baseDeclaration : declarationLayout                     //Basic
+arr2= 
+{{0,0}
+{0,0}};
 
-'{' declarationLayout (';' declarationLayout)*'}'       //layers
+arr1[0,0] = arr2 ->
 
-
-This way should solve the problem (I think). I will be trying this when I get the time. Have a gorgeous week and best of luckk!!!
+{{0,0,1}
+{0,0,1}
+{1,1,1}
+};

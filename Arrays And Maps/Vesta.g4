@@ -20,15 +20,17 @@ chanceBlock: 'chance' '{' (expression ':' block)+ '}';
 
 block: '{' line* '}';
 
-assignment: IDENTIFIER '=' expression;    
+assignment : baseAssignment | arrayAssignment | mapAssignment ;
 
-
+baseAssignment: IDENTIFIER '=' expression;    
+arrayAssignment: IDENTIFIER '[' expression (',' expression)* ']' '=' expression ;
+mapAssignment:  IDENTIFIER '.' IDENTIFIER ('[' expression (',' expression)* ']') '=' expression;
 
 declaration: (mapDeclaration | baseDeclaration); 
 
 
 
-mapDeclaration: 'map[' expression ']['expression ']' IDENTIFIER '={' mapLayer (';'mapLayer)* '}';
+mapDeclaration: 'map[' expression ','expression ']' IDENTIFIER '=' '{' mapLayer (';'mapLayer)* '}';
 
 mapLayer: identifierType IDENTIFIER ('=' expression)?;
 
@@ -44,7 +46,7 @@ expression
     | IDENTIFIER                            #identifierExpression
     | '(' expression ')'                    #parenthesizedExpression
     | expression '[' expression (',' expression)* ']'    #arrayIdentifierExpression
-    | IDENTIFIER'.'IDENTIFIER               #mapGetLayerExpression
+    | expression'.'IDENTIFIER               #mapGetLayerExpression
     | '{' (expression(','expression)*) '}'  #arrayExpression
     | 'rand('expression ',' expression ')'  #randomExpression
     | functionCall                          #functionCallExpression
