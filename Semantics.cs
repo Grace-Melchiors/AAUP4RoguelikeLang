@@ -37,7 +37,8 @@ public class Semantics {
     
     // Iterates all elements of the stacks. Prints each to std.out.
     public void CheckStack() {
-        int level = SymbolTableStack.Count() - 1;
+        int level = 0;
+        int TotalLevels = SymbolTableStack.Count() - 1;
 
 
         /*
@@ -48,17 +49,29 @@ public class Semantics {
         }
         */
         
+        System.Console.WriteLine("-----");
+        System.Console.WriteLine("Top of stack");
         // Level 0 = top of stack
-        while(level >= 0) {
+        while(level <= TotalLevels) {
+            
+            
+            System.Console.WriteLine("|---------- Level {0} ----------|", level);
 
-            System.Console.WriteLine("Level: {0}", level);
 
             foreach(var kvp in SymbolTableStack.ElementAt(level)) {
                 System.Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
             }
             
-            level--;
+
+            if(level == TotalLevels) {
+                System.Console.WriteLine("|-----------------------------|", level);
+
+            }
+            level++;
         }
+
+        System.Console.WriteLine("Bottom of stack");
+        System.Console.WriteLine("-----");
     }
     
     // Enters a new value into the symbol table located on top of the stack.
