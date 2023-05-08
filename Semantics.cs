@@ -5,12 +5,12 @@ public class Semantics {
         InitialiseSymbolTable();
     }
 
-    public Dictionary<string, object> NewSymbolTable = new Dictionary<string, object>();
     // A symbol table is associated with each scope
     // As opposed to one global table (Crafting a Compiler 8.2.2)
     public Stack<Dictionary<string, object>> SymbolTableStack = new Stack<Dictionary<string, object>>();
     
     public void InitialiseSymbolTable(){
+        Dictionary<string, object> NewSymbolTable = new Dictionary<string, object>();
         SymbolTableStack.Push(NewSymbolTable);
     }
     
