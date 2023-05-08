@@ -23,8 +23,6 @@ public class Semantics {
         Dictionary<string, object> NewSymbolTable = new Dictionary<string, object>();
         SymbolTableStack.Push(NewSymbolTable);
         System.Console.WriteLine("Opening Scope");
-
-        
     }
     
     // Closes the scope by popping symbol table from the stack. 
@@ -39,18 +37,10 @@ public class Semantics {
     public void CheckStack() {
         int level = 0;
         int TotalLevels = SymbolTableStack.Count() - 1;
-
-
-        /*
-        System.Console.WriteLine("Peek: {0}", SymbolTableStack.Peek());
-        foreach(var kvp in SymbolTableStack.Peek()) {
-                System.Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
-            
-        }
-        */
         
         System.Console.WriteLine("-----");
         System.Console.WriteLine("Top of stack");
+
         // Level 0 = top of stack
         while(level <= TotalLevels) {
             
@@ -81,35 +71,16 @@ public class Semantics {
         
         // Add symbol to the dictionary.
         SymbolTableTopOfStack.Add(name, obj);
-
-        
     }
     
-    // Retrieves a symbol in the symbol table by name.
+    // Retrieves a symbol in the stack of symbol tables by name.
+    // Starts at the symbol table located at the top of the stack.
+    // If name is not found, checks the next level of the stack until no more levels.
     public object RetrieveSymbol(string name) {
-        //int CurrentLevelInStack = SymbolTableStack.Count - 1;
-
-
         int CurrentLevelInStack = 0;
         int LevelsInStack = SymbolTableStack.Count - 1;
 
-        System.Console.WriteLine("Total levels (including level 0): {0}", LevelsInStack + 1);
-
-        /* Wrong? Starts at the bottom of the stack, as opposed to the top.
-        while(CurrentLevelInStack >= 0) {
-
-            if (SymbolTableStack.ElementAt(CurrentLevelInStack).ContainsKey(name))  
-            {  
-                System.Console.WriteLine("Found symbol at level {0}", CurrentLevelInStack);
-                return SymbolTableStack.ElementAt(CurrentLevelInStack)[name];
-            }  
-            else {
-                System.Console.WriteLine("Symbol not found, checking next level. Current level: {0}", CurrentLevelInStack);
-                CurrentLevelInStack -= 1;
-            }
-
-        }
-        */
+        //System.Console.WriteLine("Total levels (including level 0): {0}", LevelsInStack + 1);
 
         while(CurrentLevelInStack <= LevelsInStack) {
             
@@ -125,7 +96,6 @@ public class Semantics {
 
         }
         
-        throw new ArgumentException("Symbol was not found in scope");
-        
+        throw new ArgumentException("Symbol was not found in scope.");
     }
 }
