@@ -65,7 +65,6 @@ public class Map
 public class VestaVisitor : VestaBaseVisitor<object?>
 {
     private Dictionary<string, object> Variables { get; } = new();
-    private Store store = new Store();
     
     private Semantics semantics = new Semantics();
 
@@ -125,20 +124,13 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         //Parse it as paramDesc
         ParamDesc[] paramDescs = parseArray<ParamDesc>(paramArr);
         
-        //Find store of declaration
-        Store storeOfDclr = store;
-        
         //Need to handle the scope, then execute the funcBody, then reset scope, and return returnstmt
         Func<object?[], object?> newFunction = delegate(object?[] objects)
         {
             object? result;
-            //Keep the current store so it can be put back later
-            Store currentScope = store;
-            //Assign new store, 
-            Store tempStore = new Store();
-            tempStore.previous = storeOfDclr;
-            store = tempStore;
-            //Handle that objects addeed match the types, and add them to the store
+            semantics.OpenScope();
+
+            //Handle that objects addeed match the types, and add them to the symbol table
             if (objects.Length != paramDescs.Length) { throw new Exception($"Invalid amount of arguments");}
             for (int i = 0; i < objects.Length; i++)
             {
@@ -149,7 +141,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                     {
                         if (getBaseType((Array)objects[i]) == ((ArrDesc)(paramDescs[i].typeBase)).typeBase.GetType())
                         {
-                            store.variables[paramDescs[i].paramName] = objects[i];
+                            object symbol = semantics.RetrieveSymbol(paramDescs[i].paramName);
+                            symbol = objects[i];
                         }
                         else
                         {
@@ -164,7 +157,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                      
                 else if (objects[i].GetType() == paramDescs[i].typeBase.GetType())
                 {
-                    store.variables[paramDescs[i].paramName] = objects[i];
+                    object symbol = semantics.RetrieveSymbol(paramDescs[i].paramName);
+                    symbol = objects[i];
                 }
 
                 else
@@ -179,11 +173,12 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             
             
             //Reset scope
-            store = currentScope;
+            semantics.CloseScope();
             return result;
         };
 
-        storeOfDclr.variables[funcName] = newFunction;
+        object symbol = semantics.RetrieveSymbol(funcName);
+        symbol = newFunction;
         
         return null;
     }
@@ -560,25 +555,6 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return new ArrDesc(result ,arrResult);
     }
 
-    Store getStoreForVar(string varName)
-    {
-
-        if (!store.variables.ContainsKey(varName))
-        {
-            Store tempStore = store;
-            while (tempStore.previous != null)
-            {
-                tempStore = tempStore.previous;
-                if (tempStore.variables.ContainsKey(varName))
-                {
-                    return tempStore;
-                }
-            }
-            throw new Exception($"Variable {varName} is not defined");
-        }
-        return store;
-    }
-    
     public override object? VisitBaseAssignment(VestaParser.BaseAssignmentContext context)
     {
         var varName = context.IDENTIFIER().GetText();
@@ -612,8 +588,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var varName = context.IDENTIFIER().GetText();
         var expressionArr = context.expression().ToArray();
         var assignValue = Visit(expressionArr[expressionArr.Length - 1]); //Get last expression
-      
-        var relevantStore = getStoreForVar(varName);
+    
+        object symbol = semantics.RetrieveSymbol(varName);
         
         //generate list of index values
         int[] indexArr = new int[expressionArr.Length - 1];
@@ -628,9 +604,9 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                 throw new Exception($"Indexes must be described with integers");
             }
         }
-        if (relevantStore.variables[varName] is Array originalVar)
+        if (symbol is Array originalVar)
         {
-            relevantStore.variables[varName] = assignElementOfArr(indexArr, originalVar, assignValue, 0);
+            symbol = assignElementOfArr(indexArr, originalVar, assignValue, 0);
             return null;
         }
         throw new Exception($"$Cannot get element of non array element");
@@ -715,11 +691,11 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var expressionArr = context.expression().ToArray();
         var assignValue = Visit(expressionArr[expressionArr.Length - 1]); //Get last expression
 
-        var relevantStore = getStoreForVar(varName);
+        object symbol = semantics.RetrieveSymbol(varName);
 
-        if (relevantStore.variables[varName] is not Map map)
+        if (symbol is not Map map)
         {
-            throw new Exception($"Cannot get layer of type {relevantStore.variables[varName].GetType()}");
+            throw new Exception($"Cannot get layer of type {symbol.GetType()}");
         }
 
         var layer = map.layers[layerName];
@@ -727,7 +703,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         if (expressionArr.Length  == 1)  //If only valueExpression. Aka no index expressions
         {
             map.layers[layerName] = quickAssignArr(map.layers[layerName], assignValue);
-            relevantStore.variables[varName] = map;
+            symbol = map;
             return null;
         }
         //If index:
@@ -748,7 +724,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         if (layer is Array layerArr)
         { //Parse as Array
             map.layers[layerName] = assignElementOfArr(indexArr, layerArr, assignValue, 0);
-            relevantStore.variables[varName] = map;
+            symbol = map;
             return null;
         }
 
