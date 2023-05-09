@@ -2,81 +2,83 @@ grammar Vesta;
 
 program: line* EOF;
 
-line: statement | ifBlock | whileBlock | chanceBlock | functionDclr | forLoop;
+line: statement | functionDecl;
 
-statement : (declaration | assignment | functionCall ) ';';
+statement : (varDecl | instantiate | assignment | expression) ';' | block | ifStatement | whileStatement | forStatement | chance ;
 
-ifBlock: 'if' '(' expression ')' block ('else' elseIfBlock)?;
+ifStatement: 'if' '(' expression')' block ('else' block)?;
 
-elseIfBlock: block | ifBlock;
+whileStatement: 'while' '(' expression ')' block;
 
-whileBlock: 'while' '(' expression ')' block;
+forStatement: 'for' '(' instantiate ';'  expression ';' assignment ')' block;
 
-forLoop: 'for' '(' (declaration | assignment) ';' expression ';' assignment ')' block;
+chance: 'chance' '{' (expression ':' block )+ '}';
 
-chanceBlock: 'chance' '{' (expression ':' block)+ '}';
+block: '{' statement* '}';
 
-functionDclr: identifierType IDENTIFIER '('(funcParams)?')' funcBody;
-functionCall: IDENTIFIER '(' (expression (',' expression)*)? ')';
-
-funcParams: parameter (',' parameter)* ;
-parameter: identifierType IDENTIFIER;
-funcBody: '{' line*  returnStmt '}';
-returnStmt:  'return' expression';';
-
-block: '{' line* '}';
-
-assignment : baseAssignment | arrayAssignment | mapAssignment ;
-
-baseAssignment: IDENTIFIER '=' expression;    
-arrayAssignment: IDENTIFIER '[' expression (',' expression) ']' '=' expression ;
-mapAssignment:  IDENTIFIER '.' IDENTIFIER ('[' expression (',' expression)']') '=' expression;
-
-
-
-
-mapLayer: identifierType IDENTIFIER ('=' expression)?;
-
-declaration: identifierType IDENTIFIER '=' expression  ;
-
-expression
-    : constant                              #constantExpression
-    | IDENTIFIER                            #identifierExpression
-    | '(' expression ')'                    #parenthesizedExpression
-    | expression '[' expression (',' expression ']')* ']' #arrayIdentifierExpression
-    | expression'.'IDENTIFIER               #mapGetLayerExpression
-    | '{' (expression(','expression)*) '}'  #arrayExpression
-    | '[' expression ',' expression ']' '{' mapLayer (';'mapLayer)* '}' #mapExpression
-    | 'rand('expression ',' expression ')'  #randomExpression
-    | functionCall                          #functionCallExpression
-    | '!' expression                        #notExpression
-    | '-' expression                        #negExpression
-    | expression multOp expression          #multiplicationExpression
-    | expression addOp expression           #additionExpression
-    | expression compareOp expression       #compareExpression
-    | expression boolOp expression          #booleanExpression
+varDecl
+    : allType IDENTIFIER        #varDeclaration
+    | allType assignment        #varInitialization
     ;
 
 
+functionDecl: allType IDENTIFIER '('(funcParams)?')' funcBody;
+
+funcParams: parameter (',' parameter)* ;
+parameter: allType IDENTIFIER;
+funcBody: '{' statement*  returnStmt '}';
+returnStmt:  'return' expression';';
+
+instantiate: allType IDENTIFIER '=' expression;
+
+expression
+   : factor                             #factorExpression
+   | '!' factor						#notExpression
+   | '-' factor 			 			#negExpression
+   | expression multOp expression          		#multiplicationExpression
+   | expression addOp expression          	 	#additionExpression
+   | expression compareOp expression   	  	#compareExpression
+   | expression boolOp expression 			#booleanExpression
+;
+factor
+   : '(' expression ')'                             #parenthesizedExpression
+   | constant                                       #constantExpression
+   | factor2                                        #objectExpression
+   | '{' (expression(','expression)*) '}'				#arrayExpression
+   | arrayDimensions mapLayer 				#mapExpression
+   | factor2 arrayDimensions					#arrayAccess
+   | factor2 '.' IDENTIFIER arrayDimensions			#mapAccess
+;
+factor2
+	: IDENTIFIER                        #identifierAccess
+  	| functionCall 						#functionAccess
+	;
+
+arrayDimensions: '[' expression (',' expression )* ']' ;
+mapLayer: '{' identifierType IDENTIFIER ('=' expression)? (';' identifierType IDENTIFIER ('=' expression)?)* '}' ;
+
+assignment: IDENTIFIER (arrayDimensions)? '=' expression ;
+
+functionCall: IDENTIFIER '(' (expression (',' expression)*)? ')';
+
+allType: COMPLEXTYPE | identifierType;
+
+identifierType: TYPE ('[' expression (',' expression)* ']')? ;
 
 multOp: '*' | '/';
 addOp: '+' | '-';
 compareOp: '==' | '!=' | '>' | '<' | '>=' | '<=';
-boolOp: BOOL_OPERATOR;
 
-
-BOOL_OPERATOR: '&&' | '||' ;
+boolOp: '&&' | '||' ;
 
 constant: INTEGER | BOOL;
+
+TYPE: 'int' | 'bool' ;
+COMPLEXTYPE: 'map';
 
 INTEGER:  [0-9]+ ;
 BOOL: 'true' | 'false';
 
-identifierType: TYPE ('[' expression (',' expression)* ']')?;
-
-TYPE: 'int' | 'bool' | 'map';
-
-
 IDENTIFIER: [a-zA-Z] [a-zA-Z0-9]*;
 
-WS: [\t\r\n]+ -> skip;
+WS: [ \t\r\n]+ -> skip;
