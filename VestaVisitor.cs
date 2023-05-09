@@ -66,6 +66,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 {
     private Dictionary<string, object> Variables { get; } = new();
     private Store store = new Store();
+    
+    private Semantics semantics = new Semantics();
 
 
 
@@ -337,8 +339,10 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var varName = context.IDENTIFIER().GetText();
 
         var value = Visit(context.expression());
+        
+        object declaration = semantics.RetrieveSymbol(varName);
        
-        if(store.variables.ContainsKey(varName))  //No overriding current variables
+        if(declaration != null)  //No overriding current variables
         {
             throw new Exception($"The variable {varName} is already defined");
         }
@@ -350,24 +354,24 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         {
             if (arrDesc.typeBase.GetType() == getBaseType(value))
             {
-                store.variables[varName] = multiDimensionArrGen(arrDesc.dimensions, value, arrDesc.dimensions.Length);
+                semantics.EnterSymbol(varName, multiDimensionArrGen(arrDesc.dimensions, value, arrDesc.dimensions.Length));
             }
             else throw new Exception($"Types do not match");
         }
         else if (type is Map map)
         {
             checkType<Map>(value);
-            store.variables[varName] = value;
+            semantics.EnterSymbol(varName, value);
         }
         else if (type is int n)  //If type is int
         {
             checkType<int>(value);
-            store.variables[varName] = value;
+            semantics.EnterSymbol(varName, value);
         }
         else if (type is bool b) //If type is bool
         {
             checkType<bool>(value);
-            store.variables[varName] = value;
+            semantics.EnterSymbol(varName, value);
         }
         else
         {
@@ -809,22 +813,13 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     {
         var varName = context.IDENTIFIER().GetText();
 
-        if (!store.variables.ContainsKey(varName))
+        object symbol = semantics.RetrieveSymbol(varName);
+        if(symbol == null)
         {
-            Store tempStore = store;
-            while (tempStore.previous != null)
-            {
-                tempStore = tempStore.previous;
-                if (tempStore.variables.ContainsKey(varName))
-                {
-                    return tempStore.variables[varName];
-                }
-            }
-
-            throw new Exception($"Variable {varName} is not defined");
+                    throw new Exception($"Variable {varName} is not defined");
         }
 
-        return store.variables[varName];
+        return symbol;
     }
 
     /*  expression ('[' expression ']')+      #arrayIdentifierExpression */
