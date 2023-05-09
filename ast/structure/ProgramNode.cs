@@ -4,14 +4,15 @@ using Antlr_language.ast.statement;
 
 namespace Antlr_language.ast.structure
 {
-    public class BlockNode : AbstractNode
+    public class ProgramNode : AbstractNode
     {
-        private List<StatementNode> statementNodes = new List<StatementNode>();
+        private List<LineNode> lineNodes = new List<LineNode>();
+
         public string CodeGen()
         {
             string result = "";
-            foreach (StatementNode statement in statementNodes) {
-                result += statement.CodeGen();
+            foreach (LineNode line in lineNodes) {
+                result += line.CodeGen();
             }
             return result;
         }

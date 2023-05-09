@@ -7,7 +7,7 @@ namespace Antlr_language.ast.expression
 
         private Enums.Types type;
         private string VariableName;
-        private ArithmeticExpressionNode index;
+        private ExpressionNode index;
         
 
         public string CodeGen()

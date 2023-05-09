@@ -5,7 +5,7 @@ namespace Antlr_language.ast
 {
     public static class Enums
     {
-        public static enum Types {
+        public enum Types {
             BOOL,
             INTEGER,
             MAP

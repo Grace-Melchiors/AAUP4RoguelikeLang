@@ -1,11 +1,12 @@
 using System;
 using Antlr_language.ast.expression;
+using Antlr_language.ast.statement;
 
 namespace Antlr_language.ast.structure
 {
 	public class IfNode : AbstractNode
 	{
-        private BooleanExpressionNode expression;
+        private ExpressionNode expression;
         private BlockNode block;
         public string CodeGen ()
 		{

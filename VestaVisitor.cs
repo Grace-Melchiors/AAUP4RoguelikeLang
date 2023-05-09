@@ -1,3 +1,4 @@
+/*
 using System.Data;
 using System.Collections;
 using System.Diagnostics.Metrics;
@@ -107,7 +108,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return null;
     }
 
-    /* functionDclr: identifierType IDENTIFIER '('(funcParams)?')' funcBody; */
+    // functionDclr: identifierType IDENTIFIER '('(funcParams)?')' funcBody;
     public override object? VisitFunctionDclr(VestaParser.FunctionDclrContext context)
     {
         var funcName = context.IDENTIFIER().GetText();
@@ -198,7 +199,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return returnArr;
     }
     
-    /* funcParams: parameter (',' parameter)* ; */
+    // funcParams: parameter (',' parameter)* ; 
     public override object? VisitFuncParams(VestaParser.FuncParamsContext context)
     {
         var paramContextArr = context.parameter().ToArray();
@@ -213,12 +214,12 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return paramsArr;
     }
-    /* parameter: identifierType IDENTIFIER; */
+    // parameter: identifierType IDENTIFIER;
     public override object? VisitParameter(VestaParser.ParameterContext context)
     {
         return new ParamDesc(Visit(context.identifierType()), context.IDENTIFIER().GetText());
     }
-    /* funcBody: '{' line*  returnStmt '}'; */
+    // funcBody: '{' line*  returnStmt '}';
     public override object? VisitFuncBody(VestaParser.FuncBodyContext context)
     {
         //Visit all lines
@@ -231,7 +232,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return Visit(context.returnStmt());
     }
 
-    /* returnStmt:  'return' expression';'; */
+    // returnStmt:  'return' expression';';
     public override object? VisitReturnStmt(VestaParser.ReturnStmtContext context)
     {
         return Visit(context.expression());
@@ -258,17 +259,17 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
     public override object? VisitBlock(VestaParser.BlockContext context)
     {
-        /* New scope */
+        // New scope
         Store tempStore = new Store();
         tempStore.previous = store;
         store = tempStore;
-        /* Visit */
+        // Visit
         var arr = context.line().ToArray();
         for (int i = 0; i < arr.Length; i++)
         {
             Visit(arr[i]);
         }
-        /* Return to previous scope */
+        // Return to previous scope
         store = store.previous;
         return null;
     }
@@ -328,10 +329,10 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
     
     
-    /* identifierType IDENTIFIER '=' expression;
-     identifierType: TYPE ('[' expression ']')*;
-     TYPE: 'int' | 'bool' | 'map' ;
-     */
+    // identifierType IDENTIFIER '=' expression;
+    // identifierType: TYPE ('[' expression ']')*;
+    // TYPE: 'int' | 'bool' | 'map' ;
+     
     public override object? VisitDeclaration(VestaParser.DeclarationContext context)
     {
         var varName = context.IDENTIFIER().GetText();
@@ -376,7 +377,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         return null;
     }
-    /* | expression'.'IDENTIFIER               #mapGetLayerExpression */
+    // | expression'.'IDENTIFIER               #mapGetLayerExpression
     public override object? VisitMapGetLayerExpression(VestaParser.MapGetLayerExpressionContext context)
     {
         object myMap = Visit(context.expression());
@@ -395,8 +396,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"Can only get layers of maps, not type {myMap.GetType()}");
     }
 
-    /* mapDeclaration: '[' expression ','expression ']' {' mapLayer (';'mapLayer)*  '}';
-       mapLayer: identifierType IDENTIFIER ('=' expression)?; */
+    // mapDeclaration: '[' expression ','expression ']' {' mapLayer (';'mapLayer)*  '}';
+    //   mapLayer: identifierType IDENTIFIER ('=' expression)?; 
 
     public override object? VisitMapExpression(VestaParser.MapExpressionContext context)
     {
@@ -519,8 +520,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"{o} is of type {o.GetType()}, not {typeof(T)}");
     }
     
-    /* identifierType: TYPE ('['expression']')*;
-     TYPE: 'int' | 'bool' | 'map'; */
+    // identifierType: TYPE ('['expression']')*;
+    // TYPE: 'int' | 'bool' | 'map'; 
     public override object? VisitIdentifierType(VestaParser.IdentifierTypeContext context)
     {
         var myArr = context.expression().ToArray();
@@ -600,7 +601,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         return null;
     }
-    /* arrayAssignment: IDENTIFER '[' expression (',' expression)* ']' '=' expression ; */
+    // arrayAssignment: IDENTIFER '[' expression (',' expression)* ']' '=' expression ;
     public override object? VisitArrayAssignment(VestaParser.ArrayAssignmentContext context)
     {
         var varName = context.IDENTIFIER().GetText();
@@ -701,7 +702,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"Too many index references, tried to find element of type {arr.GetType()}");
     }
 
-    /* mapAssignment:  IDENTIFIER '.' IDENTIFIER ('[' expression (',' expression)* ']') '=' expression;*/
+    // mapAssignment:  IDENTIFIER '.' IDENTIFIER ('[' expression (',' expression)* ']') '=' expression;
     public override object? VisitMapAssignment(VestaParser.MapAssignmentContext context)
     {
         var varName = context.IDENTIFIER(0).GetText();
@@ -776,7 +777,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return true;
     }
     
-    /* '{' (expression',')* '}' */
+    // '{' (expression',')* '}'
     public override object? VisitArrayExpression(VestaParser.ArrayExpressionContext context)
     {
         
@@ -827,7 +828,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return store.variables[varName];
     }
 
-    /*  expression ('[' expression ']')+      #arrayIdentifierExpression */
+    //  expression ('[' expression ']')+      #arrayIdentifierExpression
     public override object? VisitArrayIdentifierExpression(VestaParser.ArrayIdentifierExpressionContext context)
     {
 
@@ -1067,7 +1068,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return null;
     }
     
-    /* 'chance{' (expression ':' block)+ '}' */
+    // 'chance{' (expression ':' block)+ '}'
     public override object? VisitChanceBlock(VestaParser.ChanceBlockContext context)
     {
         var arrExpr = context.expression().ToArray();
@@ -1137,7 +1138,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         throw new Exception($"Not exceptions must be with expressions of type bool");
     }
-/*forLoop: 'for' '(' declaration | assignment ';' expression ';' assignment ')';  */
+    // forLoop: 'for' '(' declaration | assignment ';' expression ';' assignment ')'; 
     public override object? VisitForLoop(VestaParser.ForLoopContext context)
     {
         var dclr = context.declaration();
@@ -1210,3 +1211,4 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"$Cannot compare between types {left.GetType()} and {right.GetType()}");
     }
 }
+*/

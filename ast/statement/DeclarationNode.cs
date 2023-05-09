@@ -7,7 +7,7 @@ namespace Antlr_language.ast.statement
     {
         private Enums.Types type;
         private string identifier;
-        private 
+        
         public string CodeGen()
         {
             return "";

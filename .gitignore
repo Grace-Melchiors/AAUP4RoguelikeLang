@@ -2,3 +2,4 @@ obj/
 .vscode/
 .vs/
 bin/
+Content/.antlr/

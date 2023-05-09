@@ -5,7 +5,7 @@ using Antlr_language.Content;
 using Antlr4.Runtime;
 using Antlr_language.ast;
 
-var fileName = "Content/input/test.V"; // args[0]
+var fileName = "Content/input/addition.V"; // args[0]
 var fileContents = File.ReadAllText(fileName);
 
 CSharpBuilder CSB = new CSharpBuilder();
@@ -19,11 +19,11 @@ VestaParser vestaParser = new VestaParser(commonTokenStream);
 
 var vestaContext = vestaParser.program();
 
-var visitor = new VestaVisitor();
-visitor.Visit((vestaContext));
+//var visitor = new VestaVisitor();
+//visitor.Visit((vestaContext));
 
 AstBuilder builder = new AstBuilder();
-builder.Visit(vestaContext);
+builder.Visit((vestaContext));
 
 CSB.OutputResult();
 
