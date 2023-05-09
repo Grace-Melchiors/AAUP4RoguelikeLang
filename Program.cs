@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using Antlr_language;
-//using Antlr_language.Content;
+using Antlr_language.Content;
 using Antlr4.Runtime;
 
 var fileName = "Content/input/test.V"; // args[0]
@@ -11,8 +11,8 @@ CSharpBuilder CSB = new CSharpBuilder();
 
 
 AntlrInputStream inputStream = new AntlrInputStream(fileContents);
-var VestaLexer = new VestaLexer(inputStream);
-CommonTokenStream commonTokenStream = new CommonTokenStream(VestaLexer);
+var vestaLexer = new VestaLexer(inputStream);
+CommonTokenStream commonTokenStream = new CommonTokenStream(vestaLexer);
 VestaParser vestaParser = new VestaParser(commonTokenStream);
 //vestaParser.AddErrorListener();
 
