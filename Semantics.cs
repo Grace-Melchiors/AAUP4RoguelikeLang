@@ -96,6 +96,6 @@ public class Semantics {
 
         }
         
-        throw new ArgumentException("Symbol was not found in scope.");
+        return null;
     }
 }
