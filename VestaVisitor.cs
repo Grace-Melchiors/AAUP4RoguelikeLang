@@ -73,11 +73,14 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     public VestaVisitor()
     {
-        store.variables["Write"] = new Func<object?[], object?>(Write);
-        store.variables["WriteArr"] = new Func<object?[], object?>(WriteArray);
+        semantics.EnterSymbol("Write", new Func<object?[], object?>(Write));
+        semantics.EnterSymbol("WriteArr", new Func<object?[], object?>(WriteArray));
+
+
+        semantics.EnterSymbol("write", new Func<object?[], object?>(Write));
+        semantics.EnterSymbol("writeArr", new Func<object?[], object?>(WriteArray));
         
-        store.variables["write"] = new Func<object?[], object?>(Write);
-        store.variables["writeArr"] = new Func<object?[], object?>(WriteArray);
+        semantics.CheckStack(); 
     }
     private object? WriteArray(Array arr)
     {
@@ -244,14 +247,14 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var name = context.IDENTIFIER().GetText();
         var args = context.expression().Select(e => Visit(e)).ToArray();
 
-        var relevantStore = getStoreForVar(name);
+        object symbol = semantics.RetrieveSymbol(name);
         
-        if (!relevantStore.variables.ContainsKey(name))
+        if (symbol == null)
         {
             throw new Exception($"Function {name} is not defined");
         }
 
-        if (relevantStore.variables[name] is Func<object?[], object?> func)
+        if (symbol is Func<object?[], object?> func)
         {
             return func(args);
         }
@@ -261,9 +264,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     public override object? VisitBlock(VestaParser.BlockContext context)
     {
         /* New scope */
-        Store tempStore = new Store();
-        tempStore.previous = store;
-        store = tempStore;
+        semantics.OpenScope();
         /* Visit */
         var arr = context.line().ToArray();
         for (int i = 0; i < arr.Length; i++)
@@ -271,7 +272,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             Visit(arr[i]);
         }
         /* Return to previous scope */
-        store = store.previous;
+        semantics.CloseScope();
         return null;
     }
     
@@ -561,6 +562,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     Store getStoreForVar(string varName)
     {
+
         if (!store.variables.ContainsKey(varName))
         {
             Store tempStore = store;
@@ -582,24 +584,24 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var varName = context.IDENTIFIER().GetText();
         var value = Visit(context.expression());
 
-        var relevantStore = getStoreForVar(varName);
-        var originalValue = relevantStore.variables[varName];
-        if (originalValue is Array arr) //if array need array Assign
+        object symbol = semantics.RetrieveSymbol(varName);
+
+        if (symbol is Array arr) //if array need array Assign
         {
             if (getBaseType(arr) == getBaseType(value))
             {
-                relevantStore.variables[varName] = quickAssignArr(arr, value);
+                symbol = quickAssignArr(arr, value);
             }
             else throw new Exception($"Types do not match");
         }
-        else if(originalValue.GetType()==value.GetType())
+        else if(symbol.GetType()==value.GetType())
         {
-            relevantStore.variables[varName] = value;
+            symbol = value;
         }
         else{
             
             throw new Exception(
-                $"{value} cannot be assigned to {varName} as it is of type {value.GetType()} not {relevantStore.variables[varName].GetType()}"); }
+                $"{value} cannot be assigned to {varName} as it is of type {value.GetType()} not {symbol.GetType()}"); }
 
 
         return null;
