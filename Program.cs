@@ -3,6 +3,7 @@
 using Antlr_language;
 using Antlr_language.Content;
 using Antlr4.Runtime;
+using Antlr_language.ast;
 
 var fileName = "Content/input/test.V"; // args[0]
 var fileContents = File.ReadAllText(fileName);
@@ -21,6 +22,8 @@ var vestaContext = vestaParser.program();
 var visitor = new VestaVisitor();
 visitor.Visit((vestaContext));
 
+AstBuilder builder = new AstBuilder();
+builder.Visit(vestaContext);
 
 CSB.OutputResult();
 

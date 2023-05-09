@@ -1,4 +1,4 @@
-// Generated from l:\Onedrive\Uddannelse\04-Aalborg universitet\4. semester\Project\AAUP4RoguelikeLang\content\Vesta.g4 by ANTLR 4.9.2
+// Generated from l:\Onedrive\Uddannelse\04-Aalborg universitet\4. semester\Project\AAUP4RoguelikeLang\Vesta.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
