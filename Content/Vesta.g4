@@ -4,13 +4,13 @@ program: line* EOF;
 
 line: statement | functionDecl;
 
-statement : (varDecl | instantiate | assignment | expression) ';' | block | ifStatement | whileStatement | forStatement | chance ;
+statement : (varDecl | assignment | expression) ';' | block | ifStatement | whileStatement | forStatement | chance ;
 
 ifStatement: 'if' '(' expression')' block ('else' block)?;
 
 whileStatement: 'while' '(' expression ')' block;
 
-forStatement: 'for' '(' instantiate ';'  expression ';' assignment ')' block;
+forStatement: 'for' '(' varDecl ';'  expression ';' assignment ')' block;
 
 chance: 'chance' '{' (expression ':' block )+ '}';
 
@@ -28,8 +28,6 @@ funcParams: parameter (',' parameter)* ;
 parameter: allType IDENTIFIER;
 funcBody: '{' statement*  returnStmt '}';
 returnStmt:  'return' expression';';
-
-instantiate: allType IDENTIFIER '=' expression;
 
 expression
    : factor                             #factorExpression
