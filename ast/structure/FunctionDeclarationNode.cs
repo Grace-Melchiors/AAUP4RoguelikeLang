@@ -7,31 +7,36 @@ namespace Antlr_language.ast.structure
 {
     public class FunctionDeclarationNode : AbstractNode
     {
-        private Enums.Types Type;
-        private string Identifier;
-        private List<FunctionParamNode> funcParams;
-        private BlockNode body;
+        private TypeNode Type;
+        private string? Identifier;
+        private List<FunctionParamNode> funcParams = new List<FunctionParamNode>();
+        private BlockNode? body;
 
-
-        public string CodeGen()
+        public FunctionDeclarationNode(TypeNode type, string? identifier, List<FunctionParamNode> funcParams, BlockNode? body)
         {
-            string result = "";
-            if (Type == Enums.Types.MAP) {
-                result += "Map ";
-            } else if (Type == Enums.Types.INTEGER) {
-                result += "int ";
-            } else if (Type == Enums.Types.BOOL) {
-                result += "bool ";
-            } else {
-                throw new NotImplementedException();
+            Type = type;
+            Identifier = identifier;
+            this.funcParams = funcParams;
+            this.body = body;
+        }
+
+        public string CodeGen(int indentation)
+        {
+            string indent = "";
+            for (int i = 0; i < indentation; i++) {
+                indent += "\t";
             }
+            string result = indent;
+            result += Type.CodeGen(indentation) + " ";
             result += Identifier + " ";
             result += "(";
             foreach (FunctionParamNode param in funcParams) {
-                result += param.CodeGen() + funcParams;
+                result += param.CodeGen(indentation) + funcParams;
             }
             result += ")\n";
-            result += body.CodeGen();
+            if (body == null)
+                throw new NotImplementedException();
+            result += body.CodeGen(indentation);
             return result;
         }
 

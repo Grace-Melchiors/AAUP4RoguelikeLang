@@ -1,5 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-
+using System;
 using Antlr_language;
 using Antlr_language.Content;
 using Antlr4.Runtime;
@@ -23,8 +23,10 @@ var vestaContext = vestaParser.program();
 //visitor.Visit((vestaContext));
 
 AstBuilder builder = new AstBuilder();
-builder.Visit((vestaContext));
+string Code = builder.Visit((vestaContext)).CodeGen(0);
+CSB.AppendLine(Code);
 
 CSB.OutputResult();
 
+Console.WriteLine("Press enter to continue...");
 Console.Read();

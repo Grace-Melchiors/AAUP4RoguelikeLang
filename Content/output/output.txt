@@ -1,1 +1,21 @@
+using System;
+
+namespace MapGen
+{
+	class Map {
+		Dictionary<string, int[][]> IntLayers = new();
+		Dictionary<string, bool[][]> BoolLayers = new();
+	}
+
+	class Program
+	{
+		stati void Main(string[] args)
+		{
+			int i = 1;
+			bool j = true;
+			int k = (i+j);
+		}
+	}
+}
+
 

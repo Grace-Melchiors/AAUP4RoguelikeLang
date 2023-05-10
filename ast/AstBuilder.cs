@@ -1,14 +1,230 @@
 using System;
-
+using Antlr_language.ast.expression;
+using Antlr_language.ast.statement;
+using Antlr_language.ast.structure;
 using Antlr_language.Content;
 using Antlr4.Runtime;
-
+using Antlr4.Runtime.Misc;
 
 namespace Antlr_language.ast
 {
-    public class AstBuilder : VestaBaseVisitor<object?>
+    class Map {
+        Dictionary<string, int[][]> IntLayers = new();
+        Dictionary<string, bool[][]> BoolLayers = new();
+    }
+    public class AstBuilder : VestaBaseVisitor<AbstractNode>
     {
-        public override object? VisitBlock(VestaParser.BlockContext context)
+        
+        public override AbstractNode VisitProgram([NotNull] VestaParser.ProgramContext context)
+        {
+            ProgramNode AST = new ProgramNode();
+            var lineArr = context.line().ToArray();
+            for (int i = 0; i < lineArr.Length; i++)
+            {
+                AST.AddLineNode((LineNode)Visit(lineArr[i]));
+            }
+
+            return AST;
+        }
+        public override AbstractNode VisitLine([NotNull] VestaParser.LineContext context)
+        {
+            var statement = context.statement();
+            var functionDecl = context.functionDecl();
+            LineNode result;
+            if (statement != null) {
+                result = new LineNode((StatementNode)Visit(statement), null);
+            } else if (functionDecl != null) {
+                result = new LineNode(null, (FunctionDeclarationNode)Visit(functionDecl));
+            } else {
+                throw new Exception();
+            }
+            return result;
+        }
+
+        public override AbstractNode VisitStatement([NotNull] VestaParser.StatementContext context)
+        {
+            StatementNode result;
+            var VariableDecl = context.varDecl();
+            var assignment = context.assignment();
+            var expression = context.expression();
+            var block = context.block();
+            var ifStatement = context.ifStatement();
+            var whileStatement = context.whileStatement();
+            var forStatement = context.forStatement();  //Maybe something funky here, as there is no for statement in statement make it a while?
+            var chanceStatement = context.chance();
+
+
+            if (VariableDecl != null) {
+                result = new StatementNode((VariableDeclarationNode)Visit(VariableDecl), null, null, null, null, null, null);
+            } else if (assignment != null) {
+                result = new StatementNode(null, (AssignmentNode)Visit(assignment), null, null, null, null, null);
+            } else {
+                throw new NotImplementedException();
+            }
+            return result;
+        }
+
+        
+        public override AbstractNode VisitVarDecl([NotNull] VestaParser.VarDeclContext context)
+        {
+            return base.VisitVarDecl(context);
+        }
+        public override AbstractNode VisitVarDeclaration([NotNull] VestaParser.VarDeclarationContext context)
+        {
+            return base.VisitVarDeclaration(context);
+        }
+        public override AbstractNode VisitVarInitialization([NotNull] VestaParser.VarInitializationContext context)
+        {
+            VariableDeclarationNode result;
+            var typeContext = context.allType();
+            TypeNode type = (TypeNode)Visit(typeContext);
+            var assignmentContext = context.assignment();
+            
+
+            result = new VariableDeclarationNode(type, assignmentContext.IDENTIFIER().GetText(), (ExpressionNode)Visit(assignmentContext.expression()));
+
+
+            return result;
+        }
+
+        /// ---  Function  ---  ///
+        /*public override AbstractNode VisitFunctionDecl([NotNull] VestaParser.FunctionDeclContext context)
+        {
+            FunctionDeclarationNode result;
+
+            
+
+            return result;
+        }*/
+
+        public override AbstractNode VisitAllType([NotNull] VestaParser.AllTypeContext context)
+        {
+            TypeNode result;
+            if (context.COMPLEXTYPE() != null) {
+                Enums.Types type;
+                if (context.COMPLEXTYPE().GetText() == "map") {
+                    type = Enums.Types.MAP;
+                } else {
+                    throw new NotImplementedException();
+                }
+                result = new TypeNode(type, null);
+            } else if (context.identifierType() != null) {
+                Enums.Types type;
+                var TypeContext = context.identifierType().TYPE();
+                if (TypeContext.GetText() == "int") {
+                    type = Enums.Types.INTEGER;
+                } else if (TypeContext.GetText() == "bool") {
+                    type = Enums.Types.BOOL;
+                } else {
+                    throw new NotImplementedException();
+                }
+                result = new TypeNode(type, null);
+                //Array check expressions here!
+                bool IsArray = false;
+                try {
+                    var arraySizes = context.identifierType().expression().ToArray();
+                    List<ExpressionNode> sizes = new();
+                    if (arraySizes.Length != 0) {
+                        IsArray = true;
+                        foreach (var ArraySize in arraySizes) {
+                            sizes.Add((ExpressionNode)Visit(ArraySize));
+                        }
+                        result = new TypeNode(type, sizes);
+                    }
+                } catch (NullReferenceException e) {
+                    System.Console.WriteLine("Error: " + e.Message);
+                }
+            } else {
+                throw new NotImplementedException();
+            }
+            return result;
+        }
+
+        public override AbstractNode VisitFactorExpression([NotNull] VestaParser.FactorExpressionContext context)
+        {
+            ExpressionNode result;
+
+            result = new ExpressionNode(Enums.Operators.none, null,null, (FactorNode)Visit(context.factor()));
+            return result;
+        }
+        public override AbstractNode VisitNotExpression([NotNull] VestaParser.NotExpressionContext context)
+        {
+            ExpressionNode result;
+
+            result = new ExpressionNode(Enums.Operators.not, null,null, (FactorNode)Visit(context.factor()));
+            return result;
+        }
+        public override AbstractNode VisitNegExpression([NotNull] VestaParser.NegExpressionContext context)
+        {
+            ExpressionNode result;
+
+            result = new ExpressionNode(Enums.Operators.sub, null,null, (FactorNode)Visit(context.factor()));
+            return result;
+        }
+        public override AbstractNode VisitMultiplicationExpression([NotNull] VestaParser.MultiplicationExpressionContext context)
+        {
+            ExpressionNode result;
+            var expressionContexts = context.expression().ToArray();
+            result = new ExpressionNode(Enums.StringToOperator(context.multOp().GetText()), (ExpressionNode)Visit(expressionContexts[0]),(ExpressionNode)Visit(expressionContexts[1]), null);
+            return result;
+        }
+        public override AbstractNode VisitAdditionExpression([NotNull] VestaParser.AdditionExpressionContext context)
+        {
+            ExpressionNode result;
+            var expressionContexts = context.expression().ToArray();
+            result = new ExpressionNode(Enums.StringToOperator(context.addOp().GetText()), (ExpressionNode)Visit(expressionContexts[0]),(ExpressionNode)Visit(expressionContexts[1]), null);
+            return result;
+        }
+        public override AbstractNode VisitCompareExpression([NotNull] VestaParser.CompareExpressionContext context)
+        {
+            ExpressionNode result;
+            var expressionContexts = context.expression().ToArray();
+            result = new ExpressionNode(Enums.StringToOperator(context.compareOp().GetText()), (ExpressionNode)Visit(expressionContexts[0]),(ExpressionNode)Visit(expressionContexts[1]), null);
+            return result;
+        }
+        public override AbstractNode VisitBooleanExpression([NotNull] VestaParser.BooleanExpressionContext context)
+        {
+            ExpressionNode result;
+            var expressionContexts = context.expression().ToArray();
+            result = new ExpressionNode(Enums.StringToOperator(context.boolOp().GetText()), (ExpressionNode)Visit(expressionContexts[0]),(ExpressionNode)Visit(expressionContexts[1]), null);
+            return result;
+        }
+
+        public override AbstractNode VisitConstantExpression([NotNull] VestaParser.ConstantExpressionContext context)
+        {
+            FactorNode result;
+            ConstantNode temp;
+            var integer = context.constant().INTEGER();
+            var boolean = context.constant().BOOL();
+            if (integer != null) {
+                temp = new ConstantNode(null, int.Parse(integer.GetText()));
+            } else if (boolean != null) {
+                temp = new ConstantNode(Convert.ToBoolean(boolean.GetText()), null);
+            } else {
+                throw new NotImplementedException();
+            }
+            result = new FactorNode(null, temp, null, null, null, null, null);
+            return result;
+        }
+        public override AbstractNode VisitObjectExpression([NotNull] VestaParser.ObjectExpressionContext context)
+        {
+            FactorNode result = new FactorNode(null, null, (Factor2Node)Visit(context.factor2()), null, null, null, null);
+            return result;
+        }
+        public override AbstractNode VisitIdentifierAccess([NotNull] VestaParser.IdentifierAccessContext context)
+        {
+            Factor2Node result = new Factor2Node(context.IDENTIFIER().GetText(), null);
+            return result;
+        }
+        public override AbstractNode VisitFunctionAccess([NotNull] VestaParser.FunctionAccessContext context)
+        {
+            throw new NotImplementedException();
+            Factor2Node result = new Factor2Node(null, null/*Something here*/);
+            return result;
+        }
+
+
+        public override AbstractNode VisitBlock(VestaParser.BlockContext context)
         {
 
             return null;

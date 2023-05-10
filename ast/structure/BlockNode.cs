@@ -7,11 +7,13 @@ namespace Antlr_language.ast.structure
     public class BlockNode : AbstractNode
     {
         private List<StatementNode> statementNodes = new List<StatementNode>();
-        public string CodeGen()
+        public string CodeGen(int indentation)
         {
             string result = "";
             foreach (StatementNode statement in statementNodes) {
-                result += statement.CodeGen();
+                for (int i = 0; i < indentation; i++)
+                    result +="\t";
+                result += statement.CodeGen(indentation + 1);
             }
             return result;
         }

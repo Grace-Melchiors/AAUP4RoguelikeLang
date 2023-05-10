@@ -1,26 +1,47 @@
 ﻿using System;
 using Antlr_language.ast.expression;
+using Antlr_language.ast.structure;
 
 namespace Antlr_language.ast.statement
 {
     public class StatementNode : AbstractNode
     {
-        private DeclarationNode decl;
-        private AssignmentNode assign;
-        private FunctionCallNode func;
+        private VariableDeclarationNode? varDecl;
+        private AssignmentNode? assign;
+        private ExpressionNode? expression;
+        private BlockNode? block;
+        private IfNode? ifNode;
+        private WhileNode? whileNode;
+        private ChanceNode? chance;
 
-        public string CodeGen()
+        public StatementNode(VariableDeclarationNode? varDecl, AssignmentNode? assign, ExpressionNode? expression, BlockNode? block, IfNode? ifNode, WhileNode? whileNode, ChanceNode? chance)
         {
-            if (decl != null) {
-                return decl.CodeGen();
-            }
-            else if (assign != null) {
-                return assign.CodeGen();
-            }
-            else if (func != null) {
-                return func.CodeGen();
-            }
-            else {
+            this.varDecl = varDecl;
+            this.assign = assign;
+            this.expression = expression;
+            this.block = block;
+            this.ifNode = ifNode;
+            this.whileNode = whileNode;
+            this.chance = chance;
+        }
+
+        public string CodeGen(int indentation)
+        {
+            if (varDecl != null) {
+                return varDecl.CodeGen(indentation) + ";";
+            } else if (assign != null) {
+                return assign.CodeGen(indentation) + ";";
+            } else if (expression != null) {
+                return expression.CodeGen(indentation) + ";";
+            } else if (block != null) {
+                return block.CodeGen(indentation) + ";";
+            } else if (ifNode != null) {
+                return ifNode.CodeGen(indentation) + ";";
+            } else if (whileNode != null) {
+                return whileNode.CodeGen(indentation) + ";";
+            } else if (chance != null) {
+                return chance.CodeGen(indentation) + ";";
+            } else {
                 throw new NotImplementedException();
             }
         }

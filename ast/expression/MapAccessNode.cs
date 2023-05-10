@@ -2,11 +2,11 @@
 
 namespace Antlr_language.ast.expression
 {
-    public class ArrayAccessNode : AbstractExpressionNode
+    public class MapAccessNode : AbstractExpressionNode
     {
 
-        private Enums.Types type;
         private string? VariableName;
+        private string? LayerName;
         private List<ExpressionNode> indexs = new List<ExpressionNode>();
         
 
@@ -16,7 +16,7 @@ namespace Antlr_language.ast.expression
             if (indexs.Count() != 0) {
                 if (VariableName == null)
                     throw new NotImplementedException();
-                result = VariableName + "[";
+                result = VariableName + "." + LayerName + "[";
                 foreach (ExpressionNode expr in indexs) {
                     result += expr.CodeGen(indentation) + ",";
                 }
@@ -29,7 +29,7 @@ namespace Antlr_language.ast.expression
             return result;
         }
         public override Enums.Types getEvaluationType () {
-            return type;
+            throw new NotImplementedException();
         }
 
     }

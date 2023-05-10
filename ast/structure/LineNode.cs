@@ -9,12 +9,18 @@ namespace Antlr_language.ast.structure
         private StatementNode? statement;
         private FunctionDeclarationNode? funcDecl;
 
-        public string CodeGen()
+        public LineNode(StatementNode? statement, FunctionDeclarationNode? funcDecl)
+        {
+            this.statement = statement;
+            this.funcDecl = funcDecl;
+        }
+
+        public string CodeGen(int indentation)
         {
             if (statement != null) {
-                return statement.CodeGen();
+                return statement.CodeGen(indentation);
             } else if (funcDecl != null) {
-                return funcDecl.CodeGen();
+                return funcDecl.CodeGen(indentation);
             }
             else {
                 throw new NotImplementedException();

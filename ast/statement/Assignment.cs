@@ -5,7 +5,7 @@ namespace Antlr_language.ast.statement
 {
     public class AssignmentNode : AbstractNode
     {
-        public string CodeGen()
+        public string CodeGen(int indentation)
         {
             return "";
         }

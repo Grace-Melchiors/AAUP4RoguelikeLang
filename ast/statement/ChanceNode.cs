@@ -1,14 +1,14 @@
 ﻿using System;
 using Antlr_language.ast.expression;
+using Antlr_language.ast.structure;
 
 namespace Antlr_language.ast.statement
 {
-    public class DeclarationNode : AbstractNode
+    public class ChanceNode : AbstractNode
     {
-        private Enums.Types type;
-        private string identifier;
         
-        public string CodeGen()
+
+        public string CodeGen(int indentation)
         {
             return "";
         }

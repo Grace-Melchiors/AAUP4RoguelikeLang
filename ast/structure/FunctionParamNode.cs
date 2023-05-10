@@ -8,10 +8,10 @@ namespace Antlr_language.ast.structure
     public class FunctionParamNode : AbstractNode
     {
         private Enums.Types Type;
-        private string Identifier;
+        private string? Identifier;
 
 
-        public string CodeGen()
+        public string CodeGen(int indentation)
         {
             string result = "";
             if (Type == Enums.Types.MAP) {
