@@ -25,6 +25,11 @@ namespace Antlr_language.ast
         public override AbstractNode VisitProgram([NotNull] VestaParser.ProgramContext context)
         {
             ProgramNode AST = new ProgramNode();
+            var libraryArr = context.library().ToArray();
+            for (int i = 0; i < libraryArr.Length; i++)
+            {
+                AST.AddLibraryNode((LibraryNode)Visit(libraryArr[i]));
+            }
             var lineArr = context.line().ToArray();
             for (int i = 0; i < lineArr.Length; i++)
             {
@@ -32,6 +37,17 @@ namespace Antlr_language.ast
             }
 
             return AST;
+        }
+        public override AbstractNode VisitLibrary([NotNull] VestaParser.LibraryContext context)
+        {
+            LibraryNode result;
+            if (context.IDENTIFIER().GetText() == "stdlib") {
+                result = new Stdlib();
+            } else {
+                throw new NotImplementedException();
+            }
+
+            return result;
         }
         public override AbstractNode VisitLine([NotNull] VestaParser.LineContext context)
         {

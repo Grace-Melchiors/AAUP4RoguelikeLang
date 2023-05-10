@@ -125,7 +125,7 @@ public class SemanticAnalysis {
     }
 
     public void VisitStatement(StatementNode statementNode) {
-        if(statementNode !=  null)
+        //if(statementNode !=  null)
         
         
     }

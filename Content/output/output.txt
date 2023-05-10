@@ -5,15 +5,28 @@ namespace MapGen
 	class Map {
 		Dictionary<string, int[][]> IntLayers = new();
 		Dictionary<string, bool[][]> BoolLayers = new();
+		public int d1Size;
+		public int d2Size;
+		public Map(int d1Size, int d2Size)
+		{
+			this.d1Size = d1Size;
+			this.d2Size = d2Size;
+		}
+	}
+
+	static class stdlib {
+		public static void print (string val) {
+			System.Console.WriteLine(val);
+		}
 	}
 
 	class Program
 	{
-		stati void Main(string[] args)
+		static void Main(string[] args)
 		{
 			int i = 1;
-			bool j = true;
-			int k = (i+j);
+			int j = 5;
+			int k = 3+5+i+j;
 		}
 	}
 }

@@ -1,6 +1,8 @@
 grammar Vesta;
 
-program: line* EOF;
+program: library* line* EOF;
+
+library: 'using' IDENTIFIER ';';
 
 line: statement | functionDecl;
 
