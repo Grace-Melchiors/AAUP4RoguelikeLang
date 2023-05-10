@@ -9,16 +9,18 @@ namespace Antlr_language.ast.statement
         private VariableDeclarationNode? varDecl;
         private AssignmentNode? assign;
         private ExpressionNode? expression;
+        private ReturnStatementNode? returnStatement;
         private BlockNode? block;
         private IfNode? ifNode;
         private WhileNode? whileNode;
         private ChanceNode? chance;
 
-        public StatementNode(VariableDeclarationNode? varDecl, AssignmentNode? assign, ExpressionNode? expression, BlockNode? block, IfNode? ifNode, WhileNode? whileNode, ChanceNode? chance)
+        public StatementNode(VariableDeclarationNode? varDecl, AssignmentNode? assign, ExpressionNode? expression, ReturnStatementNode? returnStatement, BlockNode? block, IfNode? ifNode, WhileNode? whileNode, ChanceNode? chance)
         {
             this.varDecl = varDecl;
             this.assign = assign;
             this.expression = expression;
+            this.returnStatement = returnStatement;
             this.block = block;
             this.ifNode = ifNode;
             this.whileNode = whileNode;

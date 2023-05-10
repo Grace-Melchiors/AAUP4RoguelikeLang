@@ -31,8 +31,9 @@ namespace Antlr_language.ast.structure
             result += Identifier + " ";
             result += "(";
             foreach (FunctionParamNode param in funcParams) {
-                result += param.CodeGen(indentation) + funcParams;
+                result += param.CodeGen(indentation) + ",";
             }
+            result = result.Substring(0, result.Length-2);
             result += ")\n";
             if (body == null)
                 throw new NotImplementedException();

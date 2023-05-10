@@ -7,6 +7,12 @@ namespace Antlr_language.ast.structure
     public class BlockNode : AbstractNode
     {
         private List<StatementNode> statementNodes = new List<StatementNode>();
+
+        public BlockNode(List<StatementNode> statementNodes)
+        {
+            this.statementNodes = statementNodes;
+        }
+
         public string CodeGen(int indentation)
         {
             string result = "";

@@ -22,6 +22,13 @@ namespace Antlr_language.ast.structure
             result += "\tclass Map {\n";
             result += "\t\tDictionary<string, int[][]> IntLayers = new();\n";
             result += "\t\tDictionary<string, bool[][]> BoolLayers = new();\n";
+            result += "\t\tpublic int d1Size;";
+            result += "\t\tpublic int d2Size;";
+            result += "\t\tpublic Map(int d1Size, int d2Size)";
+            result += "\t\t{";
+            result += "\t\t\tthis.d1Size = d1Size;";
+            result += "\t\t\tthis.d2Size = d2Size;";
+            result += "\t\t}";
             result += "\t}\n";
             result += "\n";
             result += "\tclass Program\n";

@@ -4,7 +4,7 @@ program: line* EOF;
 
 line: statement | functionDecl;
 
-statement : (varDecl | assignment | expression) ';' | block | ifStatement | whileStatement | forStatement | chance ;
+statement : (varDecl | assignment | expression | returnStmt) ';' | block | ifStatement | whileStatement | forStatement | chance ;
 
 ifStatement: 'if' '(' expression')' block ('else' block)?;
 
@@ -22,12 +22,12 @@ varDecl
     ;
 
 
-functionDecl: allType IDENTIFIER '('(funcParams)?')' funcBody;
+functionDecl: allType IDENTIFIER '('(funcParams)?')' block;
 
 funcParams: parameter (',' parameter)* ;
 parameter: allType IDENTIFIER;
-funcBody: '{' statement*  returnStmt '}';
-returnStmt:  'return' expression';';
+//funcBody: '{' statement*  returnStmt '}'; //Can we put return stmt up in statement?
+returnStmt:  'return ' expression;
 
 expression
    : factor                             #factorExpression

@@ -11,6 +11,13 @@ namespace Antlr_language.ast
     class Map {
         Dictionary<string, int[][]> IntLayers = new();
         Dictionary<string, bool[][]> BoolLayers = new();
+        public int d1Size;
+        public int d2Size;
+        public Map(int d1Size, int d2Size)
+        {
+            this.d1Size = d1Size;
+            this.d2Size = d2Size;
+        }
     }
     public class AstBuilder : VestaBaseVisitor<AbstractNode>
     {
@@ -47,6 +54,7 @@ namespace Antlr_language.ast
             var VariableDecl = context.varDecl();
             var assignment = context.assignment();
             var expression = context.expression();
+            var returnStmt = context.returnStmt();
             var block = context.block();
             var ifStatement = context.ifStatement();
             var whileStatement = context.whileStatement();
@@ -55,15 +63,33 @@ namespace Antlr_language.ast
 
 
             if (VariableDecl != null) {
-                result = new StatementNode((VariableDeclarationNode)Visit(VariableDecl), null, null, null, null, null, null);
+                result = new StatementNode((VariableDeclarationNode)Visit(VariableDecl), null, null, null, null, null, null, null);
             } else if (assignment != null) {
-                result = new StatementNode(null, (AssignmentNode)Visit(assignment), null, null, null, null, null);
+                result = new StatementNode(null, (AssignmentNode)Visit(assignment), null, null, null, null, null, null);
+            } else if (expression != null) {
+                result = new StatementNode(null, null, (ExpressionNode)Visit(expression), null, null, null, null, null);
+            } else if (returnStmt != null) {
+                result = new StatementNode(null, null, null, (ReturnStatementNode)Visit(returnStmt), null, null, null, null);
+            } else if (block != null) {
+                result = new StatementNode(null, null, null, null, (BlockNode)Visit(block), null, null, null);
+            } else if (ifStatement != null) {
+                result = new StatementNode(null, null, null, null, null, (IfNode)Visit(ifStatement), null, null);
+            } else if (whileStatement != null) {
+                result = new StatementNode(null, null, null, null, null, null, (WhileNode)Visit(whileStatement), null);
+            } else if (forStatement != null) {
+                result = new StatementNode(null, null, null, null, null, null, (WhileNode)Visit(forStatement), null);
+            } else if (chanceStatement != null) {
+                result = new StatementNode(null, null, null, null, null, null, null, (ChanceNode)Visit(chanceStatement));
             } else {
                 throw new NotImplementedException();
             }
             return result;
         }
 
+        public override AbstractNode VisitForStatement([NotNull] VestaParser.ForStatementContext context)
+        {
+            return base.VisitForStatement(context);
+        }
         
         public override AbstractNode VisitVarDecl([NotNull] VestaParser.VarDeclContext context)
         {
@@ -88,14 +114,21 @@ namespace Antlr_language.ast
         }
 
         /// ---  Function  ---  ///
-        /*public override AbstractNode VisitFunctionDecl([NotNull] VestaParser.FunctionDeclContext context)
+        public override AbstractNode VisitFunctionDecl([NotNull] VestaParser.FunctionDeclContext context)
         {
             FunctionDeclarationNode result;
-
+            List<FunctionParamNode> parameters = new List<FunctionParamNode>();
+            var parametersContext = context.funcParams()?.parameter().ToArray();
+            if (parametersContext != null) {
+                foreach (var parameter in parametersContext) {
+                    parameters.Add((FunctionParamNode)Visit(parameter));
+                }
+            }
+            result = new FunctionDeclarationNode((TypeNode)Visit(context.allType()), context.IDENTIFIER().GetText(), parameters, (BlockNode)Visit(context.block()));
             
 
             return result;
-        }*/
+        }
 
         public override AbstractNode VisitAllType([NotNull] VestaParser.AllTypeContext context)
         {
@@ -226,8 +259,13 @@ namespace Antlr_language.ast
 
         public override AbstractNode VisitBlock(VestaParser.BlockContext context)
         {
-
-            return null;
+            var statements = context.statement().ToArray();
+            List<StatementNode> statementNodes = new List<StatementNode>();
+            foreach (var statement in statements) {
+                statementNodes.Add((StatementNode)Visit(statement));
+            }
+            BlockNode result = new BlockNode(statementNodes);
+            return result;
         }
     }
 }
