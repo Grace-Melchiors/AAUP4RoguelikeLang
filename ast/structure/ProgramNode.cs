@@ -8,7 +8,10 @@ namespace Antlr_language.ast.structure
     {
         private string nameSpace = "MapGen";
         private List<LineNode> lineNodes = new List<LineNode>();
-
+        
+        public List<LineNode> retrieveLineNodes() {
+            return lineNodes;
+        }
         public void AddLineNode (LineNode node) {
             lineNodes.Add(node);
         }
