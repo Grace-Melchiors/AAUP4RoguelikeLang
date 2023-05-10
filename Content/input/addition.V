@@ -1,7 +1,4 @@
 int i = 1;
 int j = 5;
-int k = i + j;
+int k = 3 + 5 + i + j;
 
-int GetNum () {
-    return 3;
-}

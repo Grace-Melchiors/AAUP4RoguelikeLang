@@ -29,7 +29,7 @@ namespace Antlr_language.ast.expression
                     return factor.CodeGen(indentation);
                 }
             } else if (expression1 != null && expression2 != null) {
-                return "(" + expression1.CodeGen(indentation) + Enums.OperatorToString(Operator) + expression2.CodeGen(indentation) + ")";
+                return expression1.CodeGen(indentation) + Enums.OperatorToString(Operator) + expression2.CodeGen(indentation);
             } else {
                 throw new NotImplementedException();
             }
