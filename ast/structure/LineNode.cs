@@ -9,6 +9,20 @@ namespace Antlr_language.ast.structure
         private StatementNode? statement;
         private FunctionDeclarationNode? funcDecl;
 
+        public StatementNode GetStatementNode() {
+            return statement;
+
+        }
+        
+        public FunctionDeclarationNode GetFunctionDeclarationNode() {
+            return funcDecl;
+            
+        }
+
+        public bool IsStatement() {
+            return statement != null;
+        }
+
         public LineNode(StatementNode? statement, FunctionDeclarationNode? funcDecl)
         {
             this.statement = statement;
