@@ -53,7 +53,7 @@ public class Map
 {
     public Dictionary<string, object> layers { get; } = new();
     public int d1;
-    public int d2;
+    public int d2;  
 
     public Map(int d1, int d2)
     {
@@ -66,20 +66,20 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 {
     private Dictionary<string, object> Variables { get; } = new();
     
-    private Semantics semantics = new Semantics();
+    private Scope scope = new Scope();
 
 
 
     public VestaVisitor()
     {
-        semantics.EnterSymbol("Write", new Func<object?[], object?>(Write));
-        semantics.EnterSymbol("WriteArr", new Func<object?[], object?>(WriteArray));
+        scope.AddSymbol("Write", new Func<object?[], object?>(Write));
+        scope.AddSymbol("WriteArr", new Func<object?[], object?>(WriteArray));
 
 
-        semantics.EnterSymbol("write", new Func<object?[], object?>(Write));
-        semantics.EnterSymbol("writeArr", new Func<object?[], object?>(WriteArray));
+        scope.AddSymbol("write", new Func<object?[], object?>(Write));
+        scope.AddSymbol("writeArr", new Func<object?[], object?>(WriteArray));
         
-        semantics.CheckStack(); 
+        scope.CheckStack(); 
     }
     private object? WriteArray(Array arr)
     {
@@ -128,7 +128,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         Func<object?[], object?> newFunction = delegate(object?[] objects)
         {
             object? result;
-            semantics.OpenScope();
+            scope.OpenScope();
 
             //Handle that objects addeed match the types, and add them to the symbol table
             if (objects.Length != paramDescs.Length) { throw new Exception($"Invalid amount of arguments");}
@@ -141,7 +141,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                     {
                         if (getBaseType((Array)objects[i]) == ((ArrDesc)(paramDescs[i].typeBase)).typeBase.GetType())
                         {
-                            object symbol = semantics.RetrieveSymbol(paramDescs[i].paramName);
+                            object symbol = scope.GetSymbol(paramDescs[i].paramName);
                             symbol = objects[i];
                         }
                         else
@@ -157,7 +157,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                      
                 else if (objects[i].GetType() == paramDescs[i].typeBase.GetType())
                 {
-                    object symbol = semantics.RetrieveSymbol(paramDescs[i].paramName);
+                    object symbol = scope.GetSymbol(paramDescs[i].paramName);
                     symbol = objects[i];
                 }
 
@@ -173,11 +173,11 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             
             
             //Reset scope
-            semantics.CloseScope();
+            scope.CloseScope();
             return result;
         };
 
-        object symbol = semantics.RetrieveSymbol(funcName);
+        object symbol = scope.GetSymbol(funcName);
         symbol = newFunction;
         
         return null;
@@ -242,7 +242,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var name = context.IDENTIFIER().GetText();
         var args = context.expression().Select(e => Visit(e)).ToArray();
 
-        object symbol = semantics.RetrieveSymbol(name);
+        object symbol = scope.GetSymbol(name);
         
         if (symbol == null)
         {
@@ -259,7 +259,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     public override object? VisitBlock(VestaParser.BlockContext context)
     {
         /* New scope */
-        semantics.OpenScope();
+        scope.OpenScope();
         /* Visit */
         var arr = context.line().ToArray();
         for (int i = 0; i < arr.Length; i++)
@@ -267,7 +267,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             Visit(arr[i]);
         }
         /* Return to previous scope */
-        semantics.CloseScope();
+        scope.CloseScope();
         return null;
     }
     
@@ -336,7 +336,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         var value = Visit(context.expression());
         
-        object declaration = semantics.RetrieveSymbol(varName);
+        object declaration = scope.GetSymbol(varName);
        
         if(declaration != null)  //No overriding current variables
         {
@@ -350,24 +350,24 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         {
             if (arrDesc.typeBase.GetType() == getBaseType(value))
             {
-                semantics.EnterSymbol(varName, multiDimensionArrGen(arrDesc.dimensions, value, arrDesc.dimensions.Length));
+                scope.AddSymbol(varName, multiDimensionArrGen(arrDesc.dimensions, value, arrDesc.dimensions.Length));
             }
             else throw new Exception($"Types do not match");
         }
         else if (type is Map map)
         {
             checkType<Map>(value);
-            semantics.EnterSymbol(varName, value);
+            scope.AddSymbol(varName, value);
         }
         else if (type is int n)  //If type is int
         {
             checkType<int>(value);
-            semantics.EnterSymbol(varName, value);
+            scope.AddSymbol(varName, value);
         }
         else if (type is bool b) //If type is bool
         {
             checkType<bool>(value);
-            semantics.EnterSymbol(varName, value);
+            scope.AddSymbol(varName, value);
         }
         else
         {
@@ -560,7 +560,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var varName = context.IDENTIFIER().GetText();
         var value = Visit(context.expression());
 
-        object symbol = semantics.RetrieveSymbol(varName);
+        object symbol = scope.GetSymbol(varName);
 
         if (symbol is Array arr) //if array need array Assign
         {
@@ -589,7 +589,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var expressionArr = context.expression().ToArray();
         var assignValue = Visit(expressionArr[expressionArr.Length - 1]); //Get last expression
     
-        object symbol = semantics.RetrieveSymbol(varName);
+        object symbol = scope.GetSymbol(varName);
         
         //generate list of index values
         int[] indexArr = new int[expressionArr.Length - 1];
@@ -691,7 +691,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var expressionArr = context.expression().ToArray();
         var assignValue = Visit(expressionArr[expressionArr.Length - 1]); //Get last expression
 
-        object symbol = semantics.RetrieveSymbol(varName);
+        object symbol = scope.GetSymbol(varName);
 
         if (symbol is not Map map)
         {
@@ -791,7 +791,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     {
         var varName = context.IDENTIFIER().GetText();
 
-        object symbol = semantics.RetrieveSymbol(varName);
+        object symbol = scope.GetSymbol(varName);
         if(symbol == null)
         {
                     throw new Exception($"Variable {varName} is not defined");

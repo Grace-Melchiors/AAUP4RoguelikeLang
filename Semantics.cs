@@ -2,8 +2,8 @@ using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
-public class Semantics {
-    public Semantics() {
+public class Scope {
+    public Scope() {
         InitialiseSymbolTable();
     }
 
@@ -65,7 +65,7 @@ public class Semantics {
     }
     
     // Enters a new value into the symbol table located on top of the stack.
-    public void EnterSymbol(string name, object obj) {
+    public void AddSymbol(string name, object obj) {
         // Retrieve the top of the stack.
         Dictionary<string, object> SymbolTableTopOfStack = SymbolTableStack.Peek();
         
@@ -73,10 +73,10 @@ public class Semantics {
         SymbolTableTopOfStack.Add(name, obj);
     }
     
-    // Retrieves a symbol in the stack of symbol tables by name.
+    // Gets a symbol in the stack of symbol tables by name.
     // Starts at the symbol table located at the top of the stack.
     // If name is not found, checks the next level of the stack until no more levels.
-    public object RetrieveSymbol(string name) {
+    public object GetSymbol(string name) {
         int CurrentLevelInStack = 0;
         int LevelsInStack = SymbolTableStack.Count - 1;
 
