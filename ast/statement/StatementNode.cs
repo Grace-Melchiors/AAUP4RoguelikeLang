@@ -36,13 +36,13 @@ namespace Antlr_language.ast.statement
             } else if (expression != null) {
                 return expression.CodeGen(indentation) + ";";
             } else if (block != null) {
-                return block.CodeGen(indentation) + ";";
+                return block.CodeGen(indentation);
             } else if (ifNode != null) {
-                return ifNode.CodeGen(indentation) + ";";
+                return ifNode.CodeGen(indentation);
             } else if (whileNode != null) {
-                return whileNode.CodeGen(indentation) + ";";
+                return whileNode.CodeGen(indentation);
             } else if (chance != null) {
-                return chance.CodeGen(indentation) + ";";
+                return chance.CodeGen(indentation);
             } else {
                 throw new NotImplementedException();
             }
