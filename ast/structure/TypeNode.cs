@@ -29,9 +29,12 @@ namespace Antlr_language.ast.structure
                 throw new NotImplementedException();
             }
             if (ArraySizes != null) {
+                result += "["; 
                 foreach (ExpressionNode size in ArraySizes) {
-                    result += "[" + size.CodeGen(indentation) + "]";
+                    result += size.CodeGen(indentation) + ",";
                 }
+                result = result.Substring(0, result.Length-2);
+                result += "]";
             }
             result += " ";
             return result;
