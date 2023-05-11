@@ -23,6 +23,7 @@ namespace Antlr_language.ast.structure
             StringBuilder result = new StringBuilder();
             for (int i = 0; i < indentation; i++)
                 indent +="\t";
+            result.Append("\n");
             result.Append(indent);
             result.AppendLine("{");
             foreach (StatementNode statement in statementNodes) {

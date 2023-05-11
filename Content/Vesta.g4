@@ -8,7 +8,9 @@ line: statement | functionDecl;
 
 statement : (varDecl | assignment | expression | returnStmt) ';' | block | ifStatement | whileStatement | forStatement | chance ;
 
-ifStatement: 'if' '(' expression')' block ('else' block)?;
+ifStatement: 'if' '(' expression ')' block ('else' elseIfBlock)?;
+
+elseIfBlock: block | ifStatement;
 
 whileStatement: 'while' '(' expression ')' block;
 

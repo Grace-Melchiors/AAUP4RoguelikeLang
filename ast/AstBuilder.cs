@@ -101,6 +101,23 @@ namespace Antlr_language.ast
             }
             return result;
         }
+
+        public override AbstractNode VisitIfStatement([NotNull] VestaParser.IfStatementContext context)
+        {
+            var elseIfContext = context.elseIfBlock();
+            return new IfNode((ExpressionNode)Visit(context.expression()), (BlockNode)Visit(context.block()), elseIfContext != null ? (ElseIfNode)Visit(elseIfContext) : null);
+        }
+        public override AbstractNode VisitElseIfBlock([NotNull] VestaParser.ElseIfBlockContext context)
+        {
+            if (context.block() != null) {
+                return new ElseIfNode(null, (BlockNode)Visit(context.block()));
+            } else if (context.ifStatement() != null) {
+                return new ElseIfNode((IfNode)Visit(context.ifStatement()), null);
+            } else {
+                throw new NotImplementedException();
+            }
+            
+        }
         public override AbstractNode VisitWhileStatement([NotNull] VestaParser.WhileStatementContext context)
         {
             return new WhileNode((ExpressionNode)Visit(context.expression()), (BlockNode)Visit(context.block()));

@@ -38,11 +38,32 @@ namespace MapGen
 			int j = 0;
 						int i = 0;
 			while (i<2)
+
 			{
 				Stdlib.print(i);
 				i = i+1;
 			}
 
+
+			if (j==0)
+			{
+				Stdlib.print(5);
+			}
+			else 			
+			if (j==2)
+			{
+				Stdlib.print(2);
+			}
+			else 
+			{
+				j = j+1;
+			}
+
+while (j<5)
+
+			{
+				j = j*2;
+			}
 
 		}
 	}
