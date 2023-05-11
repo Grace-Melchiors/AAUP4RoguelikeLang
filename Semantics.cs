@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Antlr_language.ast.structure;
 using Antlr_language.ast.statement;
+using Antlr_language.ast.expression;
+using Antlr_language.ast;
 
 public class SemanticAnalysis {
     public SemanticAnalysis() {
@@ -18,6 +20,8 @@ public class SemanticAnalysis {
         Dictionary<string, object> NewSymbolTable = new Dictionary<string, object>();
         SymbolTableStack.Push(NewSymbolTable);
     }
+    
+    public Dictionary<string, Enums.Types> IdentifierAndType = new Dictionary<string, Enums.Types>(); 
 
 
     // Opens the scope by pushing a symbol table to the stack.
@@ -125,9 +129,67 @@ public class SemanticAnalysis {
     }
 
     public void VisitStatement(StatementNode statementNode) {
-        //if(statementNode !=  null)
+        if(statementNode.varDecl != null) {
+            VisitVariableDeclaration(statementNode.varDecl);
+        }
+    }
+    
+
+    public void VisitVariableDeclaration(VariableDeclarationNode variableDeclarationNode) {
+        string identifier = variableDeclarationNode.GetIdentifier();
+        Enums.Types typeLHS = variableDeclarationNode.GetDataType();
+        //IdentifierAndType.Add(identifier, typeLHS);
         
+        if(RetrieveSymbol(identifier) == null) {
+            ExpressionNode expressionNode = variableDeclarationNode.GetExpressionNode();
+            if(expressionNode != null) {
+               Enums.Types typeRHS = VisitExpression(expressionNode);
+               
+               bool MatchingTypes = typeLHS == typeRHS;
+               
+               if(MatchingTypes) {
+                EnterSymbol(variableDeclarationNode.GetIdentifier(), variableDeclarationNode);
+               }
+               else {
+                throw new TypeMismatchException(identifier, typeLHS, typeRHS);
+
+               }
+               
+            }
+        } else {
+            throw new VariableAlreadyDefinedException(identifier);
+        }
         
+
+        
+    }
+    
+    public Enums.Types VisitExpression(ExpressionNode expressionNode) {
+
+        if(expressionNode.GetFactorNode() != null) {
+            Enums.Types dataType = VisitFactor(expressionNode.GetFactorNode());
+            return dataType;
+        } 
+        
+        Tuple<ExpressionNode, ExpressionNode> expressionNodes = expressionNode.GetExpressionNodes();
+        if(expressionNodes.Item2 != null) {
+            Enums.Types dataType1 = VisitExpression(expressionNodes.Item1);
+            Enums.Types dataType2 = VisitExpression(expressionNodes.Item2);
+
+            if(expressionNodes.Item1 != null && expressionNodes.Item2 != null && dataType1 != dataType2) {
+                throw new TypeMismatchException(dataType1, dataType2);
+            }
+            
+            return dataType1;
+
+        }
+        
+        throw new NotImplementedException("Type not accepted!");
+    }
+    
+    public Enums.Types VisitFactor(FactorNode factorNode) {
+        Enums.Types dataType = factorNode.getEvaluationType();
+        return dataType;
     }
     
 

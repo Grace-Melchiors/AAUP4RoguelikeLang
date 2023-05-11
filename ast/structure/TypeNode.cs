@@ -9,6 +9,10 @@ namespace Antlr_language.ast.structure
         private Enums.Types Type;
         public bool IsArray => ArraySizes == null ? false : true;
         private List<ExpressionNode>? ArraySizes;
+        
+        public Enums.Types GetDataType() {
+            return Type;
+        }
 
         public TypeNode(Enums.Types type, List<ExpressionNode>? arraySizes)
         {

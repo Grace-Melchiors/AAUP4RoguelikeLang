@@ -10,6 +10,17 @@ namespace Antlr_language.ast.expression
         private ExpressionNode? expression1;
         private ExpressionNode? expression2;
         private FactorNode? factor;
+        
+
+        public FactorNode GetFactorNode() {
+            return factor;
+        }
+        
+        public Tuple<ExpressionNode, ExpressionNode> GetExpressionNodes() {
+            return new Tuple<ExpressionNode, ExpressionNode>(expression1, expression2);
+        }
+        
+
 
         public ExpressionNode(Enums.Operators Operator, ExpressionNode? expression1, ExpressionNode? expression2, FactorNode? factor)
         {
