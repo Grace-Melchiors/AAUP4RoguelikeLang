@@ -26,6 +26,7 @@ namespace Antlr_language.ast
             not,
             none
         }
+
         public static string OperatorToString (Operators val) {
             string result = "";
             switch (val) {

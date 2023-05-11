@@ -11,6 +11,17 @@ namespace Antlr_language.ast.statement
         private string? identifier;
         private ExpressionNode? expression;
         private List<int>? ArraySizes;
+        
+        public string GetIdentifier() {
+            return identifier;
+        }
+        public Enums.Types GetDataType() {
+            return Type.GetDataType();
+        }
+
+        public ExpressionNode GetExpressionNode() {
+            return expression;
+        }
 
         //Normal declaration
         public VariableDeclarationNode(TypeNode type, string? identifier, ExpressionNode? expression)

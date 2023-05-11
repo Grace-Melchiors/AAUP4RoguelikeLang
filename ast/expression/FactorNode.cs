@@ -37,7 +37,16 @@ namespace Antlr_language.ast.expression
             }
         }
         public override Enums.Types getEvaluationType () {
-            return Enums.Types.MAP;
+            if(constant != null) {
+                return Enums.Types.INTEGER;
+            }
+            if(mapExpression != null) {
+                return Enums.Types.MAP;
+            }
+            
+            throw new UndefinedTypeException("Error In FactorNode.cs"); 
+            
+            // HVAD MED BOOL??? HVBAD ER DET FOR NOGLE FIELDS JEG OPVERHOEVEDT KIGGER PÅ
         }
     }
 }

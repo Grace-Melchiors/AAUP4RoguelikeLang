@@ -4,6 +4,7 @@ using Antlr_language;
 using Antlr_language.Content;
 using Antlr4.Runtime;
 using Antlr_language.ast;
+using Antlr_language.ast.structure;
 
 var fileName = "Content/input/addition.V"; // args[0]
 var fileContents = File.ReadAllText(fileName);
@@ -23,11 +24,16 @@ var vestaContext = vestaParser.program();
 //visitor.Visit((vestaContext));
 
 AstBuilder builder = new AstBuilder();
+//ProgramNode programNode = (ProgramNode) builder.VisitProgram(vestaContext);
+
 AbstractNode AST = builder.Visit((vestaContext));
 string Code = AST.CodeGen(0);
 CSB.AppendLine(Code);
 
 CSB.OutputResult();
+
+SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
+semanticAnalysis.VisitProgram((ProgramNode) AST);
 
 Console.WriteLine("Press enter to continue...");
 Console.Read();

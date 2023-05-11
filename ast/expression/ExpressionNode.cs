@@ -10,6 +10,36 @@ namespace Antlr_language.ast.expression
         private ExpressionNode? expression1;
         private ExpressionNode? expression2;
         private FactorNode? factor;
+        
+
+        private string Number; 
+        private string VariableName; 
+        public ExpressionNode(string variableNameOrNumber, bool isNumber) {
+        if (isNumber)
+            this.Number = variableNameOrNumber;
+        else
+            this.VariableName = variableNameOrNumber;
+        }
+        
+        public string GetNumber() {
+        return Number;
+    }
+
+    public string GetVariableName() {
+        return VariableName;
+    }
+
+        
+
+        public FactorNode GetFactorNode() {
+            return factor;
+        }
+        
+        public Tuple<ExpressionNode, ExpressionNode> GetExpressionNodes() {
+            return new Tuple<ExpressionNode, ExpressionNode>(expression1, expression2);
+        }
+        
+
 
         public ExpressionNode(Enums.Operators Operator, ExpressionNode? expression1, ExpressionNode? expression2, FactorNode? factor)
         {
