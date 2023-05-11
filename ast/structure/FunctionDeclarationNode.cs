@@ -26,18 +26,26 @@ namespace Antlr_language.ast.structure
             for (int i = 0; i < indentation; i++) {
                 indent += "\t";
             }
-            string result = indent;
+            string result = "\n" + indent;
             result += Type.CodeGen(indentation) + " ";
             result += Identifier + " ";
+            System.Console.WriteLine("Test from: FunctionDeclarationNode");
             result += "(";
-            foreach (FunctionParamNode param in funcParams) {
-                result += param.CodeGen(indentation) + ",";
+            if (funcParams.Count != 0) {
+                foreach (FunctionParamNode param in funcParams) {
+                    if (param != null) {
+                        result += param.CodeGen(indentation) + ",";
+                    } else {
+                        throw new NotImplementedException();
+                    }
+                }
+                result = result.Substring(0, result.Length-1);
             }
-            result = result.Substring(0, result.Length-2);
-            result += ")\n";
+            result += ") {\n";
             if (body == null)
                 throw new NotImplementedException();
             result += body.CodeGen(indentation);
+            result += indent + "}\n";
             return result;
         }
 

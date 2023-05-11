@@ -19,7 +19,7 @@ chance: 'chance' '{' (expression ':' block )+ '}';
 block: '{' statement* '}';
 
 varDecl
-    : allType IDENTIFIER        #varDeclaration
+    : identifierType IDENTIFIER        #varDeclaration
     | allType assignment        #varInitialization
     ;
 
@@ -59,7 +59,7 @@ mapLayer: '{' identifierType IDENTIFIER ('=' expression)? (';' identifierType ID
 
 assignment: IDENTIFIER (arrayDimensions)? '=' expression ;
 
-functionCall: IDENTIFIER '(' (expression (',' expression)*)? ')';
+functionCall: (IDENTIFIER'.')? IDENTIFIER '(' (expression (',' expression)*)? ')';
 
 allType: COMPLEXTYPE | identifierType;
 

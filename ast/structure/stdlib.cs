@@ -12,8 +12,11 @@ namespace Antlr_language.ast.structure
             for (int i = 0; i < indentation; i++)
                 indent +="\t";
             string result = "";
-            result += indent + "static class stdlib {\n";
-            result += indent + "\tpublic static void print (string val) {\n";
+            result += indent + "static class Stdlib {\n";
+            result += indent + "\tpublic static void print (int val) {\n";
+            result += indent + "\t\tSystem.Console.WriteLine(val);\n";
+            result += indent + "\t}\n";
+            result += indent + "\tpublic static void print (bool val) {\n";
             result += indent + "\t\tSystem.Console.WriteLine(val);\n";
             result += indent + "\t}\n";
             result += indent + "}\n";

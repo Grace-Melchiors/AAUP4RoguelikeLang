@@ -24,14 +24,16 @@ var vestaContext = vestaParser.program();
 //visitor.Visit((vestaContext));
 
 AstBuilder builder = new AstBuilder();
-ProgramNode programNode = (ProgramNode) builder.VisitProgram(vestaContext);
-string Code = builder.Visit((vestaContext)).CodeGen(0);
+//ProgramNode programNode = (ProgramNode) builder.VisitProgram(vestaContext);
+
+AbstractNode AST = builder.Visit((vestaContext));
+string Code = AST.CodeGen(0);
 CSB.AppendLine(Code);
 
 CSB.OutputResult();
 
 SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
-semanticAnalysis.VisitProgram(programNode);
+semanticAnalysis.VisitProgram((ProgramNode) AST);
 
 Console.WriteLine("Press enter to continue...");
 Console.Read();

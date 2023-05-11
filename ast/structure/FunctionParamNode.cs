@@ -8,8 +8,13 @@ namespace Antlr_language.ast.structure
     public class FunctionParamNode : AbstractNode
     {
         private TypeNode Type;
-        private string? Identifier;
+        private string Identifier;
 
+        public FunctionParamNode(TypeNode type, string identifier)
+        {
+            Type = type;
+            Identifier = identifier;
+        }
 
         public string CodeGen(int indentation)
         {

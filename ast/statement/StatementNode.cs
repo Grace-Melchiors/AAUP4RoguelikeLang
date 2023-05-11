@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Antlr_language.ast.expression;
 using Antlr_language.ast.structure;
 
@@ -29,23 +30,30 @@ namespace Antlr_language.ast.statement
 
         public string CodeGen(int indentation)
         {
+            string indent = "";
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < indentation; i++)
+                indent +="\t";
             if (varDecl != null) {
-                return varDecl.CodeGen(indentation) + ";";
+                result.Append(varDecl.CodeGen(indentation) + ";");
             } else if (assign != null) {
-                return assign.CodeGen(indentation) + ";";
+                result.Append(assign.CodeGen(indentation) + ";");
             } else if (expression != null) {
-                return expression.CodeGen(indentation) + ";";
+                result.Append(expression.CodeGen(indentation) + ";");
+            } else if (returnStatement != null) {
+                result.Append(returnStatement.CodeGen(indentation));
             } else if (block != null) {
-                return block.CodeGen(indentation);
+                result.Append(block.CodeGen(indentation));
             } else if (ifNode != null) {
-                return ifNode.CodeGen(indentation);
+                result.Append(ifNode.CodeGen(indentation));
             } else if (whileNode != null) {
-                return whileNode.CodeGen(indentation);
+                result.Append(whileNode.CodeGen(indentation));
             } else if (chance != null) {
-                return chance.CodeGen(indentation);
+                result.Append(chance.CodeGen(indentation));
             } else {
                 throw new NotImplementedException();
             }
+            return result.ToString();
         }
 
     }

@@ -21,7 +21,7 @@ namespace Antlr_language.ast.structure
         }
         public string CodeGen(int indentation)
         {
-            indentation += 3;
+            indentation += 2;
             string result = "using System;\n\n";
             result += "namespace " + nameSpace + "\n";
             result += "{\n";
@@ -38,15 +38,15 @@ namespace Antlr_language.ast.structure
             result += "\t}\n";
             result += "\n";
             foreach (LibraryNode library in libraryNodes) {
-                result += library.CodeGen(indentation - 2) + "\n";
+                result += library.CodeGen(indentation - 1) + "\n";
             }
             result += "\tclass Program\n";
             result += "\t{\n";
             result += "\t\tstatic void Main(string[] args)\n";
             result += "\t\t{\n";
             foreach (LineNode line in lineNodes) {
-                for (int i = 0; i < indentation; i++)
-                    result +="\t";
+                //for (int i = 0; i < indentation; i++)
+                    //result +="\t";
                 result += line.CodeGen(indentation + 1) + "\n";
             }
             result += "\t\t}\n";
