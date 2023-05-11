@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Antlr_language.ast.expression;
 using Antlr_language.ast.statement;
 
@@ -18,13 +19,20 @@ namespace Antlr_language.ast.structure
 
         public string CodeGen(int indentation)
         {
-            string result = "";
+            string indent = "";
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < indentation; i++)
+                indent +="\t";
+            result.Append(indent);
+            result.AppendLine("{");
             foreach (StatementNode statement in statementNodes) {
                 //for (int i = 0; i < indentation; i++)
                     //result +="\t";
-                result += statement.CodeGen(indentation + 1) + "\n";
+                result.AppendLine(statement.CodeGen(indentation + 1));
             }
-            return result;
+            result.Append(indent);
+            result.AppendLine("}");
+            return result.ToString();
         }
 
     }

@@ -24,6 +24,9 @@ namespace Antlr_language.ast.structure
         public Enums.Types GetNodeType () {
             return Type;
         }
+        public List<ExpressionNode>? GetArraySizes () {
+            return ArraySizes;
+        }
 
         public string CodeGen(int indentation)
         {
@@ -41,6 +44,32 @@ namespace Antlr_language.ast.structure
                 result += "["; 
                 foreach (ExpressionNode size in ArraySizes) {
                     result += /*size.CodeGen(indentation) + */",";
+                }
+                result = result.Substring(0, result.Length-1);
+                result += "]";
+            }
+            return result;
+        }
+        public string CodeGen(int indentation, bool showSize)
+        {
+            string result = "";
+            if (Type == Enums.Types.MAP) {
+                result += "Map";
+            } else if (Type == Enums.Types.INTEGER) {
+                result += "int";
+            } else if (Type == Enums.Types.BOOL) {
+                result += "bool";
+            } else {
+                throw new NotImplementedException();
+            }
+            if (ArraySizes != null) {
+                result += "["; 
+                foreach (ExpressionNode size in ArraySizes) {
+                    if (showSize) {
+                        result += size.CodeGen(indentation) + ",";
+                    } else {
+                        result += /*size.CodeGen(indentation) + */",";
+                    }
                 }
                 result = result.Substring(0, result.Length-1);
                 result += "]";

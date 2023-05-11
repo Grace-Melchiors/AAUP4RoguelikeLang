@@ -1,10 +1,12 @@
+using Stdlib;
 
+int j = 0;
 
+for (int i = 0; i < 2; i = i+1) {
+    Stdlib.print(i);
+}
 
-int[2,2] i;
-
-int[,] i = new int[2,2];
-
-
-
+while (j < 5) {
+    j = j*2;
+}
 

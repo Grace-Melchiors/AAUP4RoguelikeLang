@@ -24,7 +24,7 @@ namespace Antlr_language.ast.structure
             //Maybe string builder here?
             string result = "while (";
             result += expression.CodeGen(indentation);
-            result += ") ";
+            result += ")\n";
             result += block.CodeGen(indentation);
             return result;
         }

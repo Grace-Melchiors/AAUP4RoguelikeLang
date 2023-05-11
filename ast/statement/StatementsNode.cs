@@ -25,7 +25,8 @@ namespace Antlr_language.ast.statement
                 indent +="\t";
             
             foreach (StatementNode node in statements) {
-                result.Append(node.CodeGen(indentation));
+                result.Append(indent);
+                result.AppendLine(node.CodeGen(indentation));
             }
 
 

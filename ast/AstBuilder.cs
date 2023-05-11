@@ -101,7 +101,10 @@ namespace Antlr_language.ast
             }
             return result;
         }
-
+        public override AbstractNode VisitWhileStatement([NotNull] VestaParser.WhileStatementContext context)
+        {
+            return new WhileNode((ExpressionNode)Visit(context.expression()), (BlockNode)Visit(context.block()));
+        }
         public override AbstractNode VisitForStatement([NotNull] VestaParser.ForStatementContext context)
         {
             StatementsNode result = new StatementsNode(new());
@@ -140,8 +143,17 @@ namespace Antlr_language.ast
         public override AbstractNode VisitAssignment([NotNull] VestaParser.AssignmentContext context)
         {
             AssignmentNode result;
-
-            result = new AssignmentNode();
+            var expressions = context.arrayDimensions()?.expression().ToArray();
+            if (expressions != null) {
+                List<ExpressionNode> expressionNodes= new List<ExpressionNode>();
+                foreach (var val in expressions)
+                {
+                    expressionNodes.Add((ExpressionNode)Visit(val));
+                }
+                result = new AssignmentNode(context.IDENTIFIER().GetText(),expressionNodes, (ExpressionNode)Visit(context.expression()));
+            } else {
+                result = new AssignmentNode(context.IDENTIFIER().GetText(), null, (ExpressionNode)Visit(context.expression()));
+            }
 
             return result;
         }

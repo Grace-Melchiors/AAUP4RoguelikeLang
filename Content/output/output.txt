@@ -18,25 +18,31 @@ namespace MapGen
 		public static void print (int val) {
 			System.Console.WriteLine(val);
 		}
+		public static void print (int[] val) {
+			System.Console.Write("[");			for (int i = 0; i < val.GetLength(0); i++) {				System.Console.Write(val[i] + ",");			}			System.Console.WriteLine("]");		}
+		public static void print (int[,] val) {
+			System.Console.WriteLine("[");			for (int i = 0; i < val.GetLength(0); i++) {			System.Console.Write("[");			for (int j = 0; j < val.GetLength(1); j++) {				System.Console.Write(val[j,i] + ",");			}			System.Console.WriteLine("]");			}			System.Console.WriteLine("]");		}
 		public static void print (bool val) {
 			System.Console.WriteLine(val);
 		}
+		public static void print (bool[] val) {
+			System.Console.Write("[");			for (int i = 0; i < val.GetLength(0); i++) {				System.Console.Write(val[i] + ",");			}			System.Console.WriteLine("]");		}
+		public static void print (bool[,] val) {
+			System.Console.WriteLine("[");			for (int i = 0; i < val.GetLength(0); i++) {			System.Console.Write("[");			for (int j = 0; j < val.GetLength(1); j++) {				System.Console.Write(val[j,i] + ",");			}			System.Console.WriteLine("]");			}			System.Console.WriteLine("]");		}
 	}
 
 	class Program
 	{
 		static void Main(string[] args)
 		{
-			Stdlib.print(getNum()+Add(1,2,3));
-
-			int getNum () {
-				return 2;
+			int j = 0;
+						int i = 0;
+			while (i<2)
+			{
+				Stdlib.print(i);
+				i = i+1;
 			}
 
-
-			int Add (int val1,int val2,int val3) {
-				return val1+val2+val3;
-			}
 
 		}
 	}

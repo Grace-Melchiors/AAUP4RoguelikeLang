@@ -34,10 +34,10 @@ namespace Antlr_language.ast.statement
 
         public string CodeGen(int indentation)
         {
-            string indent = "";
+            //string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
+            //for (int i = 0; i < indentation; i++)
+                //indent +="\t";
             if (varDecl != null) {
                 result.Append(varDecl.CodeGen(indentation) + ";");
             } else if (assign != null) {
@@ -54,6 +54,8 @@ namespace Antlr_language.ast.statement
                 result.Append(whileNode.CodeGen(indentation));
             } else if (chance != null) {
                 result.Append(chance.CodeGen(indentation));
+            } else if (statements != null) {
+                result.Append(statements.CodeGen(indentation));
             } else {
                 throw new NotImplementedException();
             }

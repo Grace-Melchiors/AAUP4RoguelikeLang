@@ -9,6 +9,15 @@ namespace Antlr_language.ast.statement
         private string IDENTIFIER;
         private List<ExpressionNode>? ArrayIndicies;
 
+        private ExpressionNode expression;
+
+        public AssignmentNode(string iDENTIFIER, List<ExpressionNode>? arrayIndicies, ExpressionNode expression)
+        {
+            IDENTIFIER = iDENTIFIER;
+            ArrayIndicies = arrayIndicies;
+            this.expression = expression;
+        }
+
         public string CodeGen(int indentation)
         {
             string indent = "";
@@ -17,9 +26,20 @@ namespace Antlr_language.ast.statement
                 indent +="\t";
             result.Append(indent);
 
-
-
-            throw new NotImplementedException();
+            result.Append(IDENTIFIER);
+            if (ArrayIndicies != null) {
+                result.Append("[");
+                if (ArrayIndicies.Count > 0) {
+                    foreach(var exp in ArrayIndicies)
+                        result.Append(exp.CodeGen(indentation) + ",");
+                    result.Length--;
+                }
+                result.Append("]");
+            }
+            result.Append(" = ");
+            result.Append(expression.CodeGen(indentation));
+            
+            return result.ToString();
         }
 
     }

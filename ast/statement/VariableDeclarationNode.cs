@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Antlr_language.ast.expression;
 using Antlr_language.ast;
 using Antlr_language.ast.structure;
@@ -10,7 +11,7 @@ namespace Antlr_language.ast.statement
         private TypeNode Type;
         private string? identifier;
         private ExpressionNode? expression;
-        private List<int>? ArraySizes;
+        //private List<int>? ArraySizes;
         
         public string GetIdentifier() {
             return identifier;
@@ -29,40 +30,36 @@ namespace Antlr_language.ast.statement
             Type = type;
             this.identifier = identifier;
             this.expression = expression;
-            ArraySizes = null;
+            //ArraySizes = null;
         }
         //Array declaration
-        public VariableDeclarationNode(TypeNode type, string? identifier, ExpressionNode? expression, List<int> arraySizes): this(type, identifier, expression) {
-            ArraySizes = arraySizes;
-        }
+        //public VariableDeclarationNode(TypeNode type, string? identifier, ExpressionNode? expression, List<int> arraySizes): this(type, identifier, expression) {
+        //    ArraySizes = arraySizes;
+        //}
 
         public string CodeGen(int indentation)
         {
-            string result = "";
-            result += Type.CodeGen(indentation) + " ";
-            result += identifier;
+            string indent = "";
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < indentation; i++)
+                indent +="\t";
+            result.Append(indent);
+            result.Append(Type.CodeGen(indentation) + " ");
+            result.Append(identifier);
             if (expression != null) {
-                result += " = " + expression.CodeGen(indentation);
+                result.Append(" = " + expression.CodeGen(indentation));
             } else {
                 if (Type.GetNodeType() == Enums.Types.INTEGER) {
-                    if (ArraySizes != null) {
-                        result += " = new " + Type.CodeGen(indentation) + "[";
-                        foreach (var size in ArraySizes)
-                            result += size + ",";
-                        result = result.Substring(0, result.Length-1);
-                        result += "]";
+                    if (Type.IsArray) {
+                        result.Append(" = new " + Type.CodeGen(indentation, true));
                     } else {
-                        result += " = " + Constants.INTEGER_DEFAULT;
+                        result.Append(" = " + Constants.INTEGER_DEFAULT);
                     }
                 } else if (Type.GetNodeType() == Enums.Types.BOOL) {
-                    if (ArraySizes != null) {
-                        result += " = new " + Type.CodeGen(indentation) + "[";
-                        foreach (var size in ArraySizes)
-                            result += size + ",";
-                        result = result.Substring(0, result.Length-1);
-                        result += "]";
+                    if (Type.IsArray) {
+                        result.Append(" = new " + Type.CodeGen(indentation, true));
                     } else {
-                        result += " = " + Constants.BOOL_DEFAULT;
+                        result.Append(" = " + Constants.BOOL_DEFAULT);
                     }
                     
                 } else {
@@ -71,7 +68,7 @@ namespace Antlr_language.ast.statement
                 
             }
 
-            return result;
+            return result.ToString();
         }
 
     }
