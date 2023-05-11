@@ -13,6 +13,10 @@ namespace Antlr_language.ast.expression
         private ArrayAccessNode? arrayAccess;
         private MapAccessNode? mapAccess;
 
+        public Factor2Node? GetFactor2Node() {
+            return factor2;
+        }
+
         public FactorNode(ExpressionNode? parenthesizedExpression, ConstantNode? constant, Factor2Node? factor2, List<ExpressionNode>? arrayExpressionsNode, MapExpressionNode? mapExpression, ArrayAccessNode? arrayAccess, MapAccessNode? mapAccess)
         {
             this.parenthesizedExpression = parenthesizedExpression;
@@ -38,13 +42,19 @@ namespace Antlr_language.ast.expression
         }
         public override Enums.Types getEvaluationType () {
             if(constant != null) {
-                return Enums.Types.INTEGER;
+                if(constant.GetInteger() != null) {
+                    return Enums.Types.INTEGER;
+                }
+                if(constant.GetBoolean() != null) {
+                    return Enums.Types.BOOL;
+                }
+                throw new Exception("Lol neither int or bool xd");
             }
             if(mapExpression != null) {
                 return Enums.Types.MAP;
             }
             
-            throw new UndefinedTypeException("Error In FactorNode.cs"); 
+            throw new UndefinedTypeException("Error In FactorNode.cs");
             
             // HVAD MED BOOL??? HVBAD ER DET FOR NOGLE FIELDS JEG OPVERHOEVEDT KIGGER PÅ
         }

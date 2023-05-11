@@ -10,7 +10,7 @@ public class TypeMismatchException: Exception {
 
     }
 
-    public TypeMismatchException(Enums.Types typeLHS, Enums.Types typeRHS): base($"TypeMismatchException. Type {typeLHS} is not assignable to type {typeRHS}.")
+    public TypeMismatchException(Enums.Types typeLHS, Enums.Types typeRHS): base($"TypeMismatchException. Type {typeRHS} is not assignable to type {typeLHS}.")
     {
         this.typeLHS = typeLHS;
         this.typeRHS = typeRHS;

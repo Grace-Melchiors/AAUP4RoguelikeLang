@@ -8,6 +8,16 @@ namespace Antlr_language.ast.expression
         private bool? boolean = null;
         private int? integer = null;
 
+        public bool? GetBoolean() {
+            return boolean;
+
+        }
+
+        public int? GetInteger() {
+            return integer;
+            
+        }
+
         public ConstantNode(bool? boolean, int? integer)
         {
             this.boolean = boolean;
