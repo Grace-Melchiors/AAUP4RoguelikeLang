@@ -12,6 +12,25 @@ namespace Antlr_language.ast.expression
         private FactorNode? factor;
         
 
+        private string Number; 
+        private string VariableName; 
+        public ExpressionNode(string variableNameOrNumber, bool isNumber) {
+        if (isNumber)
+            this.Number = variableNameOrNumber;
+        else
+            this.VariableName = variableNameOrNumber;
+        }
+        
+        public string GetNumber() {
+        return Number;
+    }
+
+    public string GetVariableName() {
+        return VariableName;
+    }
+
+        
+
         public FactorNode GetFactorNode() {
             return factor;
         }

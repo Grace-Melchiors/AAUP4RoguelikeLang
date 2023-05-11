@@ -44,7 +44,7 @@ namespace Antlr_language.ast.expression
                 return Enums.Types.MAP;
             }
             
-            throw new NotImplementedException("Type not yet supported");
+            throw new UndefinedTypeException("Error In FactorNode.cs"); 
             
             // HVAD MED BOOL??? HVBAD ER DET FOR NOGLE FIELDS JEG OPVERHOEVEDT KIGGER PÅ
         }

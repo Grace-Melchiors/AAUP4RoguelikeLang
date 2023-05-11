@@ -165,18 +165,32 @@ public class SemanticAnalysis {
     }
     
     public Enums.Types VisitExpression(ExpressionNode expressionNode) {
+        // If expression has a variable
+        if(expressionNode.GetVariableName() != null) {
+            AbstractNode symbol = (AbstractNode) RetrieveSymbol(expressionNode.GetVariableName());
+            if(symbol != null) {
+                return GetDataTypeFromName(expressionNode.GetVariableName());
+            }
+            throw new Exception("Variable not defined!");
+        }
 
-        if(expressionNode.GetFactorNode() != null) {
+        Tuple<ExpressionNode, ExpressionNode> expressionNodes = expressionNode.GetExpressionNodes();
+        if(expressionNode.GetFactorNode() != null && expressionNodes.Item1 == null && expressionNodes.Item2 == null) {
             Enums.Types dataType = VisitFactor(expressionNode.GetFactorNode());
             return dataType;
         } 
         
-        Tuple<ExpressionNode, ExpressionNode> expressionNodes = expressionNode.GetExpressionNodes();
+
+        else if (expressionNode.GetNumber() != null) {
+            return GetDataTypeFromLiteral(expressionNode.GetNumber());
+
+        }
+        
         if(expressionNodes.Item2 != null) {
             Enums.Types dataType1 = VisitExpression(expressionNodes.Item1);
             Enums.Types dataType2 = VisitExpression(expressionNodes.Item2);
 
-            if(expressionNodes.Item1 != null && expressionNodes.Item2 != null && dataType1 != dataType2) {
+            if(/*expressionNodes.Item1 != null && expressionNodes.Item2 != null && */ dataType1 != dataType2) {
                 throw new TypeMismatchException(dataType1, dataType2);
             }
             
@@ -190,6 +204,34 @@ public class SemanticAnalysis {
     public Enums.Types VisitFactor(FactorNode factorNode) {
         Enums.Types dataType = factorNode.getEvaluationType();
         return dataType;
+    }
+    
+    private Enums.Types GetDataTypeFromLiteral(string literal) {
+        if (literal.Equals("true") || literal.Equals("false")) {
+            return Enums.Types.BOOL;
+        } else {
+            return Enums.Types.INTEGER;
+        }
+    }
+    
+    private Enums.Types GetDataTypeFromName(string name) {
+        Enums.Types? type = null;
+        AbstractNode abstractNode = (AbstractNode) RetrieveSymbol(name);
+        
+        if(abstractNode is StatementNode) {
+            StatementNode statementNode = (StatementNode) abstractNode;
+            if(statementNode.varDecl != null) {
+                type = statementNode.varDecl.GetDataType();
+            }
+        } else if(abstractNode is FunctionDeclarationNode) {
+            throw new NotImplementedException("Not supported");
+
+        }
+        
+        if(type != null) {
+            return (Enums.Types) type;
+        }
+        throw new VariableAlreadyDefinedException(name);
     }
     
 
