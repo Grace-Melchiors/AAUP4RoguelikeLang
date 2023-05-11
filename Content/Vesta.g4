@@ -22,9 +22,14 @@ block: '{' statement* '}';
 
 varDecl
    : identifierType IDENTIFIER        #varDeclaration
-   | allType assignment        #varInitialization
+   | identifierType assignment        #varInitialization
+   | 'map' IDENTIFIER '=' arrayDimensions mapLayer #mapDeclaration
    ;
 
+//varDecl
+//   : identifierType IDENTIFIER        #varDeclaration
+//   | allType assignment        #varInitialization
+//   ;
 
 functionDecl: allType IDENTIFIER '('(funcParams)?')' block;
 
@@ -47,8 +52,7 @@ factor
    | constant                                       #constantExpression
    | factor2                                        #objectExpression
    | '{' (expression(','expression)*) '}'				#arrayExpression
-   | arrayDimensions mapLayer 				#mapExpression
-   | factor2 arrayDimensions					#arrayAccess
+   | factor2 arrayDimensions					      #arrayAccess
    | factor2 '.' IDENTIFIER arrayDimensions			#mapAccess
 ;
 factor2
@@ -57,7 +61,10 @@ factor2
 	;
 
 arrayDimensions: '[' expression (',' expression )* ']' ;
-mapLayer: '{' identifierType IDENTIFIER ('=' expression)? (';' identifierType IDENTIFIER ('=' expression)?)* '}' ;
+
+mapLayer: '{' individualLayer  (';' individualLayer)* '}' ;
+individualLayer: identifierType IDENTIFIER ('=' expression)?;
+//mapLayer: '{' identifierType IDENTIFIER ('=' expression)? (';' identifierType IDENTIFIER ('=' expression)?)* '}' ;
 
 assignment: IDENTIFIER (arrayDimensions)? '=' expression ;
 

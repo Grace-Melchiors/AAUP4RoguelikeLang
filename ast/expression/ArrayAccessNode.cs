@@ -1,16 +1,37 @@
 ﻿using System;
+using System.Text;
 
 namespace Antlr_language.ast.expression
 {
     public class ArrayAccessNode : AbstractExpressionNode
     {
 
-        private Enums.Types type;
-        private string? VariableName;
-        private List<ExpressionNode> indexs = new List<ExpressionNode>();
-        
+        private Factor2Node factor2;
+        private ArrayDimensionsNode indicies;
+
+        public ArrayAccessNode(Factor2Node factor2, ArrayDimensionsNode indicies)
+        {
+            this.factor2 = factor2;
+            this.indicies = indicies;
+        }
+
 
         public override string CodeGen(int indentation)
+        {
+            string indent = "";
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < indentation; i++)
+                indent +="\t";
+
+            result.Append(factor2.CodeGen(indentation));
+            result.Append(indicies.CodeGen(indentation));
+
+            return result.ToString();
+        }
+        public override Enums.Types getEvaluationType () {
+            throw new NotImplementedException();
+        }
+        /*public override string CodeGen(int indentation)
         {
             string result;
             if (indexs.Count() != 0) {
@@ -21,7 +42,7 @@ namespace Antlr_language.ast.expression
                     result += expr.CodeGen(indentation) + ",";
                 }
                 //Remove the last ",".
-                result = result.Substring(0, result.Length-2);
+                result = result.Substring(0, result.Length-1);
                 result += "]";
             } else {
                 throw new NotImplementedException();
@@ -30,7 +51,7 @@ namespace Antlr_language.ast.expression
         }
         public override Enums.Types getEvaluationType () {
             return type;
-        }
+        }*/
 
     }
 }

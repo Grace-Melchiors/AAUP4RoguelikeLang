@@ -8,7 +8,7 @@ namespace Antlr_language.ast.expression
         private ExpressionNode? parenthesizedExpression;
         private ConstantNode? constant;
         private Factor2Node? factor2;
-        private List<ExpressionNode>? arrayExpressionsNode;
+        private ArrayExpressionNode? arrayExpressionsNode;
         private MapExpressionNode? mapExpression;
         private ArrayAccessNode? arrayAccess;
         private MapAccessNode? mapAccess;
@@ -17,7 +17,7 @@ namespace Antlr_language.ast.expression
             return factor2;
         }
 
-        public FactorNode(ExpressionNode? parenthesizedExpression, ConstantNode? constant, Factor2Node? factor2, List<ExpressionNode>? arrayExpressionsNode, MapExpressionNode? mapExpression, ArrayAccessNode? arrayAccess, MapAccessNode? mapAccess)
+        public FactorNode(ExpressionNode? parenthesizedExpression, ConstantNode? constant, Factor2Node? factor2, ArrayExpressionNode? arrayExpressionsNode, MapExpressionNode? mapExpression, ArrayAccessNode? arrayAccess, MapAccessNode? mapAccess)
         {
             this.parenthesizedExpression = parenthesizedExpression;
             this.constant = constant;
@@ -36,6 +36,14 @@ namespace Antlr_language.ast.expression
                 return constant.CodeGen(indentation);
             } else if (factor2 != null) {
                 return factor2.CodeGen(indentation);
+            } else if (arrayExpressionsNode != null) {
+                return arrayExpressionsNode.CodeGen(indentation);
+            } else if (mapExpression != null) {
+                return mapExpression.CodeGen(indentation);
+            } else if (arrayAccess != null) {
+                return arrayAccess.CodeGen(indentation);
+            } else if (mapAccess != null) {
+                return mapAccess.CodeGen(indentation);
             } else {
                 throw new NotImplementedException();
             }
