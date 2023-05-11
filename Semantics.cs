@@ -187,6 +187,7 @@ public class SemanticAnalysis {
         
         
 
+        /* This does not work */ 
         else if (expressionNode.GetNumber() != null) {
             System.Console.WriteLine("Trying GetNumber");
             return GetDataTypeFromLiteral(expressionNode.GetNumber());

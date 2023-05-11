@@ -2,7 +2,7 @@ using System.Globalization;
 using Antlr_language.ast;
 
 public class TypeMismatchException: Exception {
-    public TypeMismatchException(string identifier, Enums.Types typeLHS, Enums.Types typeRHS): base($"TypeMismatchException. Types for {identifier} are mismatched. Type {typeLHS} is not assignable to type {typeRHS}.")
+    public TypeMismatchException(string identifier, Enums.Types typeLHS, Enums.Types typeRHS): base($"TypeMismatchException. Types for {identifier} are mismatched. Type {typeRHS} is not assignable to type {typeLHS}.")
     {
         this.identifier = identifier;
         this.typeLHS = typeLHS;
