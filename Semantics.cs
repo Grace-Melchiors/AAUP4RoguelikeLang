@@ -176,26 +176,37 @@ public class SemanticAnalysis {
 
         Tuple<ExpressionNode, ExpressionNode> expressionNodes = expressionNode.GetExpressionNodes();
         if(expressionNode.GetFactorNode() != null && expressionNodes.Item1 == null && expressionNodes.Item2 == null) {
+            System.Console.WriteLine("this is a factor");
             Enums.Types dataType = VisitFactor(expressionNode.GetFactorNode());
             return dataType;
         } 
         
+        
 
         else if (expressionNode.GetNumber() != null) {
+            System.Console.WriteLine("Trying GetNumber");
             return GetDataTypeFromLiteral(expressionNode.GetNumber());
 
         }
         
-        if(expressionNodes.Item2 != null) {
-            Enums.Types dataType1 = VisitExpression(expressionNodes.Item1);
-            Enums.Types dataType2 = VisitExpression(expressionNodes.Item2);
+        else if(expressionNodes.Item2 != null) {
+            Console.WriteLine("Revisiting VisitExpression on Item1");
+            Enums.Types? dataType1 = VisitExpression(expressionNodes.Item1);
 
-            if(/*expressionNodes.Item1 != null && expressionNodes.Item2 != null && */ dataType1 != dataType2) {
-                throw new TypeMismatchException(dataType1, dataType2);
+            Console.WriteLine("Revisiting VisitExpression on Item2");
+            Enums.Types? dataType2 = VisitExpression(expressionNodes.Item2);
+
+            if(dataType1 != null && dataType2 != null && dataType1 != dataType2) {
+                throw new TypeMismatchException((Enums.Types) dataType1, (Enums.Types) dataType2);
+            }
+            else if(dataType1 != null) {
+                return (Enums.Types) dataType1;
             }
             
-            return dataType1;
 
+        }
+        else {
+            return VisitExpression(expressionNodes.Item1);
         }
         
         throw new NotImplementedException("Type not accepted!");
