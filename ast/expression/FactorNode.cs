@@ -38,13 +38,19 @@ namespace Antlr_language.ast.expression
         }
         public override Enums.Types getEvaluationType () {
             if(constant != null) {
-                return Enums.Types.INTEGER;
+                if(constant.GetInteger() != null) {
+                    return Enums.Types.INTEGER;
+                }
+                if(constant.GetBoolean() != null) {
+                    return Enums.Types.BOOL;
+                }
+                throw new Exception("Lol neither int or bool xd");
             }
             if(mapExpression != null) {
                 return Enums.Types.MAP;
             }
             
-            throw new UndefinedTypeException("Error In FactorNode.cs"); 
+            throw new UndefinedTypeException("Error In FactorNode.cs");
             
             // HVAD MED BOOL??? HVBAD ER DET FOR NOGLE FIELDS JEG OPVERHOEVEDT KIGGER PÅ
         }

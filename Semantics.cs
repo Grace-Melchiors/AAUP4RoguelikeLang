@@ -167,6 +167,7 @@ public class SemanticAnalysis {
     public Enums.Types VisitExpression(ExpressionNode expressionNode) {
         // If expression has a variable
         if(expressionNode.GetVariableName() != null) {
+        //if(expressionNode.GetFactorNode != null && RetrieveSymbol(expressionNode.GetFactorNode().) != null) {
             AbstractNode symbol = (AbstractNode) RetrieveSymbol(expressionNode.GetVariableName());
             if(symbol != null) {
                 return GetDataTypeFromName(expressionNode.GetVariableName());
