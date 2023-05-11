@@ -19,9 +19,9 @@ chance: 'chance' '{' (expression ':' block )+ '}';
 block: '{' statement* '}';
 
 varDecl
-    : identifierType IDENTIFIER        #varDeclaration
-    | allType assignment        #varInitialization
-    ;
+   : identifierType IDENTIFIER        #varDeclaration
+   | allType assignment        #varInitialization
+   ;
 
 
 functionDecl: allType IDENTIFIER '('(funcParams)?')' block;
@@ -63,7 +63,7 @@ functionCall: (IDENTIFIER'.')? IDENTIFIER '(' (expression (',' expression)*)? ')
 
 allType: COMPLEXTYPE | identifierType;
 
-identifierType: TYPE ('[' expression (',' expression)* ']')? ;
+identifierType: TYPE (arrayDimensions)? ;
 
 multOp: '*' | '/';
 addOp: '+' | '-';

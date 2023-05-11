@@ -40,9 +40,9 @@ namespace Antlr_language.ast.structure
             if (ArraySizes != null) {
                 result += "["; 
                 foreach (ExpressionNode size in ArraySizes) {
-                    result += size.CodeGen(indentation) + ",";
+                    result += /*size.CodeGen(indentation) + */",";
                 }
-                result = result.Substring(0, result.Length-2);
+                result = result.Substring(0, result.Length-1);
                 result += "]";
             }
             return result;

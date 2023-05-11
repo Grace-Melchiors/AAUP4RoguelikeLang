@@ -6,6 +6,9 @@ namespace Antlr_language.ast.statement
 {
     public class AssignmentNode : AbstractNode
     {
+        private string IDENTIFIER;
+        private List<ExpressionNode>? ArrayIndicies;
+
         public string CodeGen(int indentation)
         {
             string indent = "";
@@ -14,9 +17,9 @@ namespace Antlr_language.ast.statement
                 indent +="\t";
             result.Append(indent);
 
-            
 
-            return "";
+
+            throw new NotImplementedException();
         }
 
     }

@@ -9,6 +9,12 @@ namespace Antlr_language.ast.structure
         private ExpressionNode? expression;
         private BlockNode? block;
 
+        public WhileNode(ExpressionNode? expression, BlockNode? block)
+        {
+            this.expression = expression;
+            this.block = block;
+        }
+
         public string CodeGen(int indentation)
         {
             if (expression == null)

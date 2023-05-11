@@ -12,6 +12,9 @@ namespace Antlr_language.ast.structure
         {
             this.statementNodes = statementNodes;
         }
+        public void AddStatement (StatementNode node) {
+            statementNodes.Add(node);
+        }
 
         public string CodeGen(int indentation)
         {

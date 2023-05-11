@@ -39,17 +39,34 @@ namespace Antlr_language.ast.statement
         public string CodeGen(int indentation)
         {
             string result = "";
-            result += Type.CodeGen(indentation);
+            result += Type.CodeGen(indentation) + " ";
             result += identifier;
             if (expression != null) {
                 result += " = " + expression.CodeGen(indentation);
             } else {
                 if (Type.GetNodeType() == Enums.Types.INTEGER) {
-                    result += " = " + Constants.INTEGER_DEFAULT;
+                    if (ArraySizes != null) {
+                        result += " = new " + Type.CodeGen(indentation) + "[";
+                        foreach (var size in ArraySizes)
+                            result += size + ",";
+                        result = result.Substring(0, result.Length-1);
+                        result += "]";
+                    } else {
+                        result += " = " + Constants.INTEGER_DEFAULT;
+                    }
                 } else if (Type.GetNodeType() == Enums.Types.BOOL) {
-                    result += " = " + Constants.BOOL_DEFAULT;
-                } else if (Type.GetNodeType() == Enums.Types.MAP) {
-                    result += " = " + Constants.MAP_DEFAULT;
+                    if (ArraySizes != null) {
+                        result += " = new " + Type.CodeGen(indentation) + "[";
+                        foreach (var size in ArraySizes)
+                            result += size + ",";
+                        result = result.Substring(0, result.Length-1);
+                        result += "]";
+                    } else {
+                        result += " = " + Constants.BOOL_DEFAULT;
+                    }
+                    
+                } else {
+                    throw new NotImplementedException();
                 }
                 
             }
@@ -58,4 +75,7 @@ namespace Antlr_language.ast.statement
         }
 
     }
+
+    
+
 }
