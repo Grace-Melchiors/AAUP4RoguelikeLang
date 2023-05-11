@@ -170,7 +170,10 @@ public class SemanticAnalysis {
         //if(expressionNode.GetFactorNode != null && RetrieveSymbol(expressionNode.GetFactorNode().) != null) {
             AbstractNode symbol = (AbstractNode) RetrieveSymbol(expressionNode.GetVariableName());
             if(symbol != null) {
-                return GetDataTypeFromName(expressionNode.GetVariableName());
+                //return GetDataTypeFromName(expressionNode.GetVariableName());
+                System.Console.WriteLine("Not null");
+                return ((VariableDeclarationNode) symbol).GetDataType();
+
             }
             throw new Exception("Variable not defined!");
         }

@@ -25,8 +25,17 @@ namespace Antlr_language.ast.expression
         return Number;
     }
 
-    public string GetVariableName() {
-        return VariableName;
+    public string? GetVariableName() {
+        Factor2Node? factor2 = null;
+        if(factor != null) {
+            factor2 = factor.GetFactor2Node();
+        }
+        if(factor2 != null) {
+            return factor2.GetIdentifier();
+        }
+        return null;
+
+
     }
 
         

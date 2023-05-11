@@ -13,6 +13,10 @@ namespace Antlr_language.ast.expression
         private ArrayAccessNode? arrayAccess;
         private MapAccessNode? mapAccess;
 
+        public Factor2Node? GetFactor2Node() {
+            return factor2;
+        }
+
         public FactorNode(ExpressionNode? parenthesizedExpression, ConstantNode? constant, Factor2Node? factor2, List<ExpressionNode>? arrayExpressionsNode, MapExpressionNode? mapExpression, ArrayAccessNode? arrayAccess, MapAccessNode? mapAccess)
         {
             this.parenthesizedExpression = parenthesizedExpression;
