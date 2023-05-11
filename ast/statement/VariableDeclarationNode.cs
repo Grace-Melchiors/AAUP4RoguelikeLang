@@ -32,6 +32,15 @@ namespace Antlr_language.ast.statement
             result += identifier;
             if (expression != null) {
                 result += " = " + expression.CodeGen(indentation);
+            } else {
+                if (Type.GetNodeType() == Enums.Types.INTEGER) {
+                    result += " = " + Constants.INTEGER_DEFAULT;
+                } else if (Type.GetNodeType() == Enums.Types.BOOL) {
+                    result += " = " + Constants.BOOL_DEFAULT;
+                } else if (Type.GetNodeType() == Enums.Types.MAP) {
+                    result += " = " + Constants.MAP_DEFAULT;
+                }
+                
             }
 
             return result;

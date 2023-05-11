@@ -23,7 +23,8 @@ var vestaContext = vestaParser.program();
 //visitor.Visit((vestaContext));
 
 AstBuilder builder = new AstBuilder();
-string Code = builder.Visit((vestaContext)).CodeGen(0);
+AbstractNode AST = builder.Visit((vestaContext));
+string Code = AST.CodeGen(0);
 CSB.AppendLine(Code);
 
 CSB.OutputResult();

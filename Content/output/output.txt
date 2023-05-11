@@ -14,8 +14,11 @@ namespace MapGen
 		}
 	}
 
-	static class stdlib {
-		public static void print (string val) {
+	static class Stdlib {
+		public static void print (int val) {
+			System.Console.WriteLine(val);
+		}
+		public static void print (bool val) {
 			System.Console.WriteLine(val);
 		}
 	}
@@ -24,9 +27,17 @@ namespace MapGen
 	{
 		static void Main(string[] args)
 		{
-			int i = 1;
-			int j = 5;
-			int k = 3+5+i+j;
+			Stdlib.print(getNum()+Add(1,2,3));
+
+			int getNum () {
+				return 2;
+			}
+
+
+			int Add (int val1,int val2,int val3) {
+				return val1+val2+val3;
+			}
+
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace Antlr_language.ast
         public override AbstractNode VisitLibrary([NotNull] VestaParser.LibraryContext context)
         {
             LibraryNode result;
-            if (context.IDENTIFIER().GetText() == "stdlib") {
+            if (context.IDENTIFIER().GetText() == "Stdlib") {
                 result = new Stdlib();
             } else {
                 throw new NotImplementedException();
@@ -142,6 +142,23 @@ namespace Antlr_language.ast
             }
             result = new FunctionDeclarationNode((TypeNode)Visit(context.allType()), context.IDENTIFIER().GetText(), parameters, (BlockNode)Visit(context.block()));
             
+
+            return result;
+        }
+
+        public override AbstractNode VisitParameter([NotNull] VestaParser.ParameterContext context)
+        {
+            FunctionParamNode result;
+            result = new FunctionParamNode((TypeNode)Visit(context.allType()), context.IDENTIFIER().GetText());
+            return result;
+        }
+
+        public override AbstractNode VisitReturnStmt([NotNull] VestaParser.ReturnStmtContext context)
+        {
+            //throw new NotImplementedException();
+            ReturnStatementNode result;
+
+            result = new ReturnStatementNode((ExpressionNode)Visit(context.expression()));
 
             return result;
         }
@@ -267,8 +284,26 @@ namespace Antlr_language.ast
         }
         public override AbstractNode VisitFunctionAccess([NotNull] VestaParser.FunctionAccessContext context)
         {
-            throw new NotImplementedException();
-            Factor2Node result = new Factor2Node(null, null/*Something here*/);
+            //throw new NotImplementedException();
+            Factor2Node result = new Factor2Node(null, (FunctionCallNode)Visit(context.functionCall()));
+            return result;
+        }
+        public override AbstractNode VisitFunctionCall([NotNull] VestaParser.FunctionCallContext context)
+        {
+            FunctionCallNode result;
+            VestaParser.ExpressionContext[] parameters = context.expression().ToArray();
+            List<ExpressionNode> expParams = new List<ExpressionNode>();
+            foreach (var parameter in parameters)
+                expParams.Add((ExpressionNode)Visit(parameter));
+
+            var Identifiers = context.IDENTIFIER().ToArray();
+            if (Identifiers.Length == 2) {
+                result = new FunctionCallNode(Identifiers[0].GetText(), Identifiers[1].GetText(), expParams);
+            } else if (Identifiers.Length == 1) {
+                result = new FunctionCallNode(null, Identifiers[0].GetText(), expParams);
+            } else {
+                throw new NotImplementedException();
+            }
             return result;
         }
 

@@ -16,6 +16,11 @@ namespace Antlr_language.ast.structure
             ArraySizes = arraySizes;
         }
 
+
+        public Enums.Types GetNodeType () {
+            return Type;
+        }
+
         public string CodeGen(int indentation)
         {
             string result = "";
@@ -36,7 +41,6 @@ namespace Antlr_language.ast.structure
                 result = result.Substring(0, result.Length-2);
                 result += "]";
             }
-            result += " ";
             return result;
         }
 

@@ -17,9 +17,9 @@ namespace Antlr_language.ast.structure
         {
             string result = "";
             foreach (StatementNode statement in statementNodes) {
-                for (int i = 0; i < indentation; i++)
-                    result +="\t";
-                result += statement.CodeGen(indentation + 1);
+                //for (int i = 0; i < indentation; i++)
+                    //result +="\t";
+                result += statement.CodeGen(indentation + 1) + "\n";
             }
             return result;
         }
