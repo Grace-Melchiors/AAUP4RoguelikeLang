@@ -79,23 +79,23 @@ namespace Antlr_language.ast
 
 
             if (VariableDecl != null) {
-                result = new StatementNode((VariableDeclarationNode)Visit(VariableDecl), null, null, null, null, null, null, null);
+                result = new StatementNode((VariableDeclarationNode)Visit(VariableDecl), null, null, null, null, null, null, null, null);
             } else if (assignment != null) {
-                result = new StatementNode(null, (AssignmentNode)Visit(assignment), null, null, null, null, null, null);
+                result = new StatementNode(null, (AssignmentNode)Visit(assignment), null, null, null, null, null, null, null);
             } else if (expression != null) {
-                result = new StatementNode(null, null, (ExpressionNode)Visit(expression), null, null, null, null, null);
+                result = new StatementNode(null, null, (ExpressionNode)Visit(expression), null, null, null, null, null, null);
             } else if (returnStmt != null) {
-                result = new StatementNode(null, null, null, (ReturnStatementNode)Visit(returnStmt), null, null, null, null);
+                result = new StatementNode(null, null, null, (ReturnStatementNode)Visit(returnStmt), null, null, null, null, null);
             } else if (block != null) {
-                result = new StatementNode(null, null, null, null, (BlockNode)Visit(block), null, null, null);
+                result = new StatementNode(null, null, null, null, (BlockNode)Visit(block), null, null, null, null);
             } else if (ifStatement != null) {
-                result = new StatementNode(null, null, null, null, null, (IfNode)Visit(ifStatement), null, null);
+                result = new StatementNode(null, null, null, null, null, (IfNode)Visit(ifStatement), null, null, null);
             } else if (whileStatement != null) {
-                result = new StatementNode(null, null, null, null, null, null, (WhileNode)Visit(whileStatement), null);
+                result = new StatementNode(null, null, null, null, null, null, (WhileNode)Visit(whileStatement), null, null);
             } else if (forStatement != null) {
-                result = new StatementNode(null, null, null, null, null, null, (WhileNode)Visit(forStatement), null);
+                result = new StatementNode(null, null, null, null, null, null, null, null, (StatementsNode)Visit(forStatement));
             } else if (chanceStatement != null) {
-                result = new StatementNode(null, null, null, null, null, null, null, (ChanceNode)Visit(chanceStatement));
+                result = new StatementNode(null, null, null, null, null, null, null, (ChanceNode)Visit(chanceStatement), null);
             } else {
                 throw new NotImplementedException();
             }
@@ -104,7 +104,14 @@ namespace Antlr_language.ast
 
         public override AbstractNode VisitForStatement([NotNull] VestaParser.ForStatementContext context)
         {
-            return base.VisitForStatement(context);
+            StatementsNode result = new StatementsNode(new());
+            result.AddStatement(new StatementNode((VariableDeclarationNode)Visit(context.varDecl()), null, null, null, null, null, null, null, null));
+            WhileNode whileNode;
+            BlockNode block = (BlockNode)Visit(context.block());
+            block.AddStatement(new StatementNode(null, (AssignmentNode)Visit(context.assignment()), null, null, null, null, null, null, null));
+            whileNode = new((ExpressionNode)Visit(context.expression()), block);
+            result.AddStatement(new StatementNode(null, null, null, null, null, null, whileNode, null, null));
+            return result;
         }
         
         public override AbstractNode VisitVarDecl([NotNull] VestaParser.VarDeclContext context)
@@ -113,7 +120,12 @@ namespace Antlr_language.ast
         }
         public override AbstractNode VisitVarDeclaration([NotNull] VestaParser.VarDeclarationContext context)
         {
-            return base.VisitVarDeclaration(context);
+            VariableDeclarationNode result;
+            
+            result = new VariableDeclarationNode((TypeNode)Visit(context.identifierType()), context.IDENTIFIER().GetText(), null);
+
+            return result;
+            //return base.VisitVarDeclaration(context);
         }
         public override AbstractNode VisitVarInitialization([NotNull] VestaParser.VarInitializationContext context)
         {
@@ -121,13 +133,19 @@ namespace Antlr_language.ast
             var typeContext = context.allType();
             TypeNode type = (TypeNode)Visit(typeContext);
             var assignmentContext = context.assignment();
-            
-
             result = new VariableDeclarationNode(type, assignmentContext.IDENTIFIER().GetText(), (ExpressionNode)Visit(assignmentContext.expression()));
+            return result;
+        }
 
+        public override AbstractNode VisitAssignment([NotNull] VestaParser.AssignmentContext context)
+        {
+            AssignmentNode result;
+
+            result = new AssignmentNode();
 
             return result;
         }
+
 
         /// ---  Function  ---  ///
         public override AbstractNode VisitFunctionDecl([NotNull] VestaParser.FunctionDeclContext context)
@@ -175,33 +193,39 @@ namespace Antlr_language.ast
                 }
                 result = new TypeNode(type, null);
             } else if (context.identifierType() != null) {
-                Enums.Types type;
-                var TypeContext = context.identifierType().TYPE();
-                if (TypeContext.GetText() == "int") {
-                    type = Enums.Types.INTEGER;
-                } else if (TypeContext.GetText() == "bool") {
-                    type = Enums.Types.BOOL;
-                } else {
-                    throw new NotImplementedException();
-                }
-                result = new TypeNode(type, null);
-                //Array check expressions here!
-                bool IsArray = false;
-                try {
-                    var arraySizes = context.identifierType().expression().ToArray();
-                    List<ExpressionNode> sizes = new();
-                    if (arraySizes.Length != 0) {
-                        IsArray = true;
-                        foreach (var ArraySize in arraySizes) {
-                            sizes.Add((ExpressionNode)Visit(ArraySize));
-                        }
-                        result = new TypeNode(type, sizes);
-                    }
-                } catch (NullReferenceException e) {
-                    System.Console.WriteLine("Error: " + e.Message);
-                }
+                result = (TypeNode)Visit(context.identifierType());
             } else {
                 throw new NotImplementedException();
+            }
+            return result;
+        }
+        public override AbstractNode VisitIdentifierType([NotNull] VestaParser.IdentifierTypeContext context)
+        {
+            TypeNode result;
+            Enums.Types type;
+            var TypeContext = context.TYPE();
+            if (TypeContext.GetText() == "int") {
+                type = Enums.Types.INTEGER;
+            } else if (TypeContext.GetText() == "bool") {
+                type = Enums.Types.BOOL;
+            } else {
+                throw new NotImplementedException();
+            }
+            result = new TypeNode(type, null);
+            //Array check expressions here!
+            bool IsArray = false;
+            try {
+                var arraySizes = context.arrayDimensions().expression().ToArray();
+                List<ExpressionNode> sizes = new();
+                if (arraySizes.Length != 0) {
+                    IsArray = true;
+                    foreach (var ArraySize in arraySizes) {
+                        sizes.Add((ExpressionNode)Visit(ArraySize));
+                    }
+                    result = new TypeNode(type, sizes);
+                }
+            } catch (NullReferenceException e) {
+                System.Console.WriteLine("Error: " + e.Message);
             }
             return result;
         }

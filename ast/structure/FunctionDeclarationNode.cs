@@ -29,7 +29,7 @@ namespace Antlr_language.ast.structure
             string result = "\n" + indent;
             result += Type.CodeGen(indentation) + " ";
             result += Identifier + " ";
-            System.Console.WriteLine("Test from: FunctionDeclarationNode");
+            //System.Console.WriteLine("Test from: FunctionDeclarationNode");
             result += "(";
             if (funcParams.Count != 0) {
                 foreach (FunctionParamNode param in funcParams) {

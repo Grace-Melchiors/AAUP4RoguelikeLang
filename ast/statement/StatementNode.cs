@@ -16,7 +16,10 @@ namespace Antlr_language.ast.statement
         private WhileNode? whileNode;
         private ChanceNode? chance;
 
-        public StatementNode(VariableDeclarationNode? varDecl, AssignmentNode? assign, ExpressionNode? expression, ReturnStatementNode? returnStatement, BlockNode? block, IfNode? ifNode, WhileNode? whileNode, ChanceNode? chance)
+        //Not in Grammar
+        private StatementsNode? statements;
+
+        public StatementNode(VariableDeclarationNode? varDecl, AssignmentNode? assign, ExpressionNode? expression, ReturnStatementNode? returnStatement, BlockNode? block, IfNode? ifNode, WhileNode? whileNode, ChanceNode? chance, StatementsNode? statements)
         {
             this.varDecl = varDecl;
             this.assign = assign;
@@ -26,6 +29,7 @@ namespace Antlr_language.ast.statement
             this.ifNode = ifNode;
             this.whileNode = whileNode;
             this.chance = chance;
+            this.statements = statements;
         }
 
         public string CodeGen(int indentation)
