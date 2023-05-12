@@ -10,6 +10,13 @@ public class TypeMismatchException: Exception {
 
     }
 
+    // Used for arrays
+    public TypeMismatchException(string message): base($"{message}")
+    {
+        this.message = message;
+
+    }
+
     public TypeMismatchException(Enums.Types typeLHS, Enums.Types typeRHS): base($"TypeMismatchException. Type {typeRHS} is not assignable to type {typeLHS}.")
     {
         this.typeLHS = typeLHS;
@@ -26,6 +33,7 @@ public class TypeMismatchException: Exception {
     }
     
     private string? identifier;
+    private string? message;
     private Enums.Types typeLHS;
     private Enums.Types typeRHS;
 

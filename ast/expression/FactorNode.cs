@@ -66,5 +66,9 @@ namespace Antlr_language.ast.expression
             
             // HVAD MED BOOL??? HVBAD ER DET FOR NOGLE FIELDS JEG OPVERHOEVEDT KIGGER PÅ
         }
+        
+        public ArrayExpressionNode GetArrayExpressionNode() {
+            return arrayExpressionsNode;
+        }
     }
 }

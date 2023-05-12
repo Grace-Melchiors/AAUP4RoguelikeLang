@@ -29,6 +29,10 @@ namespace Antlr_language.ast.expression
         public override Enums.Types getEvaluationType () {
             throw new NotImplementedException();
         }
+        
+        public List<ExpressionNode> GetExpressions() {
+            return expressions;
+        }
 
     }
 }

@@ -8,9 +8,7 @@ line: statement | functionDecl;
 
 statement : (varDecl | assignment | expression | returnStmt) ';' | block | ifStatement | whileStatement | forStatement | chance ;
 
-ifStatement: 'if' '(' expression ')' block ('else' elseIfBlock)?;
-
-elseIfBlock: block | ifStatement;
+ifStatement: 'if' '(' expression')' block ('else' block)?;
 
 whileStatement: 'while' '(' expression ')' block;
 
@@ -20,23 +18,22 @@ chance: 'chance' '{' (expression ':' block )+ '}';
 
 block: '{' statement* '}';
 
-//varDecl
-//   : identifierType IDENTIFIER        #varDeclaration
-//   | identifierType assignment        #varInitialization
-//   | 'map' IDENTIFIER '=' arrayDimensions mapLayer #mapDeclaration
-//   ;
-
 varDecl
    : identifierType IDENTIFIER        #varDeclaration
    | allType assignment        #varInitialization
    ;
 
-functionDecl: allType IDENTIFIER '('(funcParams)?')' block;
+
+functionDecl: parameterType IDENTIFIER '('(funcParams)?')' funcBody;
 
 funcParams: parameter (',' parameter)* ;
-parameter: allType IDENTIFIER;
-//funcBody: '{' statement*  returnStmt '}'; //Can we put return stmt up in statement?
-returnStmt:  'return ' expression;
+parameter: parameterType IDENTIFIER;
+parameterType: (TYPE | COMPLEXTYPE) (parameterArr)? ;
+parameterArr: '[' (paramaterArrayDenoter)* ']';
+paramaterArrayDenoter: ',';
+
+funcBody: '{' statement*  returnStmt '}'; //Can we put return stmt up in statement?
+returnStmt:  'return ' expression ';';
 
 expression
    : factor                             #factorExpression
@@ -46,28 +43,29 @@ expression
    | expression addOp expression          	 	#additionExpression
    | expression compareOp expression   	  	#compareExpression
    | expression boolOp expression 			#booleanExpression
-   ;
+;
 factor
    : '(' expression ')'                             #parenthesizedExpression
    | constant                                       #constantExpression
    | factor2                                        #objectExpression
    | '{' (expression(','expression)*) '}'				#arrayExpression
-   | arrayDimensions mapLayer                      #mapExpression
-   | factor2 arrayDimensions					         #arrayAccess
-   | factor2 '.' IDENTIFIER arrayDimensions			#mapAccess
-   ;
+   | arrayDimensions mapLayer 				#mapExpression
+   | factor2 arrayDimensions					#arrayAccess
+   | factor2 '.' IDENTIFIER (arrayDimensions)?			#mapAccess
+;
 factor2
 	: IDENTIFIER                        #identifierAccess
   	| functionCall 						#functionAccess
 	;
 
 arrayDimensions: '[' expression (',' expression )* ']' ;
+mapLayer: '{' individualLayer (';' individualLayer)* '}' ;
+individualLayer: identifierType IDENTIFIER ('=' expression)? ;
 
-mapLayer: '{' individualLayer  (';' individualLayer)* '}' ;
-individualLayer: identifierType IDENTIFIER ('=' expression)?;
-//mapLayer: '{' identifierType IDENTIFIER ('=' expression)? (';' identifierType IDENTIFIER ('=' expression)?)* '}' ;
 
-assignment: IDENTIFIER (arrayDimensions)? '=' expression ;
+assignment: IDENTIFIER (arrayDimensions)? '=' expression | mapAssignment;
+mapAssignment: IDENTIFIER '.' IDENTIFIER (arrayDimensions)? '=' expression;
+   
 
 functionCall: (IDENTIFIER'.')? IDENTIFIER '(' (expression (',' expression)*)? ')';
 
