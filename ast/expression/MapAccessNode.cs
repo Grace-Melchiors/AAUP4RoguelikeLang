@@ -5,28 +5,20 @@ namespace Antlr_language.ast.expression
     public class MapAccessNode : AbstractExpressionNode
     {
 
-        private string? VariableName;
-        private string? LayerName;
-        private List<ExpressionNode> indexs = new List<ExpressionNode>();
-        
+        private Factor2Node factor2;
+        private string IDENTIFIER;
+        private ArrayDimensionsNode arrayDimensions;
+
+        public MapAccessNode(Factor2Node factor2, string iDENTIFIER, ArrayDimensionsNode arrayDimensions)
+        {
+            this.factor2 = factor2;
+            IDENTIFIER = iDENTIFIER;
+            this.arrayDimensions = arrayDimensions;
+        }
 
         public override string CodeGen(int indentation)
         {
-            string result;
-            if (indexs.Count() != 0) {
-                if (VariableName == null)
-                    throw new NotImplementedException();
-                result = VariableName + "." + LayerName + "[";
-                foreach (ExpressionNode expr in indexs) {
-                    result += expr.CodeGen(indentation) + ",";
-                }
-                //Remove the last ",".
-                result = result.Substring(0, result.Length-2);
-                result += "]";
-            } else {
-                throw new NotImplementedException();
-            }
-            return result;
+            throw new NotImplementedException();
         }
         public override Enums.Types getEvaluationType () {
             throw new NotImplementedException();

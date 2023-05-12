@@ -3,13 +3,13 @@ using System;
 namespace MapGen
 {
 	class Map {
-		Dictionary<string, int[][]> IntLayers = new();
-		Dictionary<string, bool[][]> BoolLayers = new();
+		Dictionary<string, int[][]> IntLayers;
+		Dictionary<string, bool[][]> BoolLayers;
 		public int d1Size;
 		public int d2Size;
-		public Map(int d1Size, int d2Size)
+		public Map(int d1Size, int d2Size, Dictionary<string, int[][]> IntLayers, Dictionary<string, bool[][]> BoolLayers)
 		{
-			this.d1Size = d1Size;
+			this.IntLayers = IntLayers;			this.BoolLayers = BoolLayers;			this.d1Size = d1Size;
 			this.d2Size = d2Size;
 		}
 	}
@@ -35,36 +35,9 @@ namespace MapGen
 	{
 		static void Main(string[] args)
 		{
-			int j = 0;
-						int i = 0;
-			while (i<2)
-
-			{
-				Stdlib.print(i);
-				i = i+1;
-			}
-
-
-			if (j==0)
-			{
-				Stdlib.print(5);
-			}
-			else 			
-			if (j==2)
-			{
-				Stdlib.print(2);
-			}
-			else 
-			{
-				j = j+1;
-			}
-
-while (j<5)
-
-			{
-				j = j*2;
-			}
-
+			int[,] regions = {{1,2,3},{1,5,8}};
+			int i = regions[0,0];
+			Stdlib.print(i);
 		}
 	}
 }

@@ -1,16 +1,7 @@
 using Stdlib;
 
-int j = 0;
+int[2,3] regions = {{1,2,3}, {1,5,8}};
 
-for (int i = 0; i < 2; i = i+1) {
-    Stdlib.print(i);
-}
+int i = regions[0,0];
 
-
-map m = ;
-
-
-while (j < 5) {
-    j = j*2;
-}
-
+Stdlib.print(i);

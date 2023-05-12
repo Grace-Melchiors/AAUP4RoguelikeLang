@@ -26,12 +26,14 @@ namespace Antlr_language.ast.structure
             result += "namespace " + nameSpace + "\n";
             result += "{\n";
             result += "\tclass Map {\n";
-            result += "\t\tDictionary<string, int[][]> IntLayers = new();\n";
-            result += "\t\tDictionary<string, bool[][]> BoolLayers = new();\n";
+            result += "\t\tDictionary<string, int[][]> IntLayers;\n";
+            result += "\t\tDictionary<string, bool[][]> BoolLayers;\n";
             result += "\t\tpublic int d1Size;\n";
             result += "\t\tpublic int d2Size;\n";
-            result += "\t\tpublic Map(int d1Size, int d2Size)\n";
+            result += "\t\tpublic Map(int d1Size, int d2Size, Dictionary<string, int[][]> IntLayers, Dictionary<string, bool[][]> BoolLayers)\n";
             result += "\t\t{\n";
+            result += "\t\t\tthis.IntLayers = IntLayers;";
+			result += "\t\t\tthis.BoolLayers = BoolLayers;";
             result += "\t\t\tthis.d1Size = d1Size;\n";
             result += "\t\t\tthis.d2Size = d2Size;\n";
             result += "\t\t}\n";

@@ -6,7 +6,12 @@ namespace Antlr_language.ast.expression
     {
 
         private List<ExpressionNode> expressions;
-        
+
+        public ArrayExpressionNode(List<ExpressionNode> expressions)
+        {
+            this.expressions = expressions;
+        }
+
         //int[] i = {1,2,3};
 
         public override string CodeGen(int indentation)
@@ -16,7 +21,7 @@ namespace Antlr_language.ast.expression
             result += "{";
             foreach (var expression in expressions)
                 result += expression.CodeGen(indentation) + ",";
-            result.Substring(0, result.Length-1);
+            result = result.Substring(0, result.Length-1);
             result += "}";
 
             return result;
