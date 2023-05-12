@@ -2,17 +2,41 @@ using System;
 
 namespace MapGen
 {
-	class Map {
-		Dictionary<string, int[][]> IntLayers;
-		Dictionary<string, bool[][]> BoolLayers;
-		public int d1Size;
-		public int d2Size;
-		public Map(int d1Size, int d2Size, Dictionary<string, int[][]> IntLayers, Dictionary<string, bool[][]> BoolLayers)
-		{
-			this.IntLayers = IntLayers;			this.BoolLayers = BoolLayers;			this.d1Size = d1Size;
-			this.d2Size = d2Size;
-		}
-	}
+class Map {
+    Dictionary<string, MapLayer> layers;
+    public int d1Size;
+    public int d2Size;
+    public Map(int d1Size, int d2Size, params MapLayer[] list)
+    {
+        layers = new();
+        foreach (MapLayer layer in list) {
+            layers.Add(layer.Identifier, layer);
+            layer.SetInitialValues(d1Size, d2Size);
+        }
+        this.d1Size = d1Size;
+        this.d2Size = d2Size;
+    }
+}
+class MapLayer {
+    public object InitialValue {get; private set; }
+    public object[,]? LayerValue {get; private set; }
+    public string Identifier {get; private set; }
+    public void SetInitialValues (int size1, int size2) {
+        LayerValue = new object[size1,size2];
+        for (int i = 0; i < size1; i++)
+            for (int j = 0; j < size2; j++)
+                LayerValue[i,j] = InitialValue;
+                
+    }
+    public MapLayer (string type, string identifier, object? InitialValue) {
+        this.Identifier = identifier;
+        if (InitialValue != null) {
+            this.InitialValue = InitialValue;
+        } else {
+            this.InitialValue = type == "int" ? 0 : false;
+        }
+    }
+}
 
 	static class Stdlib {
 		public static void print (int val) {
@@ -21,22 +45,22 @@ namespace MapGen
 		public static void print (int[] val) {
 			System.Console.Write("[");			for (int i = 0; i < val.GetLength(0); i++) {				System.Console.Write(val[i] + ",");			}			System.Console.WriteLine("]");		}
 		public static void print (int[,] val) {
-			System.Console.WriteLine("[");			for (int i = 0; i < val.GetLength(0); i++) {			System.Console.Write("[");			for (int j = 0; j < val.GetLength(1); j++) {				System.Console.Write(val[j,i] + ",");			}			System.Console.WriteLine("]");			}			System.Console.WriteLine("]");		}
+			System.Console.WriteLine("[");			for (int i = 0; i < val.GetLength(1); i++) {			System.Console.Write("[");			for (int j = 0; j < val.GetLength(0); j++) {				System.Console.Write(val[j,i] + ",");			}			System.Console.WriteLine("]");			}			System.Console.WriteLine("]");		}
 		public static void print (bool val) {
 			System.Console.WriteLine(val);
 		}
 		public static void print (bool[] val) {
 			System.Console.Write("[");			for (int i = 0; i < val.GetLength(0); i++) {				System.Console.Write(val[i] + ",");			}			System.Console.WriteLine("]");		}
 		public static void print (bool[,] val) {
-			System.Console.WriteLine("[");			for (int i = 0; i < val.GetLength(0); i++) {			System.Console.Write("[");			for (int j = 0; j < val.GetLength(1); j++) {				System.Console.Write(val[j,i] + ",");			}			System.Console.WriteLine("]");			}			System.Console.WriteLine("]");		}
+			System.Console.WriteLine("[");			for (int i = 0; i < val.GetLength(1); i++) {			System.Console.Write("[");			for (int j = 0; j < val.GetLength(0); j++) {				System.Console.Write(val[j,i] + ",");			}			System.Console.WriteLine("]");			}			System.Console.WriteLine("]");		}
 	}
 
 	class Program
 	{
 		static void Main(string[] args)
 		{
-			int[,] regions = {{1,2,3},{1,5,8}};
-			int i = regions[0,0];
+			int[,] i = {{0,1},{2,3},{4,5}};
+			i = {{1},{2}};
 			Stdlib.print(i);
 		}
 	}

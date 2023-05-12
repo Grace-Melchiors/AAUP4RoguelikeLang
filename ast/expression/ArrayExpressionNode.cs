@@ -17,7 +17,7 @@ namespace Antlr_language.ast.expression
         public override string CodeGen(int indentation)
         {
             string result = "";
-            
+            throw new NotImplementedException("Need to write new {type} [size, size]");
             result += "{";
             foreach (var expression in expressions)
                 result += expression.CodeGen(indentation) + ",";

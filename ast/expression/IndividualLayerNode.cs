@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using Antlr_language.ast.structure;
 using Antlr_language.ast.statement;
 
@@ -18,7 +20,17 @@ namespace Antlr_language.ast.expression
 
         public override string CodeGen(int indentation)
         {
-            throw new NotImplementedException();
+            string indent = "";
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < indentation; i++)
+                indent +="\t";
+            result.Append("new MapLayer (");
+            result.Append(type.CodeGen(indentation) + ",");
+            result.Append(IDENTIFIER + ",");
+            result.Append(expression?.CodeGen(indentation) ?? "null");
+            result.Append("),");
+            
+            return result.ToString();
         }
         public Enums.Types GetNodeType () {
             return type.GetNodeType();
