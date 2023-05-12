@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System;
 using System.Globalization;
 using System.Collections.Generic;
@@ -140,33 +141,45 @@ public class SemanticAnalysis {
     public void VisitAssignment(AssignmentNode assignmentNode) {
         string identifier = assignmentNode.GetIdentifier();
         System.Console.WriteLine($"IDENTIFIER IS: {identifier}");
-        Enums.Types typeLHS;
-        Enums.Types typeRHS;
         if(RetrieveSymbol(identifier) != null) {
 
             System.Console.WriteLine($"IDENTIFIER WAS FOUND: {identifier}");
             if(assignmentNode.GetArrayIndices() != null) {
+                // If we have specification of array size, 
+                // we must expect the data type within the enclosing brackets to be of type int.
+                // We loop over the list of expressions defining the dimensions.
+                foreach(ExpressionNode expression in assignmentNode.GetArrayIndices()) {
+                    System.Console.WriteLine("Looping over expressions.");
+                    Enums.Types typeInt = Enums.Types.INTEGER;
+                    Enums.Types typeOfDimension = VisitExpression(expression);
+                    
+                    if(typeInt != typeOfDimension) {
+                        throw new TypeMismatchException(typeInt, typeOfDimension, "array");
+                    }
+
+                }
+
+
                 System.Console.WriteLine("Array indices was not null");
 
-            } else {
-                System.Console.WriteLine($"IN ELSE: {identifier}");
+            } 
+                
 
-                VariableDeclarationNode symbol = (VariableDeclarationNode) RetrieveSymbol(identifier);
-                typeLHS = symbol.GetDataType();
-                typeRHS = VisitExpression(assignmentNode.GetExpressionNode());
-                System.Console.WriteLine($"typeRHS: {typeRHS}");
+            VariableDeclarationNode symbol = (VariableDeclarationNode) RetrieveSymbol(identifier);
+            Enums.Types typeLHS = symbol.GetDataType();
+            Enums.Types typeRHS = VisitExpression(assignmentNode.GetExpressionNode());
+            System.Console.WriteLine($"typeRHS: {typeRHS}");
 
-                // Check for null maybe?
-                bool MatchingTypes = typeLHS == typeRHS;
-                
-                if(!MatchingTypes){
-                    throw new TypeMismatchException(identifier, typeLHS, typeRHS);
-                }
-                
-                
-                
-                
+            // Check for null maybe?
+            bool MatchingTypes = typeLHS == typeRHS;
+            
+            if(!MatchingTypes){
+                throw new TypeMismatchException(identifier, typeLHS, typeRHS);
             }
+                
+                
+                
+                
 
 
 
@@ -187,7 +200,7 @@ public class SemanticAnalysis {
         
         if(RetrieveSymbol(identifier) == null) {
             ExpressionNode expressionNode = variableDeclarationNode.GetExpressionNode();
-            if(expressionNode != null) {
+            if(expressionNode != null) { // If expression is present. Example: int i = 5 + 4;
                Enums.Types typeRHS = VisitExpression(expressionNode);
                
                bool MatchingTypes = typeLHS == typeRHS;
@@ -200,6 +213,8 @@ public class SemanticAnalysis {
 
                }
                
+            } else { // If no expression is present. Example: int i;
+                EnterSymbol(variableDeclarationNode.GetIdentifier(), variableDeclarationNode);
             }
         } else {
             throw new VariableAlreadyDefinedException(identifier);
