@@ -344,10 +344,10 @@ namespace Antlr_language.ast
             }
             return new FactorNode(null, null, null, new ArrayExpressionNode(expressions), null, null, null);
         }
-        //public override AbstractNode VisitMapExpression([NotNull] VestaParser.MapExpressionContext context)
-        //{
-            //return new FactorNode (null, null, null, null, new MapExpressionNode((ArrayDimensionsNode)Visit(context.arrayDimensions()), (MapLayerNode)Visit(context.mapLayer())), null, null);
-        //}
+        public override AbstractNode VisitMapExpression([NotNull] VestaParser.MapExpressionContext context)
+        {
+            return new FactorNode (null, null, null, null, new MapExpressionNode((ArrayDimensionsNode)Visit(context.arrayDimensions()), (MapLayerNode)Visit(context.mapLayer())), null, null);
+        }
         public override AbstractNode VisitArrayAccess([NotNull] VestaParser.ArrayAccessContext context)
         {
             return new FactorNode (null, null, null, null, null, new ArrayAccessNode((Factor2Node)Visit(context.factor2()), (ArrayDimensionsNode)Visit(context.arrayDimensions())), null);

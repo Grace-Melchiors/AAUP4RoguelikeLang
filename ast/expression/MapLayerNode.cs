@@ -21,12 +21,13 @@ namespace Antlr_language.ast.expression
                 indent +="\t";
             
             
-            
-            foreach (var layer in mapLayer) {
-                result.Append(layer.CodeGen(indentation));
-                result.Append(",");
+            if (mapLayer.Count > 0) {
+                foreach (var layer in mapLayer) {
+                    result.Append(layer.CodeGen(indentation));
+                    result.Append(",");
+                }
+                result.Length--;
             }
-            result.Length--;
             return result.ToString();
         }
 

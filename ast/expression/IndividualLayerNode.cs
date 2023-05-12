@@ -25,10 +25,10 @@ namespace Antlr_language.ast.expression
             for (int i = 0; i < indentation; i++)
                 indent +="\t";
             result.Append("new MapLayer (");
-            result.Append(type.CodeGen(indentation) + ",");
-            result.Append(IDENTIFIER + ",");
+            result.Append("\"" + type.CodeGen(indentation) + "\",");
+            result.Append("\"" + IDENTIFIER + "\",");
             result.Append(expression?.CodeGen(indentation) ?? "null");
-            result.Append("),");
+            result.Append(")");
             
             return result.ToString();
         }
