@@ -16,10 +16,20 @@ public class TypeMismatchException: Exception {
         this.typeRHS = typeRHS;
 
     }
+
+    public TypeMismatchException(Enums.Types typeLHS, Enums.Types typeRHS, string construct): base($"TypeMismatchException. Type {typeLHS} is expected for {construct}, but received type {typeRHS}.")
+    {
+        this.construct = construct;
+        this.typeLHS = typeLHS;
+        this.typeRHS = typeRHS;
+
+    }
     
     private string? identifier;
     private Enums.Types typeLHS;
     private Enums.Types typeRHS;
+
+    private string? construct;
 
     
 }

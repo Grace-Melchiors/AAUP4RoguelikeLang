@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System;
 using System.Globalization;
 using System.Collections.Generic;
@@ -129,20 +130,77 @@ public class SemanticAnalysis {
     }
 
     public void VisitStatement(StatementNode statementNode) {
-        if(statementNode.varDecl != null) {
-            VisitVariableDeclaration(statementNode.varDecl);
+        if(statementNode.GetVarDeclNode() != null) {
+            VisitVariableDeclaration(statementNode.GetVarDeclNode());
+        }
+        if(statementNode.GetAssignmentNode() != null) {
+            VisitAssignment(statementNode.GetAssignmentNode());
         }
     }
     
+    public void VisitAssignment(AssignmentNode assignmentNode) {
+        string identifier = assignmentNode.GetIdentifier();
+        System.Console.WriteLine($"IDENTIFIER IS: {identifier}");
+        if(RetrieveSymbol(identifier) != null) {
+
+            System.Console.WriteLine($"IDENTIFIER WAS FOUND: {identifier}");
+            if(assignmentNode.GetArrayIndices() != null) {
+                // If we have specification of array size, 
+                // we must expect the data type within the enclosing brackets to be of type int.
+                // We loop over the list of expressions defining the dimensions.
+                foreach(ExpressionNode expression in assignmentNode.GetArrayIndices()) {
+                    System.Console.WriteLine("Looping over expressions.");
+                    Enums.Types typeInt = Enums.Types.INTEGER;
+                    Enums.Types typeOfDimension = VisitExpression(expression);
+                    
+                    if(typeInt != typeOfDimension) {
+                        throw new TypeMismatchException(typeInt, typeOfDimension, "array");
+                    }
+
+                }
+
+
+                System.Console.WriteLine("Array indices was not null");
+
+            } 
+                
+
+            VariableDeclarationNode symbol = (VariableDeclarationNode) RetrieveSymbol(identifier);
+            Enums.Types typeLHS = symbol.GetDataType();
+            Enums.Types typeRHS = VisitExpression(assignmentNode.GetExpressionNode());
+            System.Console.WriteLine($"typeRHS: {typeRHS}");
+
+            // Check for null maybe?
+            bool MatchingTypes = typeLHS == typeRHS;
+            
+            if(!MatchingTypes){
+                throw new TypeMismatchException(identifier, typeLHS, typeRHS);
+            }
+                
+                
+                
+                
+
+
+
+
+
+        } else {
+            throw new UndefinedVariableException(identifier);
+
+        }
+        
+    }
 
     public void VisitVariableDeclaration(VariableDeclarationNode variableDeclarationNode) {
         string identifier = variableDeclarationNode.GetIdentifier();
         Enums.Types typeLHS = variableDeclarationNode.GetDataType();
+        IdentifierAndType.Add(identifier, typeLHS);
         //IdentifierAndType.Add(identifier, typeLHS);
         
         if(RetrieveSymbol(identifier) == null) {
             ExpressionNode expressionNode = variableDeclarationNode.GetExpressionNode();
-            if(expressionNode != null) {
+            if(expressionNode != null) { // If expression is present. Example: int i = 5 + 4;
                Enums.Types typeRHS = VisitExpression(expressionNode);
                
                bool MatchingTypes = typeLHS == typeRHS;
@@ -155,6 +213,8 @@ public class SemanticAnalysis {
 
                }
                
+            } else { // If no expression is present. Example: int i;
+                EnterSymbol(variableDeclarationNode.GetIdentifier(), variableDeclarationNode);
             }
         } else {
             throw new VariableAlreadyDefinedException(identifier);
@@ -207,7 +267,6 @@ public class SemanticAnalysis {
             else if(dataType1 != null) {
                 return (Enums.Types) dataType1;
             }
-            
 
         }
         else {
@@ -236,8 +295,8 @@ public class SemanticAnalysis {
         
         if(abstractNode is StatementNode) {
             StatementNode statementNode = (StatementNode) abstractNode;
-            if(statementNode.varDecl != null) {
-                type = statementNode.varDecl.GetDataType();
+            if(statementNode.GetVarDeclNode() != null) {
+                type = statementNode.GetVarDeclNode().GetDataType();
             }
         } else if(abstractNode is FunctionDeclarationNode) {
             throw new NotImplementedException("Not supported");
