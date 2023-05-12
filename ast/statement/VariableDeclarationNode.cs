@@ -20,6 +20,10 @@ namespace Antlr_language.ast.statement
             return Type.GetDataType();
         }
 
+        public TypeNode GetTypeNode() {
+            return Type;
+        }
+
         public ExpressionNode GetExpressionNode() {
             return expression;
         }
