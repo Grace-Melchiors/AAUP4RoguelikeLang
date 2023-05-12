@@ -20,16 +20,16 @@ chance: 'chance' '{' (expression ':' block )+ '}';
 
 block: '{' statement* '}';
 
-varDecl
-   : identifierType IDENTIFIER        #varDeclaration
-   | identifierType assignment        #varInitialization
-   | 'map' IDENTIFIER '=' arrayDimensions mapLayer #mapDeclaration
-   ;
-
 //varDecl
 //   : identifierType IDENTIFIER        #varDeclaration
-//   | allType assignment        #varInitialization
+//   | identifierType assignment        #varInitialization
+//   | 'map' IDENTIFIER '=' arrayDimensions mapLayer #mapDeclaration
 //   ;
+
+varDecl
+   : identifierType IDENTIFIER        #varDeclaration
+   | allType assignment        #varInitialization
+   ;
 
 functionDecl: allType IDENTIFIER '('(funcParams)?')' block;
 
@@ -46,15 +46,16 @@ expression
    | expression addOp expression          	 	#additionExpression
    | expression compareOp expression   	  	#compareExpression
    | expression boolOp expression 			#booleanExpression
-;
+   ;
 factor
    : '(' expression ')'                             #parenthesizedExpression
    | constant                                       #constantExpression
    | factor2                                        #objectExpression
    | '{' (expression(','expression)*) '}'				#arrayExpression
-   | factor2 arrayDimensions					      #arrayAccess
+   | arrayDimensions mapLayer                      #mapExpression
+   | factor2 arrayDimensions					         #arrayAccess
    | factor2 '.' IDENTIFIER arrayDimensions			#mapAccess
-;
+   ;
 factor2
 	: IDENTIFIER                        #identifierAccess
   	| functionCall 						#functionAccess

@@ -150,7 +150,7 @@ namespace Antlr_language.ast
         public override AbstractNode VisitVarInitialization([NotNull] VestaParser.VarInitializationContext context)
         {
             VariableDeclarationNode result;
-            var typeContext = context.identifierType();
+            var typeContext = context.allType();
             TypeNode type = (TypeNode)Visit(typeContext);
             var assignmentContext = context.assignment();
             result = new VariableDeclarationNode(type, assignmentContext.IDENTIFIER().GetText(), (ExpressionNode)Visit(assignmentContext.expression()));
