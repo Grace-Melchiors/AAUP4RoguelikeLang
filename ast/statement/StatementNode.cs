@@ -7,8 +7,8 @@ namespace Antlr_language.ast.statement
 {
     public class StatementNode : AbstractNode
     {
-        public VariableDeclarationNode? varDecl;
-        public AssignmentNode? assign;
+        private VariableDeclarationNode? varDecl;
+        private AssignmentNode? assign;
         public ExpressionNode? expression;
         public ReturnStatementNode? returnStatement;
         public BlockNode? block;
@@ -18,6 +18,14 @@ namespace Antlr_language.ast.statement
 
         //Not in Grammar
         private StatementsNode? statements;
+
+        public VariableDeclarationNode? GetVarDeclNode() {
+            return varDecl;
+        }
+        
+        public AssignmentNode? GetAssignmentNode() {
+            return assign;
+        }
 
         public StatementNode(VariableDeclarationNode? varDecl, AssignmentNode? assign, ExpressionNode? expression, ReturnStatementNode? returnStatement, BlockNode? block, IfNode? ifNode, WhileNode? whileNode, ChanceNode? chance, StatementsNode? statements)
         {

@@ -17,6 +17,18 @@ namespace Antlr_language.ast.statement
             this.expression = expression;
         }
 
+        public string GetIdentifier() {
+            return IDENTIFIER;
+        }
+        
+        public List<ExpressionNode>? GetArrayIndices() {
+            return ArrayIndicies;
+        }
+        
+        public ExpressionNode? GetExpressionNode() {
+            return expression;
+        }
+
         public string CodeGen(int indentation)
         {
             string indent = "";

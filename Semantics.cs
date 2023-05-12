@@ -129,15 +129,60 @@ public class SemanticAnalysis {
     }
 
     public void VisitStatement(StatementNode statementNode) {
-        if(statementNode.varDecl != null) {
-            VisitVariableDeclaration(statementNode.varDecl);
+        if(statementNode.GetVarDeclNode() != null) {
+            VisitVariableDeclaration(statementNode.GetVarDeclNode());
+        }
+        if(statementNode.GetAssignmentNode() != null) {
+            VisitAssignment(statementNode.GetAssignmentNode());
         }
     }
     
+    public void VisitAssignment(AssignmentNode assignmentNode) {
+        string identifier = assignmentNode.GetIdentifier();
+        System.Console.WriteLine($"IDENTIFIER IS: {identifier}");
+        Enums.Types typeLHS;
+        Enums.Types typeRHS;
+        if(RetrieveSymbol(identifier) != null) {
+
+            System.Console.WriteLine($"IDENTIFIER WAS FOUND: {identifier}");
+            if(assignmentNode.GetArrayIndices() != null) {
+                System.Console.WriteLine("Array indices was not null");
+
+            } else {
+                System.Console.WriteLine($"IN ELSE: {identifier}");
+
+                VariableDeclarationNode symbol = (VariableDeclarationNode) RetrieveSymbol(identifier);
+                typeLHS = symbol.GetDataType();
+                typeRHS = VisitExpression(assignmentNode.GetExpressionNode());
+                System.Console.WriteLine($"typeRHS: {typeRHS}");
+
+                // Check for null maybe?
+                bool MatchingTypes = typeLHS == typeRHS;
+                
+                if(!MatchingTypes){
+                    throw new TypeMismatchException(identifier, typeLHS, typeRHS);
+                }
+                
+                
+                
+                
+            }
+
+
+
+
+
+        } else {
+            throw new UndefinedVariableException(identifier);
+
+        }
+        
+    }
 
     public void VisitVariableDeclaration(VariableDeclarationNode variableDeclarationNode) {
         string identifier = variableDeclarationNode.GetIdentifier();
         Enums.Types typeLHS = variableDeclarationNode.GetDataType();
+        IdentifierAndType.Add(identifier, typeLHS);
         //IdentifierAndType.Add(identifier, typeLHS);
         
         if(RetrieveSymbol(identifier) == null) {
@@ -207,7 +252,6 @@ public class SemanticAnalysis {
             else if(dataType1 != null) {
                 return (Enums.Types) dataType1;
             }
-            
 
         }
         else {
@@ -236,8 +280,8 @@ public class SemanticAnalysis {
         
         if(abstractNode is StatementNode) {
             StatementNode statementNode = (StatementNode) abstractNode;
-            if(statementNode.varDecl != null) {
-                type = statementNode.varDecl.GetDataType();
+            if(statementNode.GetVarDeclNode() != null) {
+                type = statementNode.GetVarDeclNode().GetDataType();
             }
         } else if(abstractNode is FunctionDeclarationNode) {
             throw new NotImplementedException("Not supported");
