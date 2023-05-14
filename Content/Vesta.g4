@@ -6,7 +6,7 @@ library: 'using' IDENTIFIER ';';
 
 line: statement | functionDecl;
 
-statement : (varDecl | assignment | expression | returnStmt) ';' | block | ifStatement | whileStatement | forStatement | chance ;
+statement : (varDecl | assignment | expression) ';' | block | ifStatement | whileStatement | forStatement | chance ;
 
 ifStatement: 'if' '(' expression')' block ('else' block)?;
 

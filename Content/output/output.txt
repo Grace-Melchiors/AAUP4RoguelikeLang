@@ -37,7 +37,6 @@ namespace MapGen
 	        }
 	    }
 	}
-
 	static class Stdlib {
 		public static void print (int val) {
 			System.Console.WriteLine(val);
@@ -57,11 +56,107 @@ namespace MapGen
 
 	class Program
 	{
+		static Random rng = new Random();
+		public static void seed (int newSeed) {
+			rng = new Random(newSeed);
+		}
 		static void Main(string[] args)
 		{
-			Map myMap = new Map(2,2,new MapLayer ("int","number",4));
-			Map myOtherMap = new Map(3,3,new MapLayer ("int","region",1));
-			Stdlib.print((int)myMap.layers["number"].LayerValue[0,0]+(int)myOtherMap.layers["region"].LayerValue[0,0]);
+			Random rng = new Random();
+			int w = 64;
+			int h = 64;
+			bool TRUE = true;
+			int[] array = 5;
+if (false||TRUE)
+			{
+				w = w+1;
+			}
+			else 
+			{
+								int i = 0;
+				while (i<5)
+
+				{
+					Stdlib.print(i);
+					array[i] = i*2;
+					i = i+1;
+				}
+
+
+			}
+
+
+			{
+				Stdlib.print(myFunc(w,h,true));
+			}
+
+while (h>10)
+
+			{
+				{
+					int _sum = 0;
+					_sum += 32;
+					_sum += 55;
+					int _chance = rng.Next(0,_sum);
+					if (_chance <32)
+					{
+						h = h/4;
+					}
+					else {_chance -= 32;}
+					if (_chance <55)
+					{
+						h = h*2;
+					}
+					else {_chance -= 55;}
+				}
+
+				Stdlib.print(h);
+			}
+
+			{
+				int _sum = 0;
+				_sum += 3;
+				_sum += 6;
+				int _chance = rng.Next(0,_sum);
+				if (_chance <3)
+				{
+					Stdlib.print(3);
+				}
+				else {_chance -= 3;}
+				if (_chance <6)
+				{
+					Stdlib.print(6);
+				}
+				else {_chance -= 6;}
+			}
+
+						int i = 0;
+			while (i<5)
+
+			{
+				Stdlib.print(array[i]);
+				i = i+1;
+			}
+
+
+
+			int myFunc (int a,int b,bool test)
+
+			{
+				int result = 0;
+if (test&&TRUE)
+				{
+					result = 					myFunc(a+1,b+1,false);
+				}
+				else 
+				{
+					result = a*a+b*b;
+				}
+
+				return result;
+			}
+			
+
 		}
 	}
 }

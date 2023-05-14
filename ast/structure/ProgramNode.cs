@@ -70,14 +70,20 @@ namespace Antlr_language.ast.structure
 
 
 
-            result.AppendLine("");
+            
+
             foreach (LibraryNode library in libraryNodes) {
                 result.AppendLine(library.CodeGen(indentation - 1));
             }
             result.AppendLine("\tclass Program");
             result.AppendLine("\t{");
+            result.AppendLine("\t\tstatic Random rng = new Random();");
+            result.AppendLine("\t\tpublic static void seed (int newSeed) {");
+            result.AppendLine("\t\t\trng = new Random(newSeed);");
+            result.AppendLine("\t\t}");
             result.AppendLine("\t\tstatic void Main(string[] args)");
             result.AppendLine("\t\t{");
+            result.AppendLine("\t\t\tRandom rng = new Random();");
             foreach (LineNode line in lineNodes) {
                 //for (int i = 0; i < indentation; i++)
                     //result +="\t";

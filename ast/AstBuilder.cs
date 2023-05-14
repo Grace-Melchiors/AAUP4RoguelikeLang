@@ -70,7 +70,7 @@ namespace Antlr_language.ast
             var VariableDecl = context.varDecl();
             var assignment = context.assignment();
             var expression = context.expression();
-            var returnStmt = context.returnStmt();
+            //var returnStmt = context.returnStmt();
             var block = context.block();
             var ifStatement = context.ifStatement();
             var whileStatement = context.whileStatement();
@@ -84,8 +84,8 @@ namespace Antlr_language.ast
                 result = new StatementNode(null, (AssignmentNode)Visit(assignment), null, null, null, null, null, null, null);
             } else if (expression != null) {
                 result = new StatementNode(null, null, (ExpressionNode)Visit(expression), null, null, null, null, null, null);
-            } else if (returnStmt != null) {
-                result = new StatementNode(null, null, null, (ReturnStatementNode)Visit(returnStmt), null, null, null, null, null);
+            //} else if (returnStmt != null) {
+                //result = new StatementNode(null, null, null, (ReturnStatementNode)Visit(returnStmt), null, null, null, null, null);
             } else if (block != null) {
                 result = new StatementNode(null, null, null, null, (BlockNode)Visit(block), null, null, null, null);
             } else if (ifStatement != null) {
@@ -104,19 +104,7 @@ namespace Antlr_language.ast
 
         public override AbstractNode VisitIfStatement([NotNull] VestaParser.IfStatementContext context)
         {
-            var elseIfContext = context.elseIfBlock();
-            return new IfNode((ExpressionNode)Visit(context.expression()), (BlockNode)Visit(context.block()), elseIfContext != null ? (ElseIfNode)Visit(elseIfContext) : null);
-        }
-        public override AbstractNode VisitElseIfBlock([NotNull] VestaParser.ElseIfBlockContext context)
-        {
-            if (context.block() != null) {
-                return new ElseIfNode(null, (BlockNode)Visit(context.block()));
-            } else if (context.ifStatement() != null) {
-                return new ElseIfNode((IfNode)Visit(context.ifStatement()), null);
-            } else {
-                throw new NotImplementedException();
-            }
-            
+            return new IfNode((ExpressionNode)Visit(context.expression()), (BlockNode)Visit(context.block().ToArray()[0]), context.block().ToArray().Length == 2 ? (BlockNode)Visit(context.block().ToArray()[1]) : null);
         }
         public override AbstractNode VisitWhileStatement([NotNull] VestaParser.WhileStatementContext context)
         {
@@ -132,6 +120,15 @@ namespace Antlr_language.ast
             whileNode = new((ExpressionNode)Visit(context.expression()), block);
             result.AddStatement(new StatementNode(null, null, null, null, null, null, whileNode, null, null));
             return result;
+        }
+
+        public override AbstractNode VisitChance([NotNull] VestaParser.ChanceContext context)
+        {
+            
+            List<ExpressionNode> expressions = ContextToNode<ExpressionNode>(context.expression().ToArray());
+            List<BlockNode> blocks = ContextToNode<BlockNode>(context.block().ToArray());
+            return new ChanceNode(expressions, blocks);
+
         }
         
         public override AbstractNode VisitVarDecl([NotNull] VestaParser.VarDeclContext context)
@@ -187,7 +184,7 @@ namespace Antlr_language.ast
                     parameters.Add((FunctionParamNode)Visit(parameter));
                 }
             }
-            result = new FunctionDeclarationNode((TypeNode)Visit(context.allType()), context.IDENTIFIER().GetText(), parameters, (BlockNode)Visit(context.block()));
+            result = new FunctionDeclarationNode((TypeNode)Visit(context.parameterType()), context.IDENTIFIER().GetText(), parameters, (BlockNode)Visit(context.funcBody()));
             
 
             return result;
@@ -196,8 +193,42 @@ namespace Antlr_language.ast
         public override AbstractNode VisitParameter([NotNull] VestaParser.ParameterContext context)
         {
             FunctionParamNode result;
-            result = new FunctionParamNode((TypeNode)Visit(context.allType()), context.IDENTIFIER().GetText());
+            result = new FunctionParamNode((TypeNode)Visit(context.parameterType()), context.IDENTIFIER().GetText());
             return result;
+        }
+
+        public override AbstractNode VisitParameterType([NotNull] VestaParser.ParameterTypeContext context)
+        {
+            TypeNode result;
+            Enums.Types type;
+            if (context.COMPLEXTYPE() != null) {
+                if (context.COMPLEXTYPE().GetText() == "map") {
+                    type = Enums.Types.MAP;
+                } else {
+                    throw new NotImplementedException();
+                }
+            } else if (context.TYPE() != null) {
+                if (context.TYPE().GetText() == "int") {
+                    type = Enums.Types.INTEGER;
+                } else if (context.TYPE().GetText() == "bool") {
+                    type = Enums.Types.BOOL;
+                } else {
+                    throw new NotImplementedException();
+                }
+            } else {
+                throw new NotImplementedException();
+            }
+            result = new TypeNode(type, null);
+            System.Console.WriteLine("We need to create a new node and differentiate between eg. TYPE[,] and TYPE[2,3]");
+
+            return result;
+        }
+
+        public override AbstractNode VisitFuncBody([NotNull] VestaParser.FuncBodyContext context)
+        {
+            List<StatementNode> statements = ContextToNode<StatementNode>(context.statement().ToArray());
+            statements.Add(new StatementNode(null, null, null, (ReturnStatementNode)Visit(context.returnStmt()), null, null, null, null, null));
+            return new BlockNode(statements);
         }
 
         public override AbstractNode VisitReturnStmt([NotNull] VestaParser.ReturnStmtContext context)
