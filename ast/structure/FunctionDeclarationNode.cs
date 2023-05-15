@@ -41,11 +41,11 @@ namespace Antlr_language.ast.structure
                 }
                 result = result.Substring(0, result.Length-1);
             }
-            result += ") {\n";
+            result += ")\n";
             if (body == null)
                 throw new NotImplementedException();
             result += body.CodeGen(indentation);
-            result += indent + "}\n";
+            result += indent + "\n";
             return result;
         }
 

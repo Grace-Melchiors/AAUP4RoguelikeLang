@@ -2,42 +2,41 @@ using System;
 
 namespace MapGen
 {
-class Map {
-    Dictionary<string, MapLayer> layers;
-    public int d1Size;
-    public int d2Size;
-    public Map(int d1Size, int d2Size, params MapLayer[] list)
-    {
-        layers = new();
-        foreach (MapLayer layer in list) {
-            layers.Add(layer.Identifier, layer);
-            layer.SetInitialValues(d1Size, d2Size);
-        }
-        this.d1Size = d1Size;
-        this.d2Size = d2Size;
-    }
-}
-class MapLayer {
-    public object InitialValue {get; private set; }
-    public object[,]? LayerValue {get; private set; }
-    public string Identifier {get; private set; }
-    public void SetInitialValues (int size1, int size2) {
-        LayerValue = new object[size1,size2];
-        for (int i = 0; i < size1; i++)
-            for (int j = 0; j < size2; j++)
-                LayerValue[i,j] = InitialValue;
-                
-    }
-    public MapLayer (string type, string identifier, object? InitialValue) {
-        this.Identifier = identifier;
-        if (InitialValue != null) {
-            this.InitialValue = InitialValue;
-        } else {
-            this.InitialValue = type == "int" ? 0 : false;
-        }
-    }
-}
-
+	class Map {
+	    public Dictionary<string, MapLayer> layers {get; private set;}
+	    public int d1Size;
+	    public int d2Size;
+	    public Map(int d1Size, int d2Size, params MapLayer[] list)
+	    {
+	        layers = new();
+	        foreach (MapLayer layer in list) {
+	            layers.Add(layer.Identifier, layer);
+	            layer.SetInitialValues(d1Size, d2Size);
+	        }
+	        this.d1Size = d1Size;
+	        this.d2Size = d2Size;
+	    }
+	}
+	class MapLayer {
+	    public object InitialValue {get; private set; }
+	    public object[,]? LayerValue {get; private set; }
+	    public string Identifier {get; private set; }
+	    public void SetInitialValues (int size1, int size2) {
+	        LayerValue = new object[size1,size2];
+	        for (int i = 0; i < size1; i++)
+	            for (int j = 0; j < size2; j++)
+	                LayerValue[i,j] = InitialValue;
+	                
+	    }
+	    public MapLayer (string type, string identifier, object? InitialValue) {
+	        this.Identifier = identifier;
+	        if (InitialValue != null) {
+	            this.InitialValue = InitialValue;
+	        } else {
+	            this.InitialValue = type == "int" ? 0 : false;
+	        }
+	    }
+	}
 	static class Stdlib {
 		public static void print (int val) {
 			System.Console.WriteLine(val);
@@ -57,11 +56,107 @@ class MapLayer {
 
 	class Program
 	{
+		static Random rng = new Random();
+		public static void seed (int newSeed) {
+			rng = new Random(newSeed);
+		}
 		static void Main(string[] args)
 		{
-			int[,] i = {{0,1},{2,3},{4,5}};
-			i = {{1},{2}};
-			Stdlib.print(i);
+			Random rng = new Random();
+			int w = 64;
+			int h = 64;
+			bool TRUE = true;
+			int[] array = 5;
+if (false||TRUE)
+			{
+				w = w+1;
+			}
+			else 
+			{
+								int i = 0;
+				while (i<5)
+
+				{
+					Stdlib.print(i);
+					array[i] = i*2;
+					i = i+1;
+				}
+
+
+			}
+
+
+			{
+				Stdlib.print(myFunc(w,h,true));
+			}
+
+while (h>10)
+
+			{
+				{
+					int _sum = 0;
+					_sum += 32;
+					_sum += 55;
+					int _chance = rng.Next(0,_sum);
+					if (_chance <32)
+					{
+						h = h/4;
+					}
+					else {_chance -= 32;}
+					if (_chance <55)
+					{
+						h = h*2;
+					}
+					else {_chance -= 55;}
+				}
+
+				Stdlib.print(h);
+			}
+
+			{
+				int _sum = 0;
+				_sum += 3;
+				_sum += 6;
+				int _chance = rng.Next(0,_sum);
+				if (_chance <3)
+				{
+					Stdlib.print(3);
+				}
+				else {_chance -= 3;}
+				if (_chance <6)
+				{
+					Stdlib.print(6);
+				}
+				else {_chance -= 6;}
+			}
+
+						int i = 0;
+			while (i<5)
+
+			{
+				Stdlib.print(array[i]);
+				i = i+1;
+			}
+
+
+
+			int myFunc (int a,int b,bool test)
+
+			{
+				int result = 0;
+if (test&&TRUE)
+				{
+					result = 					myFunc(a+1,b+1,false);
+				}
+				else 
+				{
+					result = a*a+b*b;
+				}
+
+				return result;
+			}
+			
+
 		}
 	}
 }

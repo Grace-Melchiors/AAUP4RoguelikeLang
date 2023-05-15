@@ -25,7 +25,7 @@ namespace Antlr_language.ast.expression
 
             result.Append("new Map(" + arrayDimensions.CodeGen(indentation).Replace("[", "").Replace("]","") + ",");
             result.Append(mapLayer.CodeGen(indentation));
-            result.AppendLine(");");
+            result.Append(")");
 
             return result.ToString();
         }

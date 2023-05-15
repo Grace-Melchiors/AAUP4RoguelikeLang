@@ -32,8 +32,8 @@ CSB.AppendLine(Code);
 
 CSB.OutputResult();
 
-SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
-semanticAnalysis.VisitProgram((ProgramNode) AST);
+//SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
+//semanticAnalysis.VisitProgram((ProgramNode) AST);
 
 Console.WriteLine("Press enter to continue...");
 Console.Read();

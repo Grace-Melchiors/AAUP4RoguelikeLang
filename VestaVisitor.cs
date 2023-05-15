@@ -1,15 +1,14 @@
-/*
-using System.Data;
 using System.Collections;
+using System.Data;
 using System.Diagnostics.Metrics;
 using System.Formats.Asn1;
 using System.Linq.Expressions;
+using System.Xml.Schema;
 using Antlr_language.Content;
 using Antlr4.Runtime;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace Antlr_language;
-
 public class ArrDesc
 {
     public object? typeBase;
@@ -63,20 +62,63 @@ public class Map
     }
 }
 
+public class MLCGRandom
+{
+
+    //private int a= 1664525; //Knuth
+    private  int a = 69069; //Marsagli
+    private int c = 1;
+    private long m = (long)Math.Pow(2,32);
+    private long seed = 0;
+
+    public MLCGRandom()
+    {
+        seed = (long)(DateTime.Now.Ticks % m);
+    }
+    public MLCGRandom(long seed)
+    {
+        this.seed = seed;
+    }
+
+    long getNext()
+    {
+        seed = (a * seed + 1) % m;
+        return seed;
+    }
+
+    public int getRand(int min, int max)
+    {
+        if (max < min) throw new Exception($"Cannot generate random value where max is more than min");
+        return (int)(min + getNext() % (max+1 - min));
+    }
+}
+
 public class VestaVisitor : VestaBaseVisitor<object?>
 {
     private Dictionary<string, object> Variables { get; } = new();
     private Store store = new Store();
 
 
+    private MLCGRandom random = new MLCGRandom();
 
     public VestaVisitor()
     {
         store.variables["Write"] = new Func<object?[], object?>(Write);
-        store.variables["WriteArr"] = new Func<object?[], object?>(WriteArray);
-        
         store.variables["write"] = new Func<object?[], object?>(Write);
+        
+        store.variables["WriteArr"] = new Func<object?[], object?>(WriteArray);
         store.variables["writeArr"] = new Func<object?[], object?>(WriteArray);
+
+        store.variables["SetSeed"] = new Func<object?[], object?>(SetSeed);
+        store.variables["setSeed"] = new Func<object?[], object?>(SetSeed);
+    }
+
+    private object? SetSeed(object[] args)
+    {
+        if (args.Length != 1) throw new Exception($"This function only takes 1 parameter");
+        if (args.GetValue(0) is not int n) throw new Exception($"Seed must be given with int not {args.GetValue(0).GetType()}");
+        random = new MLCGRandom(n);
+        return null;
     }
     private object? WriteArray(Array arr)
     {
@@ -104,16 +146,45 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         {
             Console.WriteLine((arg));
         }
-        
+
         return null;
     }
+    T[] parseArray<T> (Array arrayToParse)
+    {
+        T[] returnArr = new T[arrayToParse.Length];
+        for (int i = 0; i < arrayToParse.Length; i++)
+        {
+            if (arrayToParse.GetValue(i) is T t)
+            {
+                returnArr[i] = t;
+            }
+            else
+            { throw new Exception($"Array contained element not of type {typeof(T)}");}
+        }
+        return returnArr;
+    }
+    object getElementFromIndex(int[] dimensions, object array)
+    {
+        for(int i=0; i<dimensions.Length; i++)
+        {
 
-    // functionDclr: identifierType IDENTIFIER '('(funcParams)?')' funcBody;
-    public override object? VisitFunctionDclr(VestaParser.FunctionDclrContext context)
+            if (array is Array arr)
+            {
+                array = arr.GetValue(dimensions[i]);
+            }
+            else
+            {
+                throw new Exception($"Too many indexes.");
+            }
+        }
+        return array;
+    }
+    /* functionDclr: identifierType IDENTIFIER '('(funcParams)?')' funcBody; */
+    public override object? VisitFunctionDecl(VestaParser.FunctionDeclContext context)
     {
         var funcName = context.IDENTIFIER().GetText();
 
-        object returnType = Visit(context.identifierType());
+        object returnType = Visit(context.parameterType());
         
         //Gather arr of funcParams
         var param = Visit(context.funcParams());
@@ -183,23 +254,9 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         
         return null;
     }
-
-    T[] parseArray<T> (Array arrayToParse)
-    {
-        T[] returnArr = new T[arrayToParse.Length];
-        for (int i = 0; i < arrayToParse.Length; i++)
-        {
-            if (arrayToParse.GetValue(i) is T t)
-            {
-                returnArr[i] = t;
-            }
-            else
-            { throw new Exception($"Array contained element not of type {typeof(T)}");}
-        }
-        return returnArr;
-    }
     
-    // funcParams: parameter (',' parameter)* ; 
+
+    /* funcParams: parameter (',' parameter)* ; */
     public override object? VisitFuncParams(VestaParser.FuncParamsContext context)
     {
         var paramContextArr = context.parameter().ToArray();
@@ -214,16 +271,51 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return paramsArr;
     }
-    // parameter: identifierType IDENTIFIER;
+
+    public override object? VisitParameterArr(VestaParser.ParameterArrContext context)
+    {
+        return new object[1 + context.paramaterArrayDenoter().ToArray().Length];
+    }
+
     public override object? VisitParameter(VestaParser.ParameterContext context)
     {
-        return new ParamDesc(Visit(context.identifierType()), context.IDENTIFIER().GetText());
+        var parameterName = context.IDENTIFIER().GetText();
+        var resultType = Visit(context.parameterType());
+        return new ParamDesc(resultType, parameterName);
     }
-    // funcBody: '{' line*  returnStmt '}';
+
+    /* parameter: (TYPE | COMPLEXTYPE) ('[' (paramaterArrayDenoter)* ']')? IDENTIFIER;
+    paramaterArrayDenoter: ','; */
+    public override object? VisitParameterType(VestaParser.ParameterTypeContext context)
+    {
+        object? result;
+        string baseType = "";
+        if (context.TYPE() is not null) baseType = context.TYPE().GetText();
+        else baseType = context.COMPLEXTYPE().GetText();
+            
+            
+        if (baseType == "int") { result= 0; }
+        else if (baseType == "bool") { result= false; }
+        else if (baseType == "map") { result = new Map(0, 0);}
+        else{ throw new Exception($"type {baseType} undefined"); }
+
+        
+        //Test if arrayDimensions doesn't Exist
+        
+        
+        if (context.parameterArr() is null)
+        {
+            return result;
+        }
+        
+        //if array, need to return arrDesc
+        return new ArrDesc(result, (Array)Visit(context.parameterArr()));
+    }
+    /* funcBody: '{' line*  returnStmt '}'; */
     public override object? VisitFuncBody(VestaParser.FuncBodyContext context)
     {
         //Visit all lines
-        var lineArr = context.line().ToArray();
+        var lineArr = context.statement().ToArray();
         for (int i = 0; i < lineArr.Length; i++)
         {
             Visit(lineArr[i]);
@@ -232,16 +324,30 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return Visit(context.returnStmt());
     }
 
-    // returnStmt:  'return' expression';';
+    /* returnStmt:  'return' expression';'; */
     public override object? VisitReturnStmt(VestaParser.ReturnStmtContext context)
     {
         return Visit(context.expression());
     }
 
+        
+    /* functionCall: (IDENTIFIER'.')? IDENTIFIER '(' (expression (',' expression)*)? ')'; */
+
     public override object? VisitFunctionCall(VestaParser.FunctionCallContext context)
     {
-        var name = context.IDENTIFIER().GetText();
+        var identifierArr = context.IDENTIFIER().ToArray();
+        string name = "";
+        if (identifierArr.Length == 2)  //If library call
+        {
+            name = identifierArr[1].GetText();
+        }
+        else
+        {
+            name = identifierArr[0].GetText();
+        }
+        
         var args = context.expression().Select(e => Visit(e)).ToArray();
+        
 
         var relevantStore = getStoreForVar(name);
         
@@ -259,17 +365,17 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
     public override object? VisitBlock(VestaParser.BlockContext context)
     {
-        // New scope
+        /* New scope */
         Store tempStore = new Store();
         tempStore.previous = store;
         store = tempStore;
-        // Visit
-        var arr = context.line().ToArray();
+        /* Visit */
+        var arr = context.statement().ToArray();
         for (int i = 0; i < arr.Length; i++)
         {
             Visit(arr[i]);
         }
-        // Return to previous scope
+        /* Return to previous scope */
         store = store.previous;
         return null;
     }
@@ -327,26 +433,61 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return count;
     }
-    
-    
-    // identifierType IDENTIFIER '=' expression;
-    // identifierType: TYPE ('[' expression ']')*;
-    // TYPE: 'int' | 'bool' | 'map' ;
-     
-    public override object? VisitDeclaration(VestaParser.DeclarationContext context)
+
+    /* identifierType IDENTIFIER        #varDeclaration */
+    public override object? VisitVarDeclaration(VestaParser.VarDeclarationContext context)
     {
         var varName = context.IDENTIFIER().GetText();
-
-        var value = Visit(context.expression());
-       
+        
         if(store.variables.ContainsKey(varName))  //No overriding current variables
         {
             throw new Exception($"The variable {varName} is already defined");
         }
 
         var type = Visit(context.identifierType());
-        
-        
+
+        if (type is ArrDesc arrDesc) //If is an array
+        {
+
+            store.variables[varName] = multiDimensionArrGen(arrDesc.dimensions, arrDesc.typeBase, arrDesc.dimensions.Length);
+  
+        }
+        else if (type is int n)  //If type is int
+        {
+            store.variables[varName] = n;
+        }
+        else if (type is bool b) //If type is bool
+        {
+            store.variables[varName] = b;
+        }
+        else
+        {
+            throw new Exception($"Invalid type");
+        }
+
+        return null;
+    }
+    
+    
+    
+    /* identifierType IDENTIFIER '=' expression;
+     identifierType: TYPE ('[' expression ']')*;
+     TYPE: 'int' | 'bool' | 'map' ;
+     */
+    public override object? VisitVarInitialization(VestaParser.VarInitializationContext context)
+    {
+        var varName = context.assignment().IDENTIFIER().GetText();
+
+        var value = Visit(context.assignment().expression());
+
+        if (store.variables.ContainsKey(varName)) //No overriding current variables
+        {
+            throw new Exception($"The variable {varName} is already defined");
+        }
+
+        var type = Visit(context.allType());
+
+
         if (type is ArrDesc arrDesc) //If is an array
         {
             if (arrDesc.typeBase.GetType() == getBaseType(value))
@@ -360,7 +501,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             checkType<Map>(value);
             store.variables[varName] = value;
         }
-        else if (type is int n)  //If type is int
+        else if (type is int n) //If type is int
         {
             checkType<int>(value);
             store.variables[varName] = value;
@@ -377,35 +518,50 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         return null;
     }
-    // | expression'.'IDENTIFIER               #mapGetLayerExpression
-    public override object? VisitMapGetLayerExpression(VestaParser.MapGetLayerExpressionContext context)
+
+    /* factor2 '.' IDENTIFIER arrayDimensions			#mapAccess */
+    public override object? VisitMapAccess(VestaParser.MapAccessContext context)
     {
-        object myMap = Visit(context.expression());
+        object myMap = Visit(context.factor2());
         var layerName = context.IDENTIFIER().GetText();
 
         if (myMap is Map map)
         {
             if (map.layers.ContainsKey(layerName))
             {
-                return map.layers[layerName];
+                if (context.arrayDimensions() is null)
+                {   //If no layer indexer thing
+                    return map.layers[layerName];
+                }
+                else
+                {
+                    return getElementFromIndex(parseArray<int>((Array)Visit(context.arrayDimensions())),map.layers[layerName]);
+                }
             }
 
             throw new Exception($"Unknown layer name {layerName}");
         }
 
         throw new Exception($"Can only get layers of maps, not type {myMap.GetType()}");
+        
     }
 
-    // mapDeclaration: '[' expression ','expression ']' {' mapLayer (';'mapLayer)*  '}';
-    //   mapLayer: identifierType IDENTIFIER ('=' expression)?; 
+
+    /* arrayDimensions mapLayer 				#mapExpression  '}';
+       mapLayer: '{' identifierType IDENTIFIER ('=' expression)?
+       (';' identifierType IDENTIFIER ('=' expression)?)* '}' ;
+ */
 
     public override object? VisitMapExpression(VestaParser.MapExpressionContext context)
     {
-        if (Visit(context.expression(0)) is not int n1)
+        var expressionContextArr = context.arrayDimensions().expression().ToArray();
+        if (expressionContextArr.Length != 2) throw new Exception($"Must have 2 indexes");
+        
+        if (Visit(expressionContextArr[0]) is not int n1)
         {
             throw new Exception($"Map dimensions must be described with integer");
         }
-        if (Visit(context.expression(1)) is not int n2)
+        if (Visit(expressionContextArr[1]) is not int n2)
         {
             throw new Exception($"Map dimensions must be described with integer");
         }
@@ -413,10 +569,10 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         int[] dimensionsArr = {n1, n2};
 
         //Need to parse each array element.
-        var layerContextArr = context.mapLayer().ToArray();
-        for (int i = 0; i < layerContextArr.Length; i++)
+        var layerArr = (Array)Visit(context.mapLayer());
+        for (int i = 0; i < layerArr.Length; i++)
         {
-            if (Visit(layerContextArr[i]) is not LayerDesc layerDesc)
+            if (layerArr.GetValue(i) is not LayerDesc layerDesc)
             { throw new Exception($"Layer not parsed correctly"); }
 
             resultMap.layers[layerDesc.identifier] = multiDimensionArrGen(dimensionsArr, layerDesc.value, 2);
@@ -430,10 +586,18 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             o = arr.GetValue(0);
         }
 
-        return 0.GetType();
+        return o.GetType();
     }
-    //Returns layer identifier, and value to assign layer to
+
     public override object? VisitMapLayer(VestaParser.MapLayerContext context)
+    {
+        return context.individualLayer().Select(e => Visit(e)).ToArray();
+    }
+
+    //Returns layer identifier, and value to assign layer to
+    /*mapLayer: '{' identifierType IDENTIFIER ('=' expression)?
+       (';' identifierType IDENTIFIER ('=' expression)?)* '}' ;*/
+    public override object? VisitIndividualLayer(VestaParser.IndividualLayerContext context)
     {
         var type = Visit(context.identifierType());
         string identifier = context.IDENTIFIER().GetText();
@@ -457,12 +621,12 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             //Where typebase is set the default of the value
             else if (type is int)
             {
-                checkType<int>(value);
+                if (getBaseType(value) != type.GetType()) throw new Exception($"Types do not match");
                 result = value;
             }
             else if (type is bool)
             {
-                checkType<bool>(value);
+                if (getBaseType(value) != type.GetType()) throw new Exception($"Types do not match");
                 result = value;
             }
             else { throw new Exception($"Cannot declare layer with type {type.GetType()}"); }
@@ -520,38 +684,60 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"{o} is of type {o.GetType()}, not {typeof(T)}");
     }
     
-    // identifierType: TYPE ('['expression']')*;
-    // TYPE: 'int' | 'bool' | 'map'; 
+    
+    public override object? VisitArrayDimensions(VestaParser.ArrayDimensionsContext context)
+    {
+        //return an int array of dimensions
+        return parseArray<int>(context.expression().Select(e=>Visit(e)).ToArray());
+    }
+
+    public override object? VisitAllType(VestaParser.AllTypeContext context)
+    {
+        if (context.COMPLEXTYPE() != null)
+        {
+            if (context.COMPLEXTYPE().GetText() == "map")
+            {
+                return new Map(0, 0);
+            }
+        }
+
+        var identifierType = Visit(context.identifierType());
+
+        if (identifierType != null)
+        {
+            return identifierType;
+        }
+
+
+        throw new Exception($"Cannot recognize type {context.COMPLEXTYPE().GetText()}");
+    }
+
+    /* identifierType: TYPE (arrayDimensions)? ;*;
+     TYPE: 'int' | 'bool' ; */
     public override object? VisitIdentifierType(VestaParser.IdentifierTypeContext context)
     {
-        var myArr = context.expression().ToArray();
+        
         object? result;
-        bool handleMap = false;
         string baseType = context.TYPE().GetText();
         
         if (baseType == "int") { result= 0; }
         else if (baseType == "bool") { result= false; }
-        else if (baseType == "map") { handleMap = true; result = new Map(0,0); }
         else{ throw new Exception($"type {baseType} undefined"); }
 
-        if (handleMap) //If map need to make sure we don't add to array
-        {
-            if (myArr.Length != 0)
-            {
-                throw new Exception($"Cannot have arrays with maps");
-            }
-        }
-        // If not map
-        if (myArr.Length == 0)
+        
+        //Test if arrayDimensions Exist
+        var arrayDimensionsContext = context.arrayDimensions()?.expression().ToArray();
+        if (arrayDimensionsContext==null)
         {
             return result;
         }
+        
         //if array, need to know type, and to know length of dimensions. MyArr contains dimensions by needs to know type
-
+        var myArr = parseArray<int>((Array)Visit(context.arrayDimensions()));
         object[] arrResult = new object[myArr.Length];
         for (int i = 0; i < myArr.Length; i++)
         {
-            arrResult[i] = Visit(myArr[i]);
+            arrResult[i] = myArr.GetValue(i);
         }
         return new ArrDesc(result ,arrResult);
     }
@@ -573,14 +759,32 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return store;
     }
-    
-    public override object? VisitBaseAssignment(VestaParser.BaseAssignmentContext context)
+
+    /*assignment: IDENTIFIER (arrayDimensions)? '=' expression | mapAssignment; */
+    public override object? VisitAssignment(VestaParser.AssignmentContext context)
     {
+        //If mapassignment is not null
+        if (context.mapAssignment() is not null) return Visit(context.mapAssignment());
+        
+        //IF "normal" assignment
         var varName = context.IDENTIFIER().GetText();
-        var value = Visit(context.expression());
+        var value = Visit(context.expression()); 
 
         var relevantStore = getStoreForVar(varName);
         var originalValue = relevantStore.variables[varName];
+        if (context.arrayDimensions() is not null)//Handle arrayIndexes
+        {
+            var indexArr = parseArray<int>(context.arrayDimensions().expression().Select(e => Visit(e)).ToArray());
+
+            if (relevantStore.variables[varName] is Array originalVar)
+            {
+                relevantStore.variables[varName] = assignElementOfArr(indexArr, originalVar, value, 0);
+                return null;
+            }
+            throw new Exception($"$Cannot get element of non array element");
+        }
+        //Handle not array
+        
         if (originalValue is Array arr) //if array need array Assign
         {
             if (getBaseType(arr) == getBaseType(value))
@@ -600,35 +804,6 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
 
         return null;
-    }
-    // arrayAssignment: IDENTIFER '[' expression (',' expression)* ']' '=' expression ;
-    public override object? VisitArrayAssignment(VestaParser.ArrayAssignmentContext context)
-    {
-        var varName = context.IDENTIFIER().GetText();
-        var expressionArr = context.expression().ToArray();
-        var assignValue = Visit(expressionArr[expressionArr.Length - 1]); //Get last expression
-      
-        var relevantStore = getStoreForVar(varName);
-        
-        //generate list of index values
-        int[] indexArr = new int[expressionArr.Length - 1];
-        for (int i = 0; i < indexArr.Length; i++)
-        {
-            if (Visit(expressionArr[i]) is int n)
-            {
-                indexArr[i] = n;
-            }
-            else
-            {
-                throw new Exception($"Indexes must be described with integers");
-            }
-        }
-        if (relevantStore.variables[varName] is Array originalVar)
-        {
-            relevantStore.variables[varName] = assignElementOfArr(indexArr, originalVar, assignValue, 0);
-            return null;
-        }
-        throw new Exception($"$Cannot get element of non array element");
     }
 
     object insertPrefab(object bigArray, object insertArray, Array indexList, int indexCounter)
@@ -701,14 +876,13 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         throw new Exception($"Too many index references, tried to find element of type {arr.GetType()}");
     }
-
-    // mapAssignment:  IDENTIFIER '.' IDENTIFIER ('[' expression (',' expression)* ']') '=' expression;
+   /*  mapAssignment: IDENTIFIER ',' IDENTIFIER (arrayDimensions)? '=' expression; */
+    /* mapAssignment:  IDENTIFIER '.' IDENTIFIER ('[' expression (',' expression)* ']') '=' expression;*/
     public override object? VisitMapAssignment(VestaParser.MapAssignmentContext context)
     {
         var varName = context.IDENTIFIER(0).GetText();
         var layerName = context.IDENTIFIER(1).GetText();
-        var expressionArr = context.expression().ToArray();
-        var assignValue = Visit(expressionArr[expressionArr.Length - 1]); //Get last expression
+        var assignValue = Visit(context.expression()); //Get last expression
 
         var relevantStore = getStoreForVar(varName);
 
@@ -719,26 +893,15 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         var layer = map.layers[layerName];
 
-        if (expressionArr.Length  == 1)  //If only valueExpression. Aka no index expressions
+        if (context.arrayDimensions() is null)  //no index expressions
         {
             map.layers[layerName] = quickAssignArr(map.layers[layerName], assignValue);
             relevantStore.variables[varName] = map;
             return null;
         }
         //If index:
-        //generate list of index values
-        int[] indexArr = new int[expressionArr.Length - 1];
-        for (int i = 0; i < indexArr.Length; i++)
-        {
-            if (Visit(expressionArr[i]) is int n)
-            {
-                indexArr[i] = n;
-            }
-            else
-            {
-                throw new Exception($"Indexes must be described with integers");
-            }
-        }
+        var indexArr= parseArray<int>(context.arrayDimensions().expression().Select(e=>Visit(e)).ToArray());
+
 
         if (layer is Array layerArr)
         { //Parse as Array
@@ -748,11 +911,6 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
 
         throw new Exception($"Layers must of type array"); //I don't think this could happen but safety measures never hurt
-
-
-
-
-
     }
 
 
@@ -774,10 +932,10 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     private bool checkForValidArrayEntry(object? variable)
     {
-        return true;
+        return true; //Maybe check for not map?
     }
     
-    // '{' (expression',')* '}'
+    /* '{' (expression',')* '}' */
     public override object? VisitArrayExpression(VestaParser.ArrayExpressionContext context)
     {
         
@@ -804,9 +962,9 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return result;
     }
+    
 
-
-    public override object? VisitIdentifierExpression(VestaParser.IdentifierExpressionContext context)
+    public override object? VisitIdentifierAccess(VestaParser.IdentifierAccessContext context)
     {
         var varName = context.IDENTIFIER().GetText();
 
@@ -828,34 +986,25 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return store.variables[varName];
     }
 
-    //  expression ('[' expression ']')+      #arrayIdentifierExpression
-    public override object? VisitArrayIdentifierExpression(VestaParser.ArrayIdentifierExpressionContext context)
+    /*  factor2 arrayDimensions					#arrayAccess */
+    public override object? VisitArrayAccess(VestaParser.ArrayAccessContext context)
     {
+        var indexArr = parseArray<int>((Array)Visit(context.arrayDimensions()));
+        object? myArray = Visit(context.factor2());
 
-        var numberArr = context.expression().ToArray();
-
-        var myArray = Visit(numberArr[0]);   //Main array which contains element
-        
-        object? holder;
-        
-        if (!(myArray is Array))
+        for(int i=0; i<indexArr.Length; i++)
         {
-            throw new Exception($"{myArray} is not an array, but of type {myArray.GetType()}");
-        }
-        for(int i=1; i<numberArr.Length; i++)
-        {
-            holder = Visit(numberArr[i]);   //Visit next number. Arr[5] -> 5
-            if (holder is int n && myArray is Array arr)
+            if (myArray is Array arr)
             {
-                myArray = arr.GetValue(n);
+                myArray = arr.GetValue(indexArr[i]);
             }
-            else
-            {
-                throw new Exception($"Index number must be of type int not {holder.GetType()}");
-            }
+            else throw new Exception($"Cannot get element from type {myArray.GetType()}");
         }
         return myArray;
     }
+
+            
+
 
     public override object? VisitAdditionExpression(VestaParser.AdditionExpressionContext context)
     {
@@ -913,13 +1062,54 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return result;
     }
-    
-    private Array arrayApplyToAllLeft(Array arr, object? rightside, Func<object?, object?, object?> function)
+    private Array arrayApplyToAllRightWithFunc(Array arr, object? leftside,
+        Func<object?, object?, Func<object?, object?, object?>, object?> function, 
+        Func<object?, object?, object?> mainFunc)
     {
         object[] result = new object[arr.Length];
         for(int i=0; i<arr.Length; i++)
         {
-            result[i]=(function(arr.GetValue(i), rightside));
+            result[i]=(function(leftside, arr.GetValue(i), mainFunc));
+        }
+        return result;
+    }
+    
+
+    private Array arrayApplyToAllLeftWithFunc(Array arr, object? leftside,
+        Func<object?, object?, Func<object?, object?, object?>, object?> function, 
+        Func<object?, object?, object?> mainFunc)
+    {
+        object[] result = new object[arr.Length];
+        for(int i=0; i<arr.Length; i++)
+        {
+            result[i]=(function(arr.GetValue(i), leftside, mainFunc));
+        }
+        return result;
+    }
+    private Array basicListOperationsWithFunc(Array arr1, Array arr2,
+        Func<object?, object?, Func<object?, object?, object?>, object?> function, 
+        Func<object?, object?, object?> mainFunc)
+    {
+        object[] result = new object[arr1.Length];
+
+        if (!(arr1.Length == arr2.Length))
+        {
+            throw new Exception($"The length of arrays that are added must be the same before an operation can be performed");
+        }
+        
+        for (int i=0;i < arr1.Length; i++)
+        {
+            result[i]=(function(arr1.GetValue(i), arr2.GetValue(i), mainFunc));
+        }
+
+        return result;
+    }
+    private Array arrayApplyToAllLeft(Array arr, object? leftside, Func<object?, object?, object?> function)
+    {
+        object[] result = new object[arr.Length];
+        for(int i=0; i<arr.Length; i++)
+        {
+            result[i]=(function(arr.GetValue(i), leftside));
         }
         return result;
     }
@@ -1032,31 +1222,21 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"cannot divide values of types {left?.GetType()} and {right?.GetType()} <3");
     }
 
-    public override object? VisitRandomExpression(VestaParser.RandomExpressionContext context)
-    {
-        var left = Visit(context.expression(0));
-        var right = Visit(context.expression(1));
-        if (left is int l && right is int r)
-        {
-            Random rnd = new Random();
-            var result = rnd.Next(l, r+1);
-            return result;
-        }
-
-        throw new Exception($"Cannot generate values between types");
-
-    }
-
-    public override object? VisitIfBlock(VestaParser.IfBlockContext context)
+    /* ifStatement: 'if' '(' expression')' block ('else' block)?; */
+    public override object? VisitIfStatement(VestaParser.IfStatementContext context)
     {
         if (isTrue(Visit(context.expression())))
         {
-            Visit(context.block());
+            Visit(context.block(0));
+        }
+        else
+        {
+            Visit(context.block(1));
         }
 
         return null;
     }
-    public override object? VisitWhileBlock(VestaParser.WhileBlockContext context)
+    public override object? VisitWhileStatement(VestaParser.WhileStatementContext context)
     {
 
         while (isTrue(Visit(context.expression())))
@@ -1068,8 +1248,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return null;
     }
     
-    // 'chance{' (expression ':' block)+ '}'
-    public override object? VisitChanceBlock(VestaParser.ChanceBlockContext context)
+    /* 'chance{' (expression ':' block)+ '}' */
+    public override object? VisitChance(VestaParser.ChanceContext context)
     {
         var arrExpr = context.expression().ToArray();
         int[] arrVal = new int[arrExpr.Length];
@@ -1084,8 +1264,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             }
             else { throw new Exception($"Chance table point values must be of type int"); }
         }
-        Random rnd = new Random();
-        r = rnd.Next(0, r);     //Generates an integer between 0 and sum(v_0...v_n)-1
+        r = random.getRand(0, r-1);     //Generates an integer between 0 and sum(v_0...v_n)-1
         i = 0;
         bool flag = false;
         while (!flag)
@@ -1119,41 +1298,35 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var op = context.compareOp().GetText();
         return op switch
         {
-            "==" => CompareIntFunction(left, right, (x, y) => x==y ),
-            "!=" => CompareIntFunction(left, right, (x, y) => x!=y ),
-            "<" => CompareIntFunction(left, right, (x, y) => x<y ),
-            ">" => CompareIntFunction(left, right, (x, y) => x>y ),
-            "<=" => CompareIntFunction(left, right, (x, y) => x<=y ),
-            ">=" => CompareIntFunction(left, right, (x, y) => x>=y ),
+            "==" => CompareFunction(left, right, (x, y) => (x.Equals(y)) ),
+            "!=" => CompareFunction(left, right, (x, y) => !(x.Equals(y)) ),
+            "<" => CompareFunction(left, right, (x, y) => (int)x<(int)y ),
+            ">" => CompareFunction(left, right, (x, y) => (int)x>(int)y ),
+            "<=" => CompareFunction(left, right, (x, y) => (int)x<=(int)y ),
+            ">=" => CompareFunction(left, right, (x, y) => (int)x>=(int)y ),
             _ => throw new NotImplementedException()
         };
     }
 
     public override object? VisitNotExpression(VestaParser.NotExpressionContext context)
     {
-        if (Visit(context.expression()) is bool b)
+        if (Visit(context.factor()) is bool b)
         {
             return !b;
         }
 
         throw new Exception($"Not exceptions must be with expressions of type bool");
     }
-    // forLoop: 'for' '(' declaration | assignment ';' expression ';' assignment ')'; 
-    public override object? VisitForLoop(VestaParser.ForLoopContext context)
+/*forStatement: 'for' '(' varDecl ';'  expression ';' assignment ')' block; */
+    public override object? VisitForStatement(VestaParser.ForStatementContext context)
     {
-        var dclr = context.declaration();
-        var ass = context.assignment().ToArray();
+        var dclr = Visit(context.varDecl());
+        var ass = context.assignment();
         var expression = context.expression();
-        var updateAss = ass[ass.Length - 1]; //Last ass is update
-        if (ass.Length == 2) //If initial is assign
-        {
-            Visit(ass[0]);
-        }
-        else //IF is dclr
-        {
-            Visit(dclr);
-        }
         
+        //Start by visit dclr
+        Visit(context.varDecl());
+
         if(Visit(expression) is bool flag){}
         else
         {
@@ -1162,7 +1335,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         while (flag)
         {
             Visit(context.block());
-            Visit(updateAss);
+            Visit(ass);
             if (Visit(expression) is bool b)
             {
                 flag = b;
@@ -1177,7 +1350,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     public override object? VisitNegExpression(VestaParser.NegExpressionContext context)
     {
-        if (Visit(context.expression()) is int n)
+        if (Visit(context.factor()) is int n)
         {
             return -n;
         }
@@ -1185,30 +1358,44 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"Not exceptions must be with expressions of type int");
     }
 
-    private object? CompareIntFunction(object? left, object? right, Func<int?,int? , bool> comparer)
+    public override object? VisitBooleanExpression(VestaParser.BooleanExpressionContext context)
     {
-
-        if (left is int l && right is int r)
+        var left = Visit(context.expression(0));
+        var right = Visit(context.expression(1));
+        
+        var op = context.boolOp().GetText();
+        return op switch
         {
-            return (comparer(l, r));
-        }
-
-        throw new Exception($"$Cannot compare between types {left.GetType()} and {right.GetType()} <3");
+            "&&" => CompareFunction(left, right, (x, y) => (bool)x && (bool)y ),
+            "||" => CompareFunction(left, right, (x, y) => (bool)x || (bool)y ),
+            _ => throw new NotImplementedException()
+        };
     }
-    private object? CompareFunction(object? left, object? right, Func<object? , object?, bool> comparer)
+
+
+    private object? CompareFunction(object? left, object? right, Func<object?, object?, object?> function)
     {
-
-        if (left is int l && right is int r)
+        if (left is Array arr1 && right is Array arr2)
         {
-            return (comparer(Convert.ToInt32(l), Convert.ToInt32(r)));
+            return basicListOperationsWithFunc(arr1, arr2, CompareFunction, function);
+        }
+        if (left is Array arr3)
+        {
+            return arrayApplyToAllLeftWithFunc(arr3, right, CompareFunction, function);
         }
 
-        if (left is string || right is string)
+        if (right is Array arr4)
         {
-            return (comparer(left.ToString(), right.ToString()));
+            return arrayApplyToAllRightWithFunc(arr4, left, CompareFunction, function);
         }
-
+        if (left.GetType()==right.GetType())
+        {
+            return function(left, right);
+        }
+       
         throw new Exception($"$Cannot compare between types {left.GetType()} and {right.GetType()}");
+        
+        
+
     }
 }
-*/

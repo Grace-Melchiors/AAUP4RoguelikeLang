@@ -9,13 +9,13 @@ namespace Antlr_language.ast.structure
 	{
         private ExpressionNode expression;
         private BlockNode block;
-        private ElseIfNode? elseIfNode;
+        private BlockNode? elseBlock;
 
-        public IfNode(ExpressionNode expression, BlockNode block, ElseIfNode? elseIfNode)
+        public IfNode(ExpressionNode expression, BlockNode block, BlockNode? elseBlock)
         {
             this.expression = expression;
             this.block = block;
-            this.elseIfNode = elseIfNode;
+            this.elseBlock = elseBlock;
         }
 
         public string CodeGen (int indentation)
@@ -29,18 +29,18 @@ namespace Antlr_language.ast.structure
             for (int i = 0; i < indentation; i++)
                 indent +="\t";
             
-            if (elseIfNode != null) {
-                result.Append(indent);
-            }
+            //if (elseIfNode != null) {
+            //    result.Append(indent);
+            //}
             result.Append("if (");
             result.Append(expression.CodeGen(indentation));
             result.Append(")");
             result.Append(block.CodeGen(indentation));
 
-            if (elseIfNode != null) {
+            if (elseBlock != null) {
                 result.Append(indent);
                 result.Append("else ");
-                result.Append(elseIfNode.CodeGen(indentation));
+                result.Append(elseBlock.CodeGen(indentation));
             }
             return result.ToString();
         }
