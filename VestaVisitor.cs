@@ -1320,7 +1320,6 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 /*forStatement: 'for' '(' varDecl ';'  expression ';' assignment ')' block; */
     public override object? VisitForStatement(VestaParser.ForStatementContext context)
     {
-        var dclr = Visit(context.varDecl());
         var ass = context.assignment();
         var expression = context.expression();
         
