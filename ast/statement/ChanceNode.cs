@@ -29,9 +29,12 @@ namespace Antlr_language.ast.statement
             indent +="\t";
             result.Append(indent);
             result.AppendLine("int _sum = 0;");
-            foreach (var weight in weights) {
+            for (int i = 0; i < weights.Count; i++) {
+                var weight = weights[i];
                 result.Append(indent);
                 result.AppendLine("_sum += " + weight.CodeGen(indentation + 1) + ";");
+                result.Append(indent);
+                result.AppendLine("int _sum"+i+" = " + weight.CodeGen(indentation + 1) + ";");
             }
             
             result.Append(indent);
@@ -40,11 +43,11 @@ namespace Antlr_language.ast.statement
                 var weight = weights[i];
                 var block = blocks[i];
                 result.Append(indent);
-                result.Append("if (_chance <" + weight.CodeGen(indentation + 1) + ")");
+                result.Append("if (_chance <_sum"+i+ ")");
                 //result.Append(indent);
                 result.Append(block.CodeGen(indentation +1));
                 result.Append(indent);
-                result.AppendLine("else {_chance -= " + weight.CodeGen(indentation +1) + ";}");
+                result.AppendLine("_chance = _chance<_sum"+i+"?_sum:_chance-_sum"+i+";");
             }
             indent = "";
             for (int i = 0; i < indentation; i++)

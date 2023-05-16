@@ -59,7 +59,9 @@ factor2
 	;
 
 arrayDimensions: '[' expression (',' expression )* ']' ;
-mapLayer: '{' individualLayer (';' individualLayer)* '}' ;
+
+mapLayer: '{' individualLayer (','individualLayer )* '}' ;
+
 individualLayer: identifierType IDENTIFIER ('=' expression)? ;
 
 
