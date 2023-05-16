@@ -72,18 +72,39 @@ namespace Antlr_language.ast.structure
 
             
 
-            foreach (LibraryNode library in libraryNodes) {
-                result.AppendLine(library.CodeGen(indentation - 1));
-            }
+            
             result.AppendLine("\tclass Program");
             result.AppendLine("\t{");
-            result.AppendLine("\t\tstatic Random rng = new Random();");
-            result.AppendLine("\t\tpublic static void seed (int newSeed) {");
-            result.AppendLine("\t\t\trng = new Random(newSeed);");
+            foreach (LibraryNode library in libraryNodes) {
+                result.AppendLine(library.CodeGen(indentation));
+            }
+            result.AppendLine("\t\tpublic static MLCGRandom rng = new MLCGRandom();");
+
+            
+            result.AppendLine("\t\tpublic class MLCGRandom");
+            result.AppendLine("\t\t{");
+            result.AppendLine("\t\t    //private int a= 1664525; //Knuth");
+            result.AppendLine("\t\t    private  int a = 69069; //Marsagli");
+            result.AppendLine("\t\t    private int c = 1;");
+            result.AppendLine("\t\t    private long m = (long)Math.Pow(2,32);");
+            result.AppendLine("\t\t    private long seed = 0;");
+            result.AppendLine("\t\t    public MLCGRandom()");
+            result.AppendLine("\t\t    { seed = (long)(DateTime.Now.Ticks % m); }");
+            result.AppendLine("\t\t    public MLCGRandom(long seed)");
+            result.AppendLine("\t\t    { this.seed = seed; }");
+            result.AppendLine("\t\t    public long getNext()");
+            result.AppendLine("\t\t    {");
+            result.AppendLine("\t\t        seed = (a * seed + 1) % m;");
+            result.AppendLine("\t\t        return seed;");
+            result.AppendLine("\t\t    }");
+            result.AppendLine("\t\t    public int getRand(int min, int max)");
+            result.AppendLine("\t\t    {");
+            result.AppendLine("\t\t        if (max < min) throw new Exception($\"Cannot generate random value where max is more than min\");");
+            result.AppendLine("\t\t        return (int)(min + getNext() % (max+1 - min));");
+            result.AppendLine("\t\t    }");
             result.AppendLine("\t\t}");
             result.AppendLine("\t\tstatic void Main(string[] args)");
             result.AppendLine("\t\t{");
-            result.AppendLine("\t\t\tRandom rng = new Random();");
             foreach (LineNode line in lineNodes) {
                 //for (int i = 0; i < indentation; i++)
                     //result +="\t";

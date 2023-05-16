@@ -35,7 +35,7 @@ namespace Antlr_language.ast.statement
             }
             
             result.Append(indent);
-            result.AppendLine("int _chance = rng.Next(0,_sum);");
+            result.AppendLine("int _chance = rng.getRand(0,_sum);");
             for (int i = 0; i < weights.Count; i++) {
                 var weight = weights[i];
                 var block = blocks[i];
