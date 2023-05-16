@@ -90,7 +90,7 @@ public class SymbolTable
     // Retrieves a symbol in the stack of symbol tables by name.
     // Starts at the symbol table located at the top of the stack.
     // If name is not found, checks the next level of the stack until no more levels.
-    public object RetrieveSymbol(string name)
+    public object? RetrieveSymbol(string name)
     {
         int CurrentLevelInStack = 0;
         int LevelsInStack = SymbolTableStack.Count - 1;

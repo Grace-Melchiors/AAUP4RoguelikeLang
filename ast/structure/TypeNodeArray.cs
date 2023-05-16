@@ -4,8 +4,7 @@ using Antlr_language.ast.statement;
 
 namespace Antlr_language.ast.structure
 {
-    //Maybe make it abstract to differentiate between array and not?
-    public class TypeNode : AbstractNode
+    public class TypeNodeArray : AbstractNode
     {
         public Enums.Types Type {get; private set;}
         public bool IsArray => ArraySizes == null ? false : true;
@@ -15,7 +14,7 @@ namespace Antlr_language.ast.structure
             return Type;
         }
 
-        public TypeNode(Enums.Types type, List<ExpressionNode>? arraySizes)
+        public TypeNodeArray(Enums.Types type, List<ExpressionNode>? arraySizes)
         {
             Type = type;
             ArraySizes = arraySizes;

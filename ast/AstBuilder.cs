@@ -263,12 +263,12 @@ namespace Antlr_language
             }
             result = new TypeNode(type, null);
             //Array check expressions here!
-            bool IsArray = false;
+            //bool IsArray = false;
             try {
                 var arraySizes = context.arrayDimensions().expression().ToArray();
                 List<ExpressionNode> sizes = new();
                 if (arraySizes.Length != 0) {
-                    IsArray = true;
+                    //IsArray = true;
                     foreach (var ArraySize in arraySizes) {
                         sizes.Add((ExpressionNode)Visit(ArraySize));
                     }

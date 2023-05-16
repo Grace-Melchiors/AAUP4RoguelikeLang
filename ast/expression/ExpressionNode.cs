@@ -6,10 +6,10 @@ namespace Antlr_language.ast.expression
     {
         //public Enums.Types evaluationType;
         
-        private Enums.Operators Operator;
-        private ExpressionNode? expression1;
-        private ExpressionNode? expression2;
-        private FactorNode? factor;
+        public Enums.Operators Operator {get; private set;}
+        public ExpressionNode? expression1 {get; private set;}
+        public ExpressionNode? expression2 {get; private set;}
+        public FactorNode? factor {get; private set;}
         
 
         private string Number; 

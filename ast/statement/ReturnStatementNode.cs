@@ -7,7 +7,7 @@ namespace Antlr_language.ast.statement
 {
     public class ReturnStatementNode : AbstractNode
     {
-        private ExpressionNode? expression;
+        public ExpressionNode? expression {get; private set;}
 
         public ReturnStatementNode(ExpressionNode? expression)
         {

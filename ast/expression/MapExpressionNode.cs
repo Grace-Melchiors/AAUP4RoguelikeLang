@@ -5,8 +5,8 @@ namespace Antlr_language.ast.expression
 {
     public class MapExpressionNode : AbstractExpressionNode
     {
-        private ArrayDimensionsNode arrayDimensions;
-        private MapLayerNode mapLayer;
+        public ArrayDimensionsNode arrayDimensions {get; private set;}
+        public MapLayerNode mapLayer {get; private set;}
         //private size? No can't get the size at compile time.
 
         public MapExpressionNode(ArrayDimensionsNode arrayDimensions, MapLayerNode mapLayer)

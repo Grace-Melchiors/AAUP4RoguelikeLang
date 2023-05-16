@@ -5,8 +5,8 @@ namespace Antlr_language.ast.expression
     public class ConstantNode : AbstractExpressionNode
     {
         
-        private bool? boolean = null;
-        private int? integer = null;
+        public bool? boolean{get; private set;} = null;
+        public int? integer{get; private set;} = null;
 
         public bool? GetBoolean() {
             return boolean;
@@ -26,16 +26,16 @@ namespace Antlr_language.ast.expression
 
         public override string CodeGen(int indentation)
         {
+            string result;
             if (boolean != null) {
-                return boolean == true ? "true" : "false";
+                result = boolean == true ? "true" : "false";
             } else if (integer != null) {
-                string? result = integer.ToString() ?? "0";
-                if (result == null)
-                    throw new ArgumentException();
-                return result;
+                result = integer.ToString() ?? "0";
             } else {
                 throw new NotImplementedException();
             }
+            //System.Console.WriteLine(result);
+            return result;
         }
         public override Enums.Types getEvaluationType () {
             if (boolean != null) {

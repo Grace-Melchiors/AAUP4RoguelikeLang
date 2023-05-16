@@ -8,9 +8,9 @@ namespace Antlr_language.ast.statement
 {
     public class VariableDeclarationNode : AbstractNode
     {
-        private TypeNode Type;
-        private string? identifier;
-        private ExpressionNode? expression;
+        public TypeNode Type {get; private set;}
+        public string identifier {get; private set;}
+        public ExpressionNode? expression {get; private set;}
         //private List<int>? ArraySizes;
         
         public string GetIdentifier() {
@@ -29,7 +29,7 @@ namespace Antlr_language.ast.statement
         }
 
         //Normal declaration
-        public VariableDeclarationNode(TypeNode type, string? identifier, ExpressionNode? expression)
+        public VariableDeclarationNode(TypeNode type, string identifier, ExpressionNode? expression)
         {
             Type = type;
             this.identifier = identifier;

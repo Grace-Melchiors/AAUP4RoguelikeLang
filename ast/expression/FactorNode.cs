@@ -5,13 +5,13 @@ namespace Antlr_language.ast.expression
     public class FactorNode : AbstractExpressionNode
     {
         
-        private ExpressionNode? parenthesizedExpression;
-        private ConstantNode? constant;
-        private Factor2Node? factor2;
-        private ArrayExpressionNode? arrayExpressionsNode;
-        private MapExpressionNode? mapExpression;
-        private ArrayAccessNode? arrayAccess;
-        private MapAccessNode? mapAccess;
+        public ExpressionNode? parenthesizedExpression {get; private set; }
+        public ConstantNode? constant {get; private set; }
+        public Factor2Node? factor2 {get; private set; }
+        public ArrayExpressionNode? arrayExpressionsNode {get; private set; }
+        public MapExpressionNode? mapExpression {get; private set; }
+        public ArrayAccessNode? arrayAccess {get; private set; }
+        public MapAccessNode? mapAccess {get; private set; }
 
         public Factor2Node? GetFactor2Node() {
             return factor2;

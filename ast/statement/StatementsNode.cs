@@ -7,7 +7,7 @@ namespace Antlr_language.ast.statement
 {
     public class StatementsNode : AbstractNode
     {
-        private List<StatementNode> statements;
+        public List<StatementNode> statements {get;private set;}
 
         public StatementsNode(List<StatementNode> statements)
         {

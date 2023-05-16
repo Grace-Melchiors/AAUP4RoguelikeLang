@@ -6,8 +6,8 @@ namespace Antlr_language.ast.expression
     public class ArrayAccessNode : AbstractExpressionNode
     {
 
-        private Factor2Node factor2;
-        private ArrayDimensionsNode indicies;
+        public Factor2Node factor2 {get; private set;}
+        public ArrayDimensionsNode indicies {get; private set;}
 
         public ArrayAccessNode(Factor2Node factor2, ArrayDimensionsNode indicies)
         {

@@ -6,7 +6,7 @@ namespace Antlr_language.ast.expression
     public class MapLayerNode : AbstractExpressionNode
     {
         
-        private List<IndividualLayerNode> mapLayer;
+        public List<IndividualLayerNode> mapLayer {get; private set;}
 
         public MapLayerNode(List<IndividualLayerNode> mapLayer)
         {

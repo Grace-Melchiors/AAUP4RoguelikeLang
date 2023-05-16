@@ -7,8 +7,8 @@ namespace Antlr_language.ast.statement
 {
     public class ChanceNode : AbstractNode
     {
-        private List<ExpressionNode> weights;
-        private List<BlockNode> blocks;
+        public List<ExpressionNode> weights {get;private set;}
+        public List<BlockNode> blocks {get;private set;}
 
         public ChanceNode(List<ExpressionNode> weights, List<BlockNode> blocks)
         {

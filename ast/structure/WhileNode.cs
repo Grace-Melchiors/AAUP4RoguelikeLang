@@ -6,8 +6,8 @@ namespace Antlr_language.ast.structure
 {
     public class WhileNode : AbstractNode
     {
-        private ExpressionNode? expression;
-        private BlockNode? block;
+        public ExpressionNode? expression {get; private set;}
+        public BlockNode? block {get; private set;}
 
         public WhileNode(ExpressionNode? expression, BlockNode? block)
         {

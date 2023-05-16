@@ -7,9 +7,9 @@ namespace Antlr_language.ast.structure
 {
 	public class IfNode : AbstractNode
 	{
-        private ExpressionNode expression;
-        private BlockNode block;
-        private BlockNode? elseBlock;
+        public ExpressionNode expression {get; private set;}
+        public BlockNode block {get; private set;}
+        public BlockNode? elseBlock {get; private set;}
 
         public IfNode(ExpressionNode expression, BlockNode block, BlockNode? elseBlock)
         {

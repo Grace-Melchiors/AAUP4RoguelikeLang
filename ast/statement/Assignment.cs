@@ -6,10 +6,10 @@ namespace Antlr_language.ast.statement
 {
     public class AssignmentNode : AbstractNode
     {
-        private string IDENTIFIER;
-        private List<ExpressionNode>? ArrayIndicies;
-        private List<int>? ArraySizes;
-        private ExpressionNode expression;
+        public string IDENTIFIER {get; private set;}
+        public List<ExpressionNode>? ArrayIndicies {get; private set;}
+        public List<int>? ArraySizes {get; private set;}
+        public ExpressionNode expression {get; private set;}
 
         public AssignmentNode(string iDENTIFIER, List<ExpressionNode>? arrayIndicies, ExpressionNode expression)
         {

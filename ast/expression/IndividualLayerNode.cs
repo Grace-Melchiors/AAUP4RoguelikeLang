@@ -7,9 +7,9 @@ namespace Antlr_language.ast.expression
 {
     public class IndividualLayerNode : AbstractExpressionNode
     {
-        private TypeNode type;
-        private string IDENTIFIER;
-        private ExpressionNode? expression;
+        public TypeNode type {get; private set;}
+        public string IDENTIFIER {get; private set;}
+        public ExpressionNode? expression {get; private set;}
 
         public IndividualLayerNode(TypeNode type, string iDENTIFIER, ExpressionNode? expression)
         {

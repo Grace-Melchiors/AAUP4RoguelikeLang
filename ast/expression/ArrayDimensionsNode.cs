@@ -6,7 +6,7 @@ namespace Antlr_language.ast.expression
 {
     public class ArrayDimensionsNode : AbstractExpressionNode
     {
-        private List<ExpressionNode> expressions;
+        public List<ExpressionNode> expressions {get; private set;}
 
         public ArrayDimensionsNode(List<ExpressionNode> expressions)
         {

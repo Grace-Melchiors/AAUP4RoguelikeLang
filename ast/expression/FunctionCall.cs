@@ -6,9 +6,9 @@ namespace Antlr_language.ast.expression
 {
     public class FunctionCallNode : AbstractNode
     {
-        private string? LIBRARY;
-        private string IDENTIFIER;
-        private List<ExpressionNode>? parameters;
+        public string? LIBRARY {get; private set;}
+        public string IDENTIFIER {get; private set;}
+        public List<ExpressionNode>? parameters {get; private set;}
 
 
         public FunctionCallNode(string? lIBRARY, string iDENTIFIER, List<ExpressionNode>? parameters)

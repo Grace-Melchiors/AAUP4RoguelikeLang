@@ -27,10 +27,18 @@ AstBuilder builder = new AstBuilder();
 //ProgramNode programNode = (ProgramNode) builder.VisitProgram(vestaContext);
 
 AbstractNode AST = builder.Visit((vestaContext));
+
+
+TypeIdentifierVisitor TypeIdentifier = new TypeIdentifierVisitor();
+TypeIdentifier.Visit((dynamic)AST);
+
 string Code = AST.CodeGen(0);
 CSB.AppendLine(Code);
-
 CSB.OutputResult();
+//CodeGenVisitor CodeGen = new CodeGenVisitor();
+//CodeGen.Visit((dynamic)AST);
+
+
 
 //SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
 //semanticAnalysis.VisitProgram((ProgramNode) AST);

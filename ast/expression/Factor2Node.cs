@@ -6,8 +6,8 @@ namespace Antlr_language.ast.expression
     public class Factor2Node : AbstractExpressionNode
     {
         
-        private string? identifier;
-        private FunctionCallNode? functionCall;
+        public string? identifier {get; private set;}
+        public FunctionCallNode? functionCall { get; private set; }
 
         public Factor2Node(string? identifier, FunctionCallNode? functionCall)
         {

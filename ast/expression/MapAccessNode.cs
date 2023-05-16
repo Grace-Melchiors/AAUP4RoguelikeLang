@@ -8,9 +8,9 @@ namespace Antlr_language.ast.expression
     public class MapAccessNode : AbstractExpressionNode
     {
 
-        private Factor2Node factor2;
-        private string IDENTIFIER;
-        private ArrayDimensionsNode? arrayDimensions;
+        public Factor2Node factor2 {get; private set;}
+        public string IDENTIFIER {get; private set;}
+        public ArrayDimensionsNode? arrayDimensions {get; private set;}
         public TypeNode layerType = new TypeNode(Enums.Types.INTEGER, null);
 
         public MapAccessNode(Factor2Node factor2, string iDENTIFIER, ArrayDimensionsNode arrayDimensions)

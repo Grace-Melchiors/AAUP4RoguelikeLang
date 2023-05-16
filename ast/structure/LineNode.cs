@@ -6,8 +6,8 @@ namespace Antlr_language.ast.structure
 {
     public class LineNode : AbstractNode
     {
-        private StatementNode? statement;
-        private FunctionDeclarationNode? funcDecl;
+        public StatementNode? statement {get; private set;}
+        public FunctionDeclarationNode? funcDecl {get; private set;}
 
         public StatementNode GetStatementNode() {
             return statement;
