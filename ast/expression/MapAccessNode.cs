@@ -10,7 +10,7 @@ namespace Antlr_language.ast.expression
 
         private Factor2Node factor2;
         private string IDENTIFIER;
-        private ArrayDimensionsNode arrayDimensions;
+        private ArrayDimensionsNode? arrayDimensions;
         public TypeNode layerType = new TypeNode(Enums.Types.INTEGER, null);
 
         public MapAccessNode(Factor2Node factor2, string iDENTIFIER, ArrayDimensionsNode arrayDimensions)
@@ -30,7 +30,8 @@ namespace Antlr_language.ast.expression
             result.Append(factor2.CodeGen(indentation) + ".layers");
             result.Append("[\"" + IDENTIFIER + "\"]");
             result.Append(".LayerValue");
-            result.Append(arrayDimensions.CodeGen(indentation));
+            if (arrayDimensions != null)
+                result.Append(arrayDimensions.CodeGen(indentation));
 
             return result.ToString();
         }

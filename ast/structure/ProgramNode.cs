@@ -8,8 +8,8 @@ namespace Antlr_language.ast.structure
     public class ProgramNode : AbstractNode
     {
         private string nameSpace = "MapGen";
-        private List<LibraryNode> libraryNodes = new List<LibraryNode>();
-        private List<LineNode> lineNodes = new List<LineNode>();
+        public List<LibraryNode> libraryNodes { get; private set;} = new List<LibraryNode>();
+        public List<LineNode> lineNodes  { get; private set;} = new List<LineNode>();
         
         public List<LineNode> retrieveLineNodes() {
             return lineNodes;

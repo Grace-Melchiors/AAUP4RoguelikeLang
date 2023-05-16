@@ -2,23 +2,13 @@ using System;
 using Antlr_language.ast.expression;
 using Antlr_language.ast.statement;
 using Antlr_language.ast.structure;
+using Antlr_language.ast;
 using Antlr_language.Content;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 
-namespace Antlr_language.ast
+namespace Antlr_language
 {
-    class Map {
-        Dictionary<string, int[][]> IntLayers = new();
-        Dictionary<string, bool[][]> BoolLayers = new();
-        public int d1Size;
-        public int d2Size;
-        public Map(int d1Size, int d2Size)
-        {
-            this.d1Size = d1Size;
-            this.d2Size = d2Size;
-        }
-    }
     public class AstBuilder : VestaBaseVisitor<AbstractNode>
     {
         

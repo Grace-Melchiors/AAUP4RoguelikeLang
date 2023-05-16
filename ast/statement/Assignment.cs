@@ -8,6 +8,7 @@ namespace Antlr_language.ast.statement
     {
         private string IDENTIFIER;
         private List<ExpressionNode>? ArrayIndicies;
+        private List<int>? ArraySizes;
         private ExpressionNode expression;
 
         public AssignmentNode(string iDENTIFIER, List<ExpressionNode>? arrayIndicies, ExpressionNode expression)
@@ -52,6 +53,5 @@ namespace Antlr_language.ast.statement
             
             return result.ToString();
         }
-
     }
 }

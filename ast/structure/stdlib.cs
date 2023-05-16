@@ -63,6 +63,42 @@ namespace Antlr_language.ast.structure
             result += indent + "\t}\n";
             result += indent + "}\n";
 
+            //Random
+            /*private static MLCGRandom rng = new MLCGRandom();
+            public static int random () {
+                return (int)(rng.getNext() % (long)int.MaxValue);
+            }
+            public static int random (int min, int max) {
+                return rng.getRand(min, max);
+            }
+            public static void seed (int seed) {
+                rng = new MLCGRandom(seed);
+            }
+            private class MLCGRandom
+            {
+                //private int a= 1664525; //Knuth
+                private  int a = 69069; //Marsagli
+                private int c = 1;
+                private long m = (long)Math.Pow(2,32);
+                private long seed = 0;
+
+                public MLCGRandom()
+                { seed = (long)(DateTime.Now.Ticks % m); }
+                public MLCGRandom(long seed)
+                { this.seed = seed; }
+
+                public long getNext()
+                {
+                    seed = (a * seed + 1) % m;
+                    return seed;
+                }
+                public int getRand(int min, int max)
+                {
+                    if (max < min) throw new Exception($"Cannot generate random value where max is more than min");
+                    return (int)(min + getNext() % (max+1 - min));
+                }
+            }*/
+
             return result;
         }
     }
