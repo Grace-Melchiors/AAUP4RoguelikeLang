@@ -33,7 +33,7 @@ namespace Antlr_language
 
         public override string? Visit(MapAccessNode context)
         {
-            
+            List<IndividualLayerNode>? mapLayers;
             if (context.factor2.functionCall != null) {
                 object? function = symbolTable.RetrieveSymbol(context.factor2.functionCall.IDENTIFIER);
                 if (function == null)
@@ -44,20 +44,24 @@ namespace Antlr_language
                 } catch (InvalidCastException e) {
                     throw new UndefinedVariableException(context.factor2.functionCall.IDENTIFIER);
                 }
-                //We would need to store the return type map with layers.
-                throw new NotImplementedException("Access layers on maps returned from functions, not yet supported.");
                 
-                //List<IndividualLayerNode>? mapLayers = funcDeclNode.expression?.factor?.mapExpression?.mapLayer.mapLayer;
+                mapLayers = funcDeclNode.Type.mapLayers;
 
-
-
+                //We would need to store the return type map with layers.
+                //throw new NotImplementedException("Access layers on maps returned from functions, not yet supported.");
+                
             } else if (context.factor2.identifier != null) {
                 object? map = symbolTable.RetrieveSymbol(context.factor2.identifier);
                 if (map == null)
                     throw new UndefinedVariableException(context.factor2.identifier);
                 VariableDeclarationNode mapnode = (VariableDeclarationNode)map;
-                List<IndividualLayerNode>? mapLayers = mapnode.expression?.factor?.mapExpression?.mapLayer.mapLayer;
-                if (mapLayers == null)
+                mapLayers = mapnode.expression?.factor?.mapExpression?.mapLayer.mapLayer;
+                
+            } else {
+                throw new Exception("Malformed MapAccessNode");
+            }
+
+            if (mapLayers == null)
                     throw new UndefinedVariableException(context.factor2.identifier);
                 List<IndividualLayerNode>? layersMatchingName = new List<IndividualLayerNode>();
                 foreach (var layer in mapLayers)
@@ -67,10 +71,8 @@ namespace Antlr_language
                     }
                 }
                 Enums.Types type = layersMatchingName[0].type.Type;
-                context.layerType = new TypeNode(type, null);
-            } else {
-                throw new Exception("Malformed MapAccessNode");
-            }
+                context.layerType = new TypeNode(type, mapLayers, null);
+
             return base.Visit(context);
         }
 

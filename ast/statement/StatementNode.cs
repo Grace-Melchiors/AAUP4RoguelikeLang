@@ -14,6 +14,7 @@ namespace Antlr_language.ast.statement
         public BlockNode? block;
         public IfNode? ifNode;
         public WhileNode? whileNode;
+        public ForNode? forNode;
         public ChanceNode? chance;
 
         //Not in Grammar
@@ -27,7 +28,7 @@ namespace Antlr_language.ast.statement
             return assign;
         }
 
-        public StatementNode(VariableDeclarationNode? varDecl, AssignmentNode? assign, ExpressionNode? expression, ReturnStatementNode? returnStatement, BlockNode? block, IfNode? ifNode, WhileNode? whileNode, ChanceNode? chance, StatementsNode? statements)
+        public StatementNode(VariableDeclarationNode? varDecl, AssignmentNode? assign, ExpressionNode? expression, ReturnStatementNode? returnStatement, BlockNode? block, IfNode? ifNode, WhileNode? whileNode, ForNode? forNode, ChanceNode? chance, StatementsNode? statements)
         {
             this.varDecl = varDecl;
             this.assign = assign;
@@ -36,6 +37,7 @@ namespace Antlr_language.ast.statement
             this.block = block;
             this.ifNode = ifNode;
             this.whileNode = whileNode;
+            this.forNode = forNode;
             this.chance = chance;
             this.statements = statements;
         }
@@ -60,6 +62,8 @@ namespace Antlr_language.ast.statement
                 result.Append(ifNode.CodeGen(indentation));
             } else if (whileNode != null) {
                 result.Append(whileNode.CodeGen(indentation));
+            } else if (forNode != null) {
+                result.Append(forNode.CodeGen(indentation));
             } else if (chance != null) {
                 result.Append(chance.CodeGen(indentation));
             } else if (statements != null) {

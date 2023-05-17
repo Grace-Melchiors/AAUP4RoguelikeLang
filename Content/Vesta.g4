@@ -28,7 +28,7 @@ functionDecl: parameterType IDENTIFIER '('(funcParams)?')' funcBody;
 
 funcParams: parameter (',' parameter)* ;
 parameter: parameterType IDENTIFIER;
-parameterType: (TYPE | COMPLEXTYPE) (parameterArr)? ;
+parameterType: TYPE (parameterArr)? | verboseComplextype;
 parameterArr: '[' (paramaterArrayDenoter)* ']';
 paramaterArrayDenoter: ',';
 
@@ -85,6 +85,7 @@ constant: INTEGER | BOOL;
 
 TYPE: 'int' | 'bool' ;
 COMPLEXTYPE: 'map';
+verboseComplextype: 'map' mapLayer;
 
 INTEGER:  [0-9]+ ;
 BOOL: 'true' | 'false';

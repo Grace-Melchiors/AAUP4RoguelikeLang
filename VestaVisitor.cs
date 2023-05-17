@@ -291,7 +291,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         object? result;
         string baseType = "";
         if (context.TYPE() is not null) baseType = context.TYPE().GetText();
-        else baseType = context.COMPLEXTYPE().GetText();
+        else baseType = "map";
             
             
         if (baseType == "int") { result= 0; }

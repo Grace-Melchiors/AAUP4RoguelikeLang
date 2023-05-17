@@ -8,6 +8,7 @@ namespace Antlr_language.ast.structure
     public class TypeNode : AbstractNode
     {
         public Enums.Types Type {get; private set;}
+        public List<IndividualLayerNode>? mapLayers {get; private set;}
         public bool IsArray => ArraySizes == null ? false : true;
         public List<ExpressionNode>? ArraySizes {get; private set;}
         
@@ -15,9 +16,10 @@ namespace Antlr_language.ast.structure
             return Type;
         }
 
-        public TypeNode(Enums.Types type, List<ExpressionNode>? arraySizes)
+        public TypeNode(Enums.Types type, List<IndividualLayerNode>? mapLayers, List<ExpressionNode>? arraySizes)
         {
             Type = type;
+            this.mapLayers = mapLayers;
             ArraySizes = arraySizes;
         }
 
@@ -34,6 +36,13 @@ namespace Antlr_language.ast.structure
             string result = "";
             if (Type == Enums.Types.MAP) {
                 result += "Map";
+                /*if (mapLayers != null) {
+                    result+= "{";
+                    foreach (var layer in mapLayers) {
+                        result += layer.CodeGen(indentation);
+                    }
+                    result+= "{";
+                }*/
             } else if (Type == Enums.Types.INTEGER) {
                 result += "int";
             } else if (Type == Enums.Types.BOOL) {

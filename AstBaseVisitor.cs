@@ -14,10 +14,10 @@ namespace Antlr_language
         
         public virtual TResult? Visit(ProgramNode context) {
             foreach (var library in context.libraryNodes) {
-                Visit((dynamic)library);
+                Visit(library);
             }
             foreach (var line in context.lineNodes) {
-                Visit((dynamic)line);
+                Visit(line);
             }
             return default(TResult);
         }
@@ -26,31 +26,33 @@ namespace Antlr_language
         }
         public virtual TResult? Visit(LineNode context) {
             if (context.statement != null)
-                Visit((dynamic)context.statement);
+                Visit(context.statement);
             if (context.funcDecl != null)
-                Visit((dynamic)context.funcDecl);
+                Visit(context.funcDecl);
             return default(TResult);
         }
         //Mangler
         public virtual TResult? Visit(StatementNode context) {
             if (context.varDecl != null) {
-                Visit((dynamic)context.varDecl);
+                Visit(context.varDecl);
             } else if (context.assign != null) {
-                Visit((dynamic)context.assign);
+                Visit(context.assign);
             } else if (context.expression != null) {
-                Visit((dynamic)context.expression);
+                Visit(context.expression);
             } else if (context.returnStatement != null) {
-                Visit((dynamic)context.returnStatement);
+                Visit(context.returnStatement);
             } else if (context.block != null) {
-                Visit((dynamic)context.block);
+                Visit(context.block);
             } else if (context.ifNode != null) {
-                Visit((dynamic)context.ifNode);
+                Visit(context.ifNode);
             } else if (context.whileNode != null) {
-                Visit((dynamic)context.whileNode);
+                Visit(context.whileNode);
+            } else if (context.forNode != null) {
+                Visit(context.forNode);
             } else if (context.chance != null) {
-                Visit((dynamic)context.chance);
+                Visit(context.chance);
             } else if (context.statements != null) {
-                Visit((dynamic)context.statements);
+                Visit(context.statements);
             } else {
                 throw new NotImplementedException();
             }
@@ -58,95 +60,109 @@ namespace Antlr_language
         }
         public virtual TResult? Visit(VariableDeclarationNode context) {
             if (context.Type != null)
-                Visit((dynamic)context.Type);
+                Visit(context.Type);
             if (context.expression != null)
-                Visit((dynamic)context.expression);
+                Visit(context.expression);
             return default(TResult);
         }
         public virtual TResult? Visit(AssignmentNode context) {
             if (context.ArrayIndicies != null)
                 foreach (var expression in context.ArrayIndicies)
-                    Visit((dynamic)expression);
+                    Visit(expression);
             if (context.expression != null)
-                Visit((dynamic)context.expression);
+                Visit(context.expression);
             return default(TResult);
         }
         public virtual TResult? Visit(ReturnStatementNode context) {
             if (context.expression != null)
-                Visit((dynamic)context.expression);
+                Visit(context.expression);
             return default(TResult);
         }
         public virtual TResult? Visit(IfNode context) {
             if (context.expression != null)
-                Visit((dynamic)context.expression);
+                Visit(context.expression);
             if (context.block != null)
-                Visit((dynamic)context.block);
+                Visit(context.block);
             if (context.elseBlock != null)
-                Visit((dynamic)context.elseBlock);
+                Visit(context.elseBlock);
             return default(TResult);
         }
         public virtual TResult? Visit(WhileNode context) {
             if (context.expression != null)
-                Visit((dynamic)context.expression);
+                Visit(context.expression);
             if (context.block != null)
-                Visit((dynamic)context.block);
+                Visit(context.block);
+            return default(TResult);
+        }
+        public virtual TResult? Visit(ForNode context) {
+            if (context.declaration != null)
+                Visit(context.declaration);
+            if (context.expression != null)
+                Visit(context.expression);
+            if (context.assignment != null)
+                Visit(context.assignment);
+            if (context.block != null)
+                Visit(context.block);
             return default(TResult);
         }
         public virtual TResult? Visit(ChanceNode context) {
             if (context.weights != null)
                 foreach (var expression in context.weights)
-                    Visit((dynamic)expression);
+                    Visit(expression);
             if (context.blocks != null)
                 foreach (var block in context.blocks)
-                    Visit((dynamic)block);
+                    Visit(block);
             return default(TResult);
         }
         public virtual TResult? Visit(StatementsNode context) {
             if (context.statements != null)
                 foreach (var statement in context.statements)
-                    Visit((dynamic)statement);
+                    Visit(statement);
             return default(TResult);
         }
         public virtual TResult? Visit(FunctionDeclarationNode context) {
             if (context.Type != null)
-                Visit((dynamic)context.Type);
+                Visit(context.Type);
             foreach (var funcParam in context.funcParams) {
-                Visit((dynamic)funcParam);
+                Visit(funcParam);
             }
             if (context.body != null)
-                Visit((dynamic)context.body);
+                Visit(context.body);
             return default(TResult);
         }
         public virtual TResult? Visit(TypeNode context) {
+            if (context.mapLayers != null)
+                foreach (var layer in context.mapLayers)
+                    Visit(layer);
             if (context.ArraySizes != null)
                 foreach (var expression in context.ArraySizes)
-                    Visit((dynamic)expression);
+                    Visit(expression);
             return default(TResult);
         }
         public virtual TResult? Visit(ExpressionNode context) {
             if (context.expression1 != null)
-                Visit((dynamic)context.expression1);
+                Visit(context.expression1);
             if (context.expression2 != null)
-                Visit((dynamic)context.expression2);
+                Visit(context.expression2);
             if (context.factor != null)
-                Visit((dynamic)context.factor);
+                Visit(context.factor);
             return default(TResult);
         }
         public virtual TResult? Visit(FactorNode context) {
             if (context.parenthesizedExpression != null)
-                Visit((dynamic)context.parenthesizedExpression);
+                Visit(context.parenthesizedExpression);
             if (context.constant != null)
-                Visit((dynamic)context.constant);
+                Visit(context.constant);
             if (context.factor2 != null)
-                Visit((dynamic)context.factor2);
+                Visit(context.factor2);
             if (context.arrayExpressionsNode != null)
-                Visit((dynamic)context.arrayExpressionsNode);
+                Visit(context.arrayExpressionsNode);
             if (context.mapExpression != null)
-                Visit((dynamic)context.mapExpression);
+                Visit(context.mapExpression);
             if (context.arrayAccess != null)
-                Visit((dynamic)context.arrayAccess);
+                Visit(context.arrayAccess);
             if (context.mapAccess != null)
-                Visit((dynamic)context.mapAccess);
+                Visit(context.mapAccess);
             return default(TResult);
         }
         public virtual TResult? Visit(ConstantNode context) {
@@ -154,72 +170,72 @@ namespace Antlr_language
         }
         public virtual TResult? Visit(Factor2Node context) {
             if (context.functionCall != null)
-                Visit((dynamic)context.functionCall);
+                Visit(context.functionCall);
             return default(TResult);
         }
         public virtual TResult? Visit(FunctionCallNode context) {
             if (context.parameters != null)
                 foreach (var param in context.parameters)
-                    Visit((dynamic)param);
+                    Visit(param);
             return default(TResult);
         }
         public virtual TResult? Visit(ArrayExpressionNode context) {
             if (context.expressions != null)
                 foreach (var expression in context.expressions)
-                    Visit((dynamic)expression);
+                    Visit(expression);
             return default(TResult);
         }
         public virtual TResult? Visit(MapExpressionNode context) {
             if (context.arrayDimensions != null)
-                Visit((dynamic)context.arrayDimensions);
+                Visit(context.arrayDimensions);
             if (context.mapLayer != null)
-                Visit((dynamic)context.mapLayer);
+                Visit(context.mapLayer);
             return default(TResult);
         }
         public virtual TResult? Visit(ArrayDimensionsNode context) {
             if (context.expressions != null)
                 foreach (var expression in context.expressions)
-                    Visit((dynamic)expression);
+                    Visit(expression);
             return default(TResult);
         }
         public virtual TResult? Visit(MapLayerNode context) {
             if (context.mapLayer != null)
                 foreach (var IndividualLayer in context.mapLayer)
-                    Visit((dynamic)IndividualLayer);
+                    Visit(IndividualLayer);
             return default(TResult);
         }
         public virtual TResult? Visit(IndividualLayerNode context) {
             if (context.type != null)
-                Visit((dynamic)context.type);
+                Visit(context.type);
             if (context.expression != null)
-                Visit((dynamic)context.expression);
+                Visit(context.expression);
             return default(TResult);
         }
 
         public virtual TResult? Visit(ArrayAccessNode context) {
             if (context.factor2 != null)
-                Visit((dynamic)context.factor2);
+                Visit(context.factor2);
             if (context.indicies != null)
-                Visit((dynamic)context.indicies);
+                Visit(context.indicies);
             return default(TResult);
         }
         public virtual TResult? Visit(MapAccessNode context) {
             if (context.factor2 != null)
-                Visit((dynamic)context.factor2);
+                Visit(context.factor2);
             if (context.arrayDimensions != null)
-                Visit((dynamic)context.arrayDimensions);
+                Visit(context.arrayDimensions);
             if (context.layerType != null)
-                Visit((dynamic)context.layerType);
+                Visit(context.layerType);
             return default(TResult);
         }
         public virtual TResult? Visit(FunctionParamNode context) {
             if (context.Type != null)
-                Visit((dynamic)context.Type);
+                Visit(context.Type);
             return default(TResult);
         }
         public virtual TResult? Visit(BlockNode context) {
             foreach (var statement in context.statementNodes)
-                Visit((dynamic)statement);
+                Visit(statement);
             return default(TResult);
         }
     }

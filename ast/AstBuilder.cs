@@ -69,23 +69,23 @@ namespace Antlr_language
 
 
             if (VariableDecl != null) {
-                result = new StatementNode((VariableDeclarationNode)Visit(VariableDecl), null, null, null, null, null, null, null, null);
+                result = new StatementNode((VariableDeclarationNode)Visit(VariableDecl), null, null, null, null, null, null, null, null, null);
             } else if (assignment != null) {
-                result = new StatementNode(null, (AssignmentNode)Visit(assignment), null, null, null, null, null, null, null);
+                result = new StatementNode(null, (AssignmentNode)Visit(assignment), null, null, null, null, null, null, null, null);
             } else if (expression != null) {
-                result = new StatementNode(null, null, (ExpressionNode)Visit(expression), null, null, null, null, null, null);
+                result = new StatementNode(null, null, (ExpressionNode)Visit(expression), null, null, null, null, null, null, null);
             //} else if (returnStmt != null) {
-                //result = new StatementNode(null, null, null, (ReturnStatementNode)Visit(returnStmt), null, null, null, null, null);
+                //result = new StatementNode(null, null, null, (ReturnStatementNode)Visit(returnStmt), null, null, null, null, null, null);
             } else if (block != null) {
-                result = new StatementNode(null, null, null, null, (BlockNode)Visit(block), null, null, null, null);
+                result = new StatementNode(null, null, null, null, (BlockNode)Visit(block), null, null, null, null, null);
             } else if (ifStatement != null) {
-                result = new StatementNode(null, null, null, null, null, (IfNode)Visit(ifStatement), null, null, null);
+                result = new StatementNode(null, null, null, null, null, (IfNode)Visit(ifStatement), null, null, null, null);
             } else if (whileStatement != null) {
-                result = new StatementNode(null, null, null, null, null, null, (WhileNode)Visit(whileStatement), null, null);
+                result = new StatementNode(null, null, null, null, null, null, (WhileNode)Visit(whileStatement), null, null, null);
             } else if (forStatement != null) {
-                result = new StatementNode(null, null, null, null, null, null, null, null, (StatementsNode)Visit(forStatement));
+                result = new StatementNode(null, null, null, null, null, null, null, (ForNode)Visit(forStatement), null, null);
             } else if (chanceStatement != null) {
-                result = new StatementNode(null, null, null, null, null, null, null, (ChanceNode)Visit(chanceStatement), null);
+                result = new StatementNode(null, null, null, null, null, null, null, null, (ChanceNode)Visit(chanceStatement), null);
             } else {
                 throw new NotImplementedException();
             }
@@ -102,13 +102,7 @@ namespace Antlr_language
         }
         public override AbstractNode VisitForStatement([NotNull] VestaParser.ForStatementContext context)
         {
-            StatementsNode result = new StatementsNode(new());
-            result.AddStatement(new StatementNode((VariableDeclarationNode)Visit(context.varDecl()), null, null, null, null, null, null, null, null));
-            WhileNode whileNode;
-            BlockNode block = (BlockNode)Visit(context.block());
-            block.AddStatement(new StatementNode(null, (AssignmentNode)Visit(context.assignment()), null, null, null, null, null, null, null));
-            whileNode = new((ExpressionNode)Visit(context.expression()), block);
-            result.AddStatement(new StatementNode(null, null, null, null, null, null, whileNode, null, null));
+            ForNode result = new ForNode((VariableDeclarationNode)Visit(context.varDecl()), (ExpressionNode)Visit(context.expression()),(AssignmentNode)Visit(context.assignment()),(BlockNode)Visit(context.block()));
             return result;
         }
 
@@ -190,14 +184,11 @@ namespace Antlr_language
         public override AbstractNode VisitParameterType([NotNull] VestaParser.ParameterTypeContext context)
         {
             TypeNode result;
-            Enums.Types type;
-            if (context.COMPLEXTYPE() != null) {
-                if (context.COMPLEXTYPE().GetText() == "map") {
-                    type = Enums.Types.MAP;
-                } else {
-                    throw new NotImplementedException();
-                }
+            
+            if (context.verboseComplextype() != null) {
+                result = (TypeNode)Visit(context.verboseComplextype());
             } else if (context.TYPE() != null) {
+                Enums.Types type;
                 if (context.TYPE().GetText() == "int") {
                     type = Enums.Types.INTEGER;
                 } else if (context.TYPE().GetText() == "bool") {
@@ -205,11 +196,20 @@ namespace Antlr_language
                 } else {
                     throw new NotImplementedException();
                 }
+                result = new TypeNode(type, null, null);
             } else {
                 throw new NotImplementedException();
             }
-            result = new TypeNode(type, null);
+            
             System.Console.WriteLine("We need to create a new node and differentiate between eg. TYPE[,] and TYPE[2,3]");
+
+            return result;
+        }
+
+        public override AbstractNode VisitVerboseComplextype([NotNull] VestaParser.VerboseComplextypeContext context)
+        {
+            TypeNode result;
+            result = new TypeNode(Enums.Types.MAP, ContextToNode<IndividualLayerNode>(context.mapLayer().individualLayer().ToArray()), null);
 
             return result;
         }
@@ -217,7 +217,7 @@ namespace Antlr_language
         public override AbstractNode VisitFuncBody([NotNull] VestaParser.FuncBodyContext context)
         {
             List<StatementNode> statements = ContextToNode<StatementNode>(context.statement().ToArray());
-            statements.Add(new StatementNode(null, null, null, (ReturnStatementNode)Visit(context.returnStmt()), null, null, null, null, null));
+            statements.Add(new StatementNode(null, null, null, (ReturnStatementNode)Visit(context.returnStmt()), null, null, null, null, null, null));
             return new BlockNode(statements);
         }
 
@@ -241,7 +241,7 @@ namespace Antlr_language
                 } else {
                     throw new NotImplementedException();
                 }
-                result = new TypeNode(type, null);
+                result = new TypeNode(type, null, null);
             } else if (context.identifierType() != null) {
                 result = (TypeNode)Visit(context.identifierType());
             } else {
@@ -261,7 +261,7 @@ namespace Antlr_language
             } else {
                 throw new NotImplementedException();
             }
-            result = new TypeNode(type, null);
+            result = new TypeNode(type, null, null);
             //Array check expressions here!
             //bool IsArray = false;
             try {
@@ -272,7 +272,7 @@ namespace Antlr_language
                     foreach (var ArraySize in arraySizes) {
                         sizes.Add((ExpressionNode)Visit(ArraySize));
                     }
-                    result = new TypeNode(type, sizes);
+                    result = new TypeNode(type, null, sizes);
                 }
             } catch (NullReferenceException e) {
                 System.Console.WriteLine("Error: " + e.Message);
