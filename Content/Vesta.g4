@@ -24,11 +24,12 @@ varDecl
    ;
 
 
-functionDecl: parameterType IDENTIFIER '('(funcParams)?')' funcBody;
+functionDecl: returnType IDENTIFIER '('(funcParams)?')' funcBody;
 
 funcParams: parameter (',' parameter)* ;
 parameter: parameterType IDENTIFIER;
-parameterType: TYPE (parameterArr)? | verboseComplextype;
+parameterType: TYPE (parameterArr)?;
+returnType: TYPE (parameterArr)? | verboseComplextype;
 parameterArr: '[' (paramaterArrayDenoter)* ']';
 paramaterArrayDenoter: ',';
 

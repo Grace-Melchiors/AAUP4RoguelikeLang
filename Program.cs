@@ -29,7 +29,7 @@ AstBuilder builder = new AstBuilder();
 AbstractNode AST = builder.Visit((vestaContext));
 
 
-TypeIdentifierVisitor TypeIdentifier = new TypeIdentifierVisitor();
+ASTSemanticAnalysisVisitor TypeIdentifier = new ASTSemanticAnalysisVisitor();
 TypeIdentifier.Visit((dynamic)AST);
 
 string Code = AST.CodeGen(0);

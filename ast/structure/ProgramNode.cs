@@ -10,6 +10,8 @@ namespace Antlr_language.ast.structure
         private string nameSpace = "MapGen";
         public List<LibraryNode> libraryNodes { get; private set;} = new List<LibraryNode>();
         public List<LineNode> lineNodes  { get; private set;} = new List<LineNode>();
+        public List<LineNode> FunctionDecls  { get; set;} = new List<LineNode>();
+        public List<LineNode> Statements  { get; set;} = new List<LineNode>();
         
         public List<LineNode> retrieveLineNodes() {
             return lineNodes;
@@ -103,9 +105,14 @@ namespace Antlr_language.ast.structure
             result.AppendLine("\t\t        return (int)(min + getNext() % (max+1 - min));");
             result.AppendLine("\t\t    }");
             result.AppendLine("\t\t}");
+            foreach (LineNode line in FunctionDecls) {
+                //for (int i = 0; i < indentation; i++)
+                    //result +="\t";
+                result.AppendLine(line.CodeGen(indentation));
+            }
             result.AppendLine("\t\tstatic void Main(string[] args)");
             result.AppendLine("\t\t{");
-            foreach (LineNode line in lineNodes) {
+            foreach (LineNode line in Statements) {
                 //for (int i = 0; i < indentation; i++)
                     //result +="\t";
                 result.AppendLine(line.CodeGen(indentation + 1));
