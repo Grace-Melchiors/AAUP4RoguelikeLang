@@ -37,14 +37,5 @@ namespace Antlr_language.ast.expression
             //System.Console.WriteLine(result);
             return result;
         }
-        public override Enums.Types getEvaluationType () {
-            if (boolean != null) {
-                return Enums.Types.BOOL;
-            } else if (integer != null) {
-                return Enums.Types.INTEGER;
-            } else {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

@@ -168,7 +168,7 @@ namespace Antlr_language
                     parameters.Add((FunctionParamNode)Visit(parameter));
                 }
             }
-            result = new FunctionDeclarationNode((TypeNode)Visit(context.parameterType()), context.IDENTIFIER().GetText(), parameters, (BlockNode)Visit(context.funcBody()));
+            result = new FunctionDeclarationNode((TypeNode)Visit(context.returnType()), context.IDENTIFIER().GetText(), parameters, (BlockNode)Visit(context.funcBody()));
             
 
             return result;
@@ -181,13 +181,35 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitParameterType([NotNull] VestaParser.ParameterTypeContext context)
+        public override AbstractNode VisitReturnType([NotNull] VestaParser.ReturnTypeContext context)
         {
             TypeNode result;
             
             if (context.verboseComplextype() != null) {
                 result = (TypeNode)Visit(context.verboseComplextype());
             } else if (context.TYPE() != null) {
+                Enums.Types type;
+                if (context.TYPE().GetText() == "int") {
+                    type = Enums.Types.INTEGER;
+                } else if (context.TYPE().GetText() == "bool") {
+                    type = Enums.Types.BOOL;
+                } else {
+                    throw new NotImplementedException();
+                }
+                result = new TypeNode(type, null, null);
+            } else {
+                throw new NotImplementedException();
+            }
+            
+            System.Console.WriteLine("We need to create a new node and differentiate between eg. TYPE[,] and TYPE[2,3]");
+
+            return result;
+        }
+        public override AbstractNode VisitParameterType([NotNull] VestaParser.ParameterTypeContext context)
+        {
+            TypeNode result;
+            
+            if (context.TYPE() != null) {
                 Enums.Types type;
                 if (context.TYPE().GetText() == "int") {
                     type = Enums.Types.INTEGER;

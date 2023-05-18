@@ -28,10 +28,5 @@ namespace Antlr_language.ast.expression
 
             return result.ToString();
         }
-
-        public override Enums.Types getEvaluationType()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

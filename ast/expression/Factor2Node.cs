@@ -25,9 +25,6 @@ namespace Antlr_language.ast.expression
                 throw new NotImplementedException();
             }
         }
-        public override Enums.Types getEvaluationType () {
-            throw new NotImplementedException();
-        }
         
         public string? GetIdentifier() {
             return identifier;

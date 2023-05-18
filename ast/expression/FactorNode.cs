@@ -48,7 +48,7 @@ namespace Antlr_language.ast.expression
                 throw new NotImplementedException();
             }
         }
-        public override Enums.Types getEvaluationType () {
+        public Enums.Types getEvaluationType () {
             if(constant != null) {
                 if(constant.GetInteger() != null) {
                     return Enums.Types.INTEGER;

@@ -6,7 +6,7 @@ namespace Antlr_language.ast.expression
     {
         //public Enums.Types evaluationType;
         
-        public Enums.Operators Operator {get; private set;}
+        public Enums.Operators? Operator {get; private set;}
         public ExpressionNode? expression1 {get; private set;}
         public ExpressionNode? expression2 {get; private set;}
         public FactorNode? factor {get; private set;}
@@ -50,7 +50,7 @@ namespace Antlr_language.ast.expression
         
 
 
-        public ExpressionNode(Enums.Operators Operator, ExpressionNode? expression1, ExpressionNode? expression2, FactorNode? factor)
+        public ExpressionNode(Enums.Operators? Operator, ExpressionNode? expression1, ExpressionNode? expression2, FactorNode? factor)
         {
             this.Operator = Operator;
             this.expression1 = expression1;
@@ -62,19 +62,16 @@ namespace Antlr_language.ast.expression
         {
             
             if (factor != null) {
-                if (Operator == Enums.Operators.sub || Operator == Enums.Operators.not) {
-                    return "(" + Enums.OperatorToString(Operator) + factor.CodeGen(indentation) + ")";
+                if (Operator != null && (Operator == Enums.Operators.sub || Operator == Enums.Operators.not)) {
+                    return "(" + Enums.OperatorToString((Enums.Operators)Operator) + factor.CodeGen(indentation) + ")";
                 } else {
                     return factor.CodeGen(indentation);
                 }
-            } else if (expression1 != null && expression2 != null) {
-                return expression1.CodeGen(indentation) + Enums.OperatorToString(Operator) + expression2.CodeGen(indentation);
+            } else if (Operator != null && expression1 != null && expression2 != null) {
+                return expression1.CodeGen(indentation) + Enums.OperatorToString((Enums.Operators)Operator) + expression2.CodeGen(indentation);
             } else {
                 throw new NotImplementedException();
             }
-        }
-        public override Enums.Types getEvaluationType () {
-            return Enums.Types.MAP;
         }
     }
 }

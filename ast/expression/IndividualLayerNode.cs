@@ -35,10 +35,5 @@ namespace Antlr_language.ast.expression
         public Enums.Types GetNodeType () {
             return type.GetNodeType();
         }
-
-        public override Enums.Types getEvaluationType()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

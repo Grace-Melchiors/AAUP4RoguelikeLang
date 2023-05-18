@@ -9,7 +9,6 @@ namespace Antlr_language.ast.expression
     {
 
         public List<ExpressionNode> expressions {get; private set;}
-        public TypeNode? type {get; private set;}
 
         public ArrayExpressionNode(List<ExpressionNode> expressions)
         {
@@ -30,9 +29,6 @@ namespace Antlr_language.ast.expression
             result += "}";
 
             return result;
-        }
-        public override Enums.Types getEvaluationType () {
-            throw new NotImplementedException();
         }
         
         public List<ExpressionNode> GetExpressions() {
