@@ -165,9 +165,7 @@ namespace Antlr_language
                 if (FirstType == null)
                     throw new Exception("Unknown first type in array expression.");
                 context.type = new TypeNode(FirstType.Type, null, null);
-
-                
-                
+                FirstType.OutMostArrayExpression = false;
                 for (int i = 1; i < context.expressions.Count; i++)
                 {
                     var expr = context.expressions[i];
@@ -176,9 +174,10 @@ namespace Antlr_language
                         throw new Exception("No type on first expression");
 
                     if (currentType.Type != context.type.Type)
-                        throw new TypeMismatchException(currentType.Type, context.type.Type);
+                        throw new TypeMismatchException(context.type.Type, currentType.Type);
                     
                     expressionsTypes.Add(currentType);
+                    currentType.OutMostArrayExpression = false;
 
                     if (currentType.ArrayExpressionDimensionSizes is null != FirstType.ArrayExpressionDimensionSizes is null) {
                         if(currentType.ArrayExpressionDimensionSizes is null) {
@@ -194,6 +193,7 @@ namespace Antlr_language
                             for (int j = 0; j < currentType.ArrayExpressionDimensionSizes.Count; j++) {
                                 if (currentType.ArrayExpressionDimensionSizes[j] == FirstType.ArrayExpressionDimensionSizes[j]) {
                                     DimensionSizes.Add(currentType.ArrayExpressionDimensionSizes[j]);
+                                    
                                 } else {
                                     throw new Exception("Dimension " + j + " is not the same size.");
                                 }
@@ -203,12 +203,9 @@ namespace Antlr_language
                             throw new Exception("Not same number of dimensions in all arrayExpressions.");
                         }
                     }
-                    
-
                 }
                 DimensionSizes.Insert(0, context.expressions.Count);
-
-                
+                context.type.OutMostArrayExpression = true;
 
                 context.type.ArrayExpressionDimensionSizes = DimensionSizes;
             } catch (Exception e) {

@@ -12,6 +12,7 @@ namespace Antlr_language.ast.structure
         public bool IsArray => ArraySizes == null ? false : true;
         public List<ExpressionNode>? ArraySizes {get; private set;}
         public List<int>? ArrayExpressionDimensionSizes {get;set;}
+        public bool OutMostArrayExpression {get;set;} = false;
         
         public Enums.Types GetDataType() {
             return Type;

@@ -22,7 +22,13 @@ namespace Antlr_language.ast.expression
             string result = "";
             if (type == null)
                 throw new NotImplementedException("Mising type information, Need to write new {type} [size, size]");
-            result += "new " + type.CodeGen(indentation, true) + "{";
+
+            if (type == null)
+                throw new Exception("Missing type");
+            if (type.OutMostArrayExpression) {
+                result += "new " + type.CodeGen(indentation, true);
+            }
+            result += "{";
             foreach (var expression in expressions)
                 result += expression.CodeGen(indentation) + ",";
             result = result.Substring(0, result.Length-1);

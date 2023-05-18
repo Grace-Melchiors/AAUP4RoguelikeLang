@@ -179,12 +179,15 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return array;
     }
+    public override object? VisitReturnType(VestaParser.ReturnTypeContext context) {
+        throw new NotImplementedException();
+    }
     /* functionDclr: identifierType IDENTIFIER '('(funcParams)?')' funcBody; */
     public override object? VisitFunctionDecl(VestaParser.FunctionDeclContext context)
     {
         var funcName = context.IDENTIFIER().GetText();
 
-        object returnType = Visit(context.parameterType());
+        object returnType = Visit(context.returnType());
         
         //Gather arr of funcParams
         var param = Visit(context.funcParams());
