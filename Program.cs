@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System;
+using System.Text;
 using Antlr_language;
 using Antlr_language.Content;
 using Antlr4.Runtime;
@@ -32,8 +33,9 @@ AbstractNode AST = builder.Visit((vestaContext));
 ASTSemanticAnalysisVisitor TypeIdentifier = new ASTSemanticAnalysisVisitor();
 TypeIdentifier.Visit((dynamic)AST);
 
-string Code = AST.CodeGen(0);
-CSB.AppendLine(Code);
+CodeGenVisitor CodeGenerator = new CodeGenVisitor();
+
+CSB.InsertStringBuilder(CodeGenerator.Visit((dynamic)AST));
 CSB.OutputResult();
 //CodeGenVisitor CodeGen = new CodeGenVisitor();
 //CodeGen.Visit((dynamic)AST);

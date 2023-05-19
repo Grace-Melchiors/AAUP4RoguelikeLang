@@ -20,34 +20,5 @@ namespace Antlr_language.ast.structure
             this.body = body;
         }
 
-        public string CodeGen(int indentation)
-        {
-            string indent = "";
-            for (int i = 0; i < indentation; i++) {
-                indent += "\t";
-            }
-            string result = "\n" + indent;
-            result += Type.CodeGen(indentation) + " ";
-            result += Identifier + " ";
-            //System.Console.WriteLine("Test from: FunctionDeclarationNode");
-            result += "(";
-            if (funcParams.Count != 0) {
-                foreach (FunctionParamNode param in funcParams) {
-                    if (param != null) {
-                        result += param.CodeGen(indentation) + ",";
-                    } else {
-                        throw new NotImplementedException();
-                    }
-                }
-                result = result.Substring(0, result.Length-1);
-            }
-            result += ")\n";
-            if (body == null)
-                throw new NotImplementedException();
-            result += body.CodeGen(indentation);
-            result += indent + "\n";
-            return result;
-        }
-
     }
 }

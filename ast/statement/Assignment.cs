@@ -29,29 +29,5 @@ namespace Antlr_language.ast.statement
         public ExpressionNode? GetExpressionNode() {
             return expression;
         }
-
-        public string CodeGen(int indentation)
-        {
-            string indent = "";
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-            result.Append(indent);
-
-            result.Append(IDENTIFIER);
-            if (ArrayIndicies != null) {
-                result.Append("[");
-                if (ArrayIndicies.Count > 0) {
-                    foreach(var exp in ArrayIndicies)
-                        result.Append(exp.CodeGen(indentation) + ",");
-                    result.Length--;
-                }
-                result.Append("]");
-            }
-            result.Append(" = ");
-            result.Append(expression.CodeGen(indentation));
-            
-            return result.ToString();
-        }
     }
 }

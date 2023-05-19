@@ -19,19 +19,5 @@ namespace Antlr_language.ast.structure
             this.block = block;
         }
 
-        public string CodeGen(int indentation)
-        {
-
-            string result = "for (";
-            result += declaration.CodeGen(indentation);
-            result += ";";
-            result += expression.CodeGen(indentation);
-            result += ";";
-            result += assignment.CodeGen(indentation);
-            result += ")\n";
-            result += block.CodeGen(indentation);
-            return result;
-        }
-
     }
 }

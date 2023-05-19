@@ -16,25 +16,5 @@ namespace Antlr_language.ast.structure
         public void AddStatement (StatementNode node) {
             statementNodes.Add(node);
         }
-
-        public string CodeGen(int indentation)
-        {
-            string indent = "";
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-            result.Append("\n");
-            result.Append(indent);
-            result.AppendLine("{");
-            foreach (StatementNode statement in statementNodes) {
-                //for (int i = 0; i < indentation; i++)
-                    //result +="\t";
-                result.AppendLine(statement.CodeGen(indentation + 1));
-            }
-            result.Append(indent);
-            result.AppendLine("}");
-            return result.ToString();
-        }
-
     }
 }

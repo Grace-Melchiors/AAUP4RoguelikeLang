@@ -31,7 +31,6 @@ namespace Antlr_language
                 Visit(context.funcDecl);
             return default(TResult);
         }
-        //Mangler
         public virtual TResult? Visit(StatementNode context) {
             if (context.varDecl != null) {
                 Visit(context.varDecl);
@@ -205,10 +204,10 @@ namespace Antlr_language
             return default(TResult);
         }
         public virtual TResult? Visit(IndividualLayerNode context) {
-            if (context.type != null)
-                Visit(context.type);
-            if (context.expression != null)
-                Visit(context.expression);
+            if (context.LayerType != null)
+                Visit(context.LayerType);
+            if (context.Expression != null)
+                Visit(context.Expression);
             return default(TResult);
         }
 

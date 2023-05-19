@@ -7,33 +7,18 @@ namespace Antlr_language.ast.expression
 {
     public class IndividualLayerNode : AbstractExpressionNode
     {
-        public TypeNode type {get; private set;}
+        public TypeNode LayerType {get; private set;}
         public string IDENTIFIER {get; private set;}
-        public ExpressionNode? expression {get; private set;}
+        public ExpressionNode? Expression {get; private set;}
 
         public IndividualLayerNode(TypeNode type, string iDENTIFIER, ExpressionNode? expression)
         {
-            this.type = type;
+            this.LayerType = type;
             IDENTIFIER = iDENTIFIER;
-            this.expression = expression;
-        }
-
-        public override string CodeGen(int indentation)
-        {
-            string indent = "";
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-            result.Append("new MapLayer (");
-            result.Append("\"" + type.CodeGen(indentation) + "\",");
-            result.Append("\"" + IDENTIFIER + "\",");
-            result.Append(expression?.CodeGen(indentation) ?? "null");
-            result.Append(")");
-            
-            return result.ToString();
+            this.Expression = expression;
         }
         public Enums.Types GetNodeType () {
-            return type.GetNodeType();
+            return LayerType.GetNodeType();
         }
     }
 }

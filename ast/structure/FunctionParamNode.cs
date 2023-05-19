@@ -16,14 +16,5 @@ namespace Antlr_language.ast.structure
             Identifier = identifier;
         }
 
-        public string CodeGen(int indentation)
-        {
-            string result = "";
-            result += Type.CodeGen(indentation) + " ";
-            result += Identifier;
-            return result;
-            
-        }
-
     }
 }

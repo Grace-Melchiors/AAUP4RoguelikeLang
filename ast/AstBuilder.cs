@@ -196,7 +196,14 @@ namespace Antlr_language
                 } else {
                     throw new NotImplementedException();
                 }
-                result = new TypeNode(type, null, null);
+                var array = context.parameterArr();
+                if (array == null) {
+                    result = new TypeNode(type, null, null, 0, false);
+                } else {
+                    int arrRank = array.paramaterArrayDenoter().ToArray().Length + 1;
+                    result = new TypeNode(type, null, null, arrRank, false);
+                }
+                
             } else {
                 throw new NotImplementedException();
             }
@@ -218,7 +225,13 @@ namespace Antlr_language
                 } else {
                     throw new NotImplementedException();
                 }
-                result = new TypeNode(type, null, null);
+                var array = context.parameterArr();
+                if (array == null) {
+                    result = new TypeNode(type, null, null, 0, false);
+                } else {
+                    int arrRank = array.paramaterArrayDenoter().ToArray().Length + 1;
+                    result = new TypeNode(type, null, null, arrRank, false);
+                }
             } else {
                 throw new NotImplementedException();
             }
@@ -231,7 +244,7 @@ namespace Antlr_language
         public override AbstractNode VisitVerboseComplextype([NotNull] VestaParser.VerboseComplextypeContext context)
         {
             TypeNode result;
-            result = new TypeNode(Enums.Types.MAP, ContextToNode<IndividualLayerNode>(context.mapLayer().individualLayer().ToArray()), null);
+            result = new TypeNode(Enums.Types.MAP, ContextToNode<IndividualLayerNode>(context.mapLayer().individualLayer().ToArray()), null, 0, true);
 
             return result;
         }
@@ -245,7 +258,6 @@ namespace Antlr_language
 
         public override AbstractNode VisitReturnStmt([NotNull] VestaParser.ReturnStmtContext context)
         {
-            //throw new NotImplementedException();
             ReturnStatementNode result;
 
             result = new ReturnStatementNode((ExpressionNode)Visit(context.expression()));
@@ -263,7 +275,7 @@ namespace Antlr_language
                 } else {
                     throw new NotImplementedException();
                 }
-                result = new TypeNode(type, null, null);
+                result = new TypeNode(type, null, null, 0, false);
             } else if (context.identifierType() != null) {
                 result = (TypeNode)Visit(context.identifierType());
             } else {
@@ -283,7 +295,7 @@ namespace Antlr_language
             } else {
                 throw new NotImplementedException();
             }
-            result = new TypeNode(type, null, null);
+            result = new TypeNode(type, null, null, 0, true);
             //Array check expressions here!
             //bool IsArray = false;
             try {
@@ -294,7 +306,7 @@ namespace Antlr_language
                     foreach (var ArraySize in arraySizes) {
                         sizes.Add((ExpressionNode)Visit(ArraySize));
                     }
-                    result = new TypeNode(type, null, sizes);
+                    result = new TypeNode(type, null, sizes, sizes.Count, false);
                 }
             } catch (NullReferenceException e) {
                 System.Console.WriteLine("Error: " + e.Message);

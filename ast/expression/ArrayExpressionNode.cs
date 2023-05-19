@@ -14,28 +14,6 @@ namespace Antlr_language.ast.expression
         {
             this.expressions = expressions;
         }
-
-        //int[] i = {1,2,3};
-
-        public override string CodeGen(int indentation)
-        {
-            string result = "";
-            if (type == null)
-                throw new NotImplementedException("Mising type information, Need to write new {type} [size, size]");
-
-            if (type == null)
-                throw new Exception("Missing type");
-            if (type.OutMostArrayExpression) {
-                result += "new " + type.CodeGen(indentation, true);
-            }
-            result += "{";
-            foreach (var expression in expressions)
-                result += expression.CodeGen(indentation) + ",";
-            result = result.Substring(0, result.Length-1);
-            result += "}";
-
-            return result;
-        }
         
         public List<ExpressionNode> GetExpressions() {
             return expressions;

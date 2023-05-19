@@ -14,21 +14,5 @@ namespace Antlr_language.ast.statement
             this.expression = expression;
         }
 
-        public string CodeGen(int indentation)
-        {
-            string indent = "";
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-            result.Append(indent);
-            result.Append("return ");
-            if (expression != null) {
-                result.Append(expression.CodeGen(indentation) + ";");
-            } else {
-                throw new NotImplementedException();
-            }
-            return result.ToString();
-        }
-
     }
 }

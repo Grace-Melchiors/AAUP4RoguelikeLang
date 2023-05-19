@@ -65,7 +65,7 @@ namespace Antlr_language
 
                     } else {
                         if (expression1Type.Type == Enums.Types.INTEGER && expression2Type.Type == Enums.Types.INTEGER) {
-                            expressionNode.type = new TypeNode(Enums.Types.INTEGER, null, null);
+                            expressionNode.type = new TypeNode(Enums.Types.INTEGER, null, null, 0, false);
                             return expressionNode.type;
                         } else {
                             throw new TypeMismatchException(expression1Type.Type, expression2Type.Type);
@@ -77,7 +77,7 @@ namespace Antlr_language
 
                     } else {
                         if (expression1Type.Type == Enums.Types.INTEGER && expression2Type.Type == Enums.Types.INTEGER) {
-                            expressionNode.type = new TypeNode(Enums.Types.BOOL, null, null);
+                            expressionNode.type = new TypeNode(Enums.Types.BOOL, null, null, 0, false);
                             return expressionNode.type;
                         } else {
                             throw new TypeMismatchException(expression1Type.Type, expression2Type.Type);
@@ -88,7 +88,7 @@ namespace Antlr_language
 
                     } else {
                         if (expression1Type.Type == Enums.Types.BOOL && expression2Type.Type == Enums.Types.BOOL) {
-                            expressionNode.type = new TypeNode(Enums.Types.BOOL, null, null);
+                            expressionNode.type = new TypeNode(Enums.Types.BOOL, null, null, 0, false);
                             return expressionNode.type;
                         } else {
                             throw new TypeMismatchException(expression1Type.Type, expression2Type.Type);
@@ -128,9 +128,9 @@ namespace Antlr_language
 
         public override TypeNode? Visit(ConstantNode context) {
             if (context.boolean != null) {
-                context.type = new TypeNode(Enums.Types.BOOL, null, null);
+                context.type = new TypeNode(Enums.Types.BOOL, null, null, 0, false);
             } else if (context.integer != null) {
-                context.type = new TypeNode(Enums.Types.INTEGER, null, null);
+                context.type = new TypeNode(Enums.Types.INTEGER, null, null, 0, false);
             } else {
                 throw new Exception("Malformed canstantnode.");
             }
@@ -164,7 +164,7 @@ namespace Antlr_language
                 TypeNode? FirstType = Visit(context.expressions.First());
                 if (FirstType == null)
                     throw new Exception("Unknown first type in array expression.");
-                context.type = new TypeNode(FirstType.Type, null, null);
+                context.type = new TypeNode(FirstType.Type, null, null, 0, false);
                 FirstType.OutMostArrayExpression = false;
                 for (int i = 1; i < context.expressions.Count; i++)
                 {
@@ -226,7 +226,7 @@ namespace Antlr_language
                 FunctionDeclarationNode funcDeclNode;
                 try {
                     funcDeclNode = (FunctionDeclarationNode)function;
-                } catch (InvalidCastException e) {
+                } catch (InvalidCastException) {
                     throw new UndefinedVariableException(context.factor2.functionCall.IDENTIFIER);
                 }
                 
@@ -247,7 +247,7 @@ namespace Antlr_language
             }
 
             if (mapLayers == null)
-                throw new UndefinedVariableException(context.factor2.identifier);
+                throw new UndefinedVariableException(context.factor2.identifier ?? "");
             List<IndividualLayerNode>? layersMatchingName = new List<IndividualLayerNode>();
             foreach (var layer in mapLayers)
             {
@@ -255,8 +255,8 @@ namespace Antlr_language
                     layersMatchingName.Add(layer);
                 }
             }
-            Enums.Types type = layersMatchingName[0].type.Type;
-            context.layerType = new TypeNode(type, mapLayers, null);
+            Enums.Types type = layersMatchingName[0].LayerType.Type;
+            context.layerType = new TypeNode(type, mapLayers, null, 0, false);
 
             return context.layerType;
         }

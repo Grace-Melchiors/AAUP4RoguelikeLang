@@ -371,9 +371,9 @@ public class SemanticAnalysis
 
     public Enums.Types VisitFactor(FactorNode factorNode)
     {
-        if(factorNode.GetArrayExpressionNode() != null) { // If the factor node of type "dataType" is an array of "dataTypei"
+        if(factorNode.arrayExpressionsNode != null) { // If the factor node of type "dataType" is an array of "dataTypei"
             // We loop over each expression
-            Enums.Types dataType = VisitArrayExpression(factorNode.GetArrayExpressionNode());
+            Enums.Types dataType = VisitArrayExpression(factorNode.arrayExpressionsNode);
             return dataType;
             
 

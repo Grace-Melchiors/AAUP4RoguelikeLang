@@ -28,7 +28,7 @@ namespace Antlr_language.ast.structure
             return ArraySizes;
         }
 
-        public string CodeGen(int indentation)
+        /*public string CodeGen(int indentation)
         {
             string result = "";
             if (Type == Enums.Types.MAP) {
@@ -43,7 +43,7 @@ namespace Antlr_language.ast.structure
             if (ArraySizes != null) {
                 result += "["; 
                 foreach (ExpressionNode size in ArraySizes) {
-                    result += /*size.CodeGen(indentation) + */",";
+                    result += ",";
                 }
                 result = result.Substring(0, result.Length-1);
                 result += "]";
@@ -68,14 +68,14 @@ namespace Antlr_language.ast.structure
                     if (showSize) {
                         result += size.CodeGen(indentation) + ",";
                     } else {
-                        result += /*size.CodeGen(indentation) + */",";
+                        result += ",";
                     }
                 }
                 result = result.Substring(0, result.Length-1);
                 result += "]";
             }
             return result;
-        }
+        }*/
 
     }
 }

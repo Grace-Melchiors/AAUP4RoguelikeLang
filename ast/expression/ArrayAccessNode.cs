@@ -15,40 +15,5 @@ namespace Antlr_language.ast.expression
             this.indicies = indicies;
         }
 
-
-        public override string CodeGen(int indentation)
-        {
-            string indent = "";
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-
-            result.Append(factor2.CodeGen(indentation));
-            result.Append(indicies.CodeGen(indentation));
-
-            return result.ToString();
-        }
-        /*public override string CodeGen(int indentation)
-        {
-            string result;
-            if (indexs.Count() != 0) {
-                if (VariableName == null)
-                    throw new NotImplementedException();
-                result = VariableName + "[";
-                foreach (ExpressionNode expr in indexs) {
-                    result += expr.CodeGen(indentation) + ",";
-                }
-                //Remove the last ",".
-                result = result.Substring(0, result.Length-1);
-                result += "]";
-            } else {
-                throw new NotImplementedException();
-            }
-            return result;
-        }
-        public override Enums.Types getEvaluationType () {
-            return type;
-        }*/
-
     }
 }

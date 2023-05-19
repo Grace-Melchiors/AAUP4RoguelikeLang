@@ -14,17 +14,6 @@ namespace Antlr_language.ast.expression
             this.identifier = identifier;
             this.functionCall = functionCall;
         }
-
-        public override string CodeGen(int indentation)
-        {
-            if (functionCall != null) {
-                return functionCall.CodeGen(indentation);
-            } else if (identifier != null) {
-                return identifier;
-            } else {
-                throw new NotImplementedException();
-            }
-        }
         
         public string? GetIdentifier() {
             return identifier;

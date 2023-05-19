@@ -29,17 +29,5 @@ namespace Antlr_language.ast.structure
             this.funcDecl = funcDecl;
         }
 
-        public string CodeGen(int indentation)
-        {
-            if (statement != null) {
-                return statement.CodeGen(indentation);
-            } else if (funcDecl != null) {
-                return funcDecl.CodeGen(indentation);
-            }
-            else {
-                throw new NotImplementedException();
-            }
-        }
-
     }
 }

@@ -14,20 +14,5 @@ namespace Antlr_language.ast.expression
             this.arrayDimensions = arrayDimensions;
             this.mapLayer = mapLayer;
         }
-
-        public override string CodeGen(int indentation)
-        {
-            //Map tempMap = new Map();
-            string indent = "";
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-
-            result.Append("new Map(" + arrayDimensions.CodeGen(indentation).Replace("[", "").Replace("]","") + ",");
-            result.Append(mapLayer.CodeGen(indentation));
-            result.Append(")");
-
-            return result.ToString();
-        }
     }
 }

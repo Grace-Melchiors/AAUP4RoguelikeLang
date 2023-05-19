@@ -42,37 +42,5 @@ namespace Antlr_language.ast.statement
             this.statements = statements;
         }
 
-        public string CodeGen(int indentation)
-        {
-            //string indent = "";
-            StringBuilder result = new StringBuilder();
-            //for (int i = 0; i < indentation; i++)
-                //indent +="\t";
-            if (varDecl != null) {
-                result.Append(varDecl.CodeGen(indentation) + ";");
-            } else if (assign != null) {
-                result.Append(assign.CodeGen(indentation) + ";");
-            } else if (expression != null) {
-                result.Append(expression.CodeGen(indentation) + ";");
-            } else if (returnStatement != null) {
-                result.Append(returnStatement.CodeGen(indentation));
-            } else if (block != null) {
-                result.Append(block.CodeGen(indentation));
-            } else if (ifNode != null) {
-                result.Append(ifNode.CodeGen(indentation));
-            } else if (whileNode != null) {
-                result.Append(whileNode.CodeGen(indentation));
-            } else if (forNode != null) {
-                result.Append(forNode.CodeGen(indentation));
-            } else if (chance != null) {
-                result.Append(chance.CodeGen(indentation));
-            } else if (statements != null) {
-                result.Append(statements.CodeGen(indentation));
-            } else {
-                throw new NotImplementedException();
-            }
-            return result.ToString();
-        }
-
     }
 }

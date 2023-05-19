@@ -20,21 +20,5 @@ namespace Antlr_language.ast.expression
             this.arrayDimensions = arrayDimensions;
         }
 
-        public override string CodeGen(int indentation)
-        {
-            string indent = "";
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-            result.Append("(" + layerType.CodeGen(indentation) + ")");
-            result.Append(factor2.CodeGen(indentation) + ".layers");
-            result.Append("[\"" + IDENTIFIER + "\"]");
-            result.Append(".LayerValue");
-            if (arrayDimensions != null)
-                result.Append(arrayDimensions.CodeGen(indentation));
-
-            return result.ToString();
-        }
-
     }
 }

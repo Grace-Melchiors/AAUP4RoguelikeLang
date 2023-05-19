@@ -7,6 +7,6 @@ namespace Antlr_language.ast.structure
     public abstract class LibraryNode : AbstractNode
     {
         public abstract string LibraryName {get; set;}
-        abstract public string CodeGen(int indentation);
+        public abstract string Content {get; set;}
     }
 }

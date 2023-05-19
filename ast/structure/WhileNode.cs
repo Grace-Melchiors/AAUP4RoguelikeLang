@@ -15,19 +15,5 @@ namespace Antlr_language.ast.structure
             this.block = block;
         }
 
-        public string CodeGen(int indentation)
-        {
-            if (expression == null)
-                throw new NotImplementedException();
-            if (block == null)
-                throw new NotImplementedException();
-            //Maybe string builder here?
-            string result = "while (";
-            result += expression.CodeGen(indentation);
-            result += ")\n";
-            result += block.CodeGen(indentation);
-            return result;
-        }
-
     }
 }

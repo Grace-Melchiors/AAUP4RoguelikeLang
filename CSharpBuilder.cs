@@ -8,8 +8,6 @@ public class CSharpBuilder {
     string OutputFile;
     StringBuilder Output = new StringBuilder();
 
-    int[] arr;
-
     public CSharpBuilder() {
         OutputFolder = "Content/output";
         OutputFile = "output" + /*DateTime.Now.ToShortDateString() +*/ ".txt";
@@ -25,6 +23,9 @@ public class CSharpBuilder {
     public void Append(string line)
     {
         Output.Append(line);
+    }
+    public void InsertStringBuilder(StringBuilder sb) {
+        Output = sb;
     }
 
     public void OutputResult () {

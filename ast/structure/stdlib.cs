@@ -8,10 +8,13 @@ namespace Antlr_language.ast.structure
     public class Stdlib : LibraryNode
     {
         public override string LibraryName {get; set;}
-        public override string CodeGen(int indentation) {
+        public override string Content { get; set; }
+        public Stdlib () {
+            LibraryName = "Stdlib";
+
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < 1; i++)
                 indent +="\t";
             result.AppendLine(indent + "static class Stdlib {\n");
             result.AppendLine(indent + "\tpublic static void print (int val) {\n");
@@ -76,7 +79,8 @@ namespace Antlr_language.ast.structure
             
 
             result.AppendLine(indent + "}\n");
-            return result.ToString();
+            
+            Content = result.ToString();
         }
     }
 }
