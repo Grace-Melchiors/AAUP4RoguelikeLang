@@ -34,7 +34,7 @@ parameterArr: '[' (paramaterArrayDenoter)* ']';
 paramaterArrayDenoter: ',';
 
 funcBody: '{' statement*  returnStmt '}'; //Can we put return stmt up in statement?
-returnStmt:  'return ' expression ';';
+returnStmt:  'return' expression ';';
 
 expression
    : factor                             #factorExpression
