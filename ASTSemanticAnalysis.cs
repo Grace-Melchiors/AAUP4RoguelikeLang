@@ -32,70 +32,94 @@ namespace Antlr_language
             return base.Visit(context);
         }
 
+        public override TypeNode? Visit(AssignmentNode context) {
+            if (context.IDENTIFIER != null) {
+                VariableDeclarationNode? decl = (VariableDeclarationNode?)symbolTable.RetrieveSymbol(context.IDENTIFIER);
+                if (decl == null)
+                    throw new UndefinedVariableException(context.IDENTIFIER);
+                
+                context.IdentifierType = decl.Type;
+            }
+            return base.Visit(context);
+        }
         
-        public override TypeNode? Visit(ExpressionNode expressionNode)
+        public override TypeNode? Visit(ExpressionNode context)
         {
-            if (expressionNode.factor != null) {
-                return Visit(expressionNode.factor);
+            if (context.factor != null) {
+                context.type = Visit(context.factor);
+                return context.type;
             }
             
-            
-            TypeNode? expression1Type = null;
-            TypeNode? expression2Type = null;
             // If expression1 has a expression1
-            if (expressionNode.expression1 != null)
+            if (context.expression1 != null)
             {
-                expression1Type = Visit(expressionNode.expression1);
-            }
-            if (expression1Type == null) {
+                context.expression1.type = Visit(context.expression1);
+            } else {
                 throw new Exception("If Factor is null both expressions must be non null.");
             }
             // If expression2 has a expression1
-            if (expressionNode.expression2 != null)
+            if (context.expression2 != null)
             {
-                expression2Type = Visit(expressionNode.expression2);
-            } 
-            if (expression2Type == null) {
+                context.expression2.type = Visit(context.expression2);
+            } else {
                 throw new Exception("If Factor is null both expressions must be non null.");
             }
 
-            if (expressionNode.Operator != null) {
-                if (expressionNode.Operator == Enums.Operators.add || expressionNode.Operator == Enums.Operators.sub || expressionNode.Operator == Enums.Operators.mult || expressionNode.Operator == Enums.Operators.div) {
-                    if (/*Arraystuff*/false) {
-
-                    } else {
-                        if (expression1Type.Type == Enums.Types.INTEGER && expression2Type.Type == Enums.Types.INTEGER) {
-                            expressionNode.type = new TypeNode(Enums.Types.INTEGER, null, null, 0, false);
-                            return expressionNode.type;
+            if (context.Operator != null) {
+                if (context.Operator == Enums.Operators.add || context.Operator == Enums.Operators.sub || context.Operator == Enums.Operators.mult || context.Operator == Enums.Operators.div) {
+                    if (context.expression1.type.IsArray || context.expression2.type.IsArray) {
+                        if (context.expression1.type.IsArray) {
+                            context.type = new TypeNode(Enums.Types.INTEGER, null, null, context.expression1.type.DimensionRank, false);
+                            return context.type;
                         } else {
-                            throw new TypeMismatchException(expression1Type.Type, expression2Type.Type);
+                            context.type = new TypeNode(Enums.Types.INTEGER, null, null, context.expression2.type.DimensionRank, false);
+                            return context.type;
+                        }
+                    } else {
+                        if (context.expression1.type.Type == Enums.Types.INTEGER && context.expression2.type.Type == Enums.Types.INTEGER) {
+                            context.type = new TypeNode(Enums.Types.INTEGER, null, null, 0, false);
+                            return context.type;
+                        } else {
+                            throw new TypeMismatchException(context.expression1.type.Type, context.expression2.type.Type);
                         }
                     }
 
-                } else if (expressionNode.Operator == Enums.Operators.eq || expressionNode.Operator == Enums.Operators.neq || expressionNode.Operator == Enums.Operators.greater || expressionNode.Operator == Enums.Operators.less || expressionNode.Operator == Enums.Operators.geq || expressionNode.Operator == Enums.Operators.leq) {
-                    if (/*Arraystuff*/false) {
-
-                    } else {
-                        if (expression1Type.Type == Enums.Types.INTEGER && expression2Type.Type == Enums.Types.INTEGER) {
-                            expressionNode.type = new TypeNode(Enums.Types.BOOL, null, null, 0, false);
-                            return expressionNode.type;
+                } else if (context.Operator == Enums.Operators.eq || context.Operator == Enums.Operators.neq || context.Operator == Enums.Operators.greater || context.Operator == Enums.Operators.less || context.Operator == Enums.Operators.geq || context.Operator == Enums.Operators.leq) {
+                    if (context.expression1.type.IsArray || context.expression2.type.IsArray) {
+                        if (context.expression1.type.IsArray) {
+                            context.type = new TypeNode(Enums.Types.BOOL, null, null, context.expression1.type.DimensionRank, false);
+                            return context.type;
                         } else {
-                            throw new TypeMismatchException(expression1Type.Type, expression2Type.Type);
+                            context.type = new TypeNode(Enums.Types.BOOL, null, null, context.expression2.type.DimensionRank, false);
+                            return context.type;
+                        }
+                    } else {
+                        if (context.expression1.type.Type == Enums.Types.INTEGER && context.expression2.type.Type == Enums.Types.INTEGER) {
+                            context.type = new TypeNode(Enums.Types.BOOL, null, null, 0, false);
+                            return context.type;
+                        } else {
+                            throw new TypeMismatchException(context.expression1.type.Type, context.expression2.type.Type);
                         }
                     }
-                } else if (expressionNode.Operator == Enums.Operators.and || expressionNode.Operator == Enums.Operators.or) {
-                    if (/*Arraystuff*/false) {
-
-                    } else {
-                        if (expression1Type.Type == Enums.Types.BOOL && expression2Type.Type == Enums.Types.BOOL) {
-                            expressionNode.type = new TypeNode(Enums.Types.BOOL, null, null, 0, false);
-                            return expressionNode.type;
+                } else if (context.Operator == Enums.Operators.and || context.Operator == Enums.Operators.or) {
+                    if (context.expression1.type.IsArray || context.expression2.type.IsArray) {
+                        if (context.expression1.type.IsArray) {
+                            context.type = new TypeNode(Enums.Types.BOOL, null, null, context.expression1.type.DimensionRank, false);
+                            return context.type;
                         } else {
-                            throw new TypeMismatchException(expression1Type.Type, expression2Type.Type);
+                            context.type = new TypeNode(Enums.Types.BOOL, null, null, context.expression2.type.DimensionRank, false);
+                            return context.type;
+                        }
+                    } else {
+                        if (context.expression1.type.Type == Enums.Types.BOOL && context.expression2.type.Type == Enums.Types.BOOL) {
+                            context.type = new TypeNode(Enums.Types.BOOL, null, null, 0, false);
+                            return context.type;
+                        } else {
+                            throw new TypeMismatchException(context.expression1.type.Type, context.expression2.type.Type);
                         }
                     }
                 } else {
-                    throw new InvalidOperator((Enums.Operators)expressionNode.Operator);
+                    throw new InvalidOperator((Enums.Operators)context.Operator);
                 }
             } else {
                 throw new Exception("Must have operator if factor is null.");
@@ -145,13 +169,19 @@ namespace Antlr_language
                 context.type = decl.Type;
             } else if (context.functionCall != null) {
                 FunctionDeclarationNode? decl = (FunctionDeclarationNode?)symbolTable.RetrieveSymbol(context.functionCall.IDENTIFIER);
-                if (decl == null)
-                    throw new UndefinedVariableException(context.identifier ?? "");
-                
-                context.type = decl.Type;
+                if (context.functionCall.LIBRARY == null) {
+
+                    if (decl == null) {
+                        throw new UndefinedVariableException(context.identifier ?? "");
+                    }
+                    context.type = decl.Type;
+                } else {
+                    context.type = null;
+                }
             } else {
                 throw new Exception("Malformed factor2node.");
             }
+            base.Visit(context);
             return context.type;
         }
         public override TypeNode? Visit(ArrayExpressionNode context) {

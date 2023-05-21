@@ -24,7 +24,7 @@ public class CSharpBuilder {
     {
         Output.Append(line);
     }
-    public void InsertStringBuilder(StringBuilder sb) {
+    public void AcceptStringBuilder(StringBuilder sb) {
         Output = sb;
     }
 

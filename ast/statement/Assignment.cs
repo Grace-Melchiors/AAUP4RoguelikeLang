@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Text;
 using Antlr_language.ast.expression;
+using Antlr_language.ast.structure;
 
 namespace Antlr_language.ast.statement
 {
     public class AssignmentNode : AbstractNode
     {
+        public TypeNode IdentifierType {get; set;}
         public string IDENTIFIER {get; private set;}
         public List<ExpressionNode>? ArrayIndicies {get; private set;}
         public List<int>? ArraySizes {get; private set;}

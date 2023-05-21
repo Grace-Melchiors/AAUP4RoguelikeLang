@@ -14,7 +14,7 @@ namespace Antlr_language.ast.structure
 
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 2; i++)
                 indent +="\t";
             result.AppendLine(indent + "static class Stdlib {\n");
             result.AppendLine(indent + "\tpublic static void print (int val) {\n");

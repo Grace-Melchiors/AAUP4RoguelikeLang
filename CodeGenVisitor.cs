@@ -12,12 +12,15 @@ namespace Antlr_language
 {
     public class CodeGenVisitor : AstBaseVisitorBuilder<StringBuilder>
     {
-        int indentation = 2;
+        int Indentation = 2;
+        public CodeGenVisitor (int indentation) {
+            Indentation = indentation;
+        }
         public override StringBuilder Visit(ProgramNode context) {
             
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             result.AppendLine("using System;\n");
             result.AppendLine("namespace " + context.nameSpace);
@@ -60,6 +63,362 @@ namespace Antlr_language
             result.AppendLine("\t    }");
             result.AppendLine("\t}");
 
+            result.AppendLine("\tpublic enum ArithmeticOperator");
+            result.AppendLine("\t{");
+            result.AppendLine("\t    add,");
+            result.AppendLine("\t    sub,");
+            result.AppendLine("\t    mult,");
+            result.AppendLine("\t    div");
+            result.AppendLine("\t}");
+            result.AppendLine("\tpublic enum RelationalOperator");
+            result.AppendLine("\t{");
+            result.AppendLine("\t    less,");
+            result.AppendLine("\t    leq,");
+            result.AppendLine("\t    greater,");
+            result.AppendLine("\t    geq,");
+            result.AppendLine("\t    eq,");
+            result.AppendLine("\t    neq");
+            result.AppendLine("\t}");
+            result.AppendLine("\tpublic enum BooleanOperator");
+            result.AppendLine("\t{");
+            result.AppendLine("\t    and,");
+            result.AppendLine("\t    or");
+            result.AppendLine("\t}");
+            result.AppendLine("\tpublic class ArrayCalculator");
+            result.AppendLine("\t{");
+            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, int rightValue, ArithmeticOperator op) {");
+            result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array rightArray = Array.CreateInstance(typeof(int), dimensionSizes);");
+            result.AppendLine("\t        AssignOperation(rightArray, rightValue);");
+            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static Array ApplyOperation(int leftValue, Array rightArray, ArithmeticOperator op) {");
+            result.AppendLine("\t        int[] dimensionSizes = new int[rightArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < rightArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            dimensionSizes[i] = rightArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array leftArray = Array.CreateInstance(typeof(int), dimensionSizes);");
+            result.AppendLine("\t        AssignOperation(leftArray, leftValue);");
+            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, int rightValue, RelationalOperator op) {");
+            result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array rightArray = Array.CreateInstance(typeof(int), dimensionSizes);");
+            result.AppendLine("\t        AssignOperation(rightArray, rightValue);");
+            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static Array ApplyOperation(int leftValue, Array rightArray, RelationalOperator op) {");
+            result.AppendLine("\t        int[] dimensionSizes = new int[rightArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < rightArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            dimensionSizes[i] = rightArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array leftArray = Array.CreateInstance(typeof(int), dimensionSizes);");
+            result.AppendLine("\t        AssignOperation(leftArray, leftValue);");
+            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    //Assuming all boolean operations are commutative.");
+            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, bool rightValue, BooleanOperator op) {");
+            result.AppendLine("\t        return ApplyOperation(rightValue, leftArray, op);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static Array ApplyOperation(bool leftValue, Array rightArray, BooleanOperator op) {");
+            result.AppendLine("\t        int[] dimensionSizes = new int[rightArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < rightArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            dimensionSizes[i] = rightArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array leftArray = Array.CreateInstance(typeof(bool), dimensionSizes);");
+            result.AppendLine("\t        AssignOperation(leftArray, leftValue);");
+            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, Array rightArray, ArithmeticOperator op)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        if (leftArray.Rank != rightArray.Rank)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            throw new ArgumentException(\"Arrays must have the same number of dimensions.\");");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            if (leftArray.GetLength(i) != rightArray.GetLength(i))");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                throw new ArgumentException(\"Arrays must have the same length in each dimension.\");");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array result = Array.CreateInstance(leftArray.GetType().GetElementType(), dimensionSizes);");
+            result.AppendLine("\t        ApplyOperationRecursive(leftArray, rightArray, result, op);");
+            result.AppendLine("\t        return result;");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, Array rightArray, RelationalOperator op)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        if (leftArray.Rank != rightArray.Rank)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            throw new ArgumentException(\"Arrays must have the same number of dimensions.\");");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            if (leftArray.GetLength(i) != rightArray.GetLength(i))");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                throw new ArgumentException(\"Arrays must have the same length in each dimension.\");");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array result = Array.CreateInstance(typeof(bool), dimensionSizes);");
+            result.AppendLine("\t        ApplyOperationRecursive(leftArray, rightArray, result, op);");
+            result.AppendLine("\t        return result;");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, Array rightArray, BooleanOperator op)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        if (leftArray.Rank != rightArray.Rank)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            throw new ArgumentException(\"Arrays must have the same number of dimensions.\");");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            if (leftArray.GetLength(i) != rightArray.GetLength(i))");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                throw new ArgumentException(\"Arrays must have the same length in each dimension.\");");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array result = Array.CreateInstance(leftArray.GetType().GetElementType(), dimensionSizes);");
+            result.AppendLine("\t        ApplyOperationRecursive(leftArray, rightArray, result, op);");
+            result.AppendLine("\t        return result;");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    private static void ApplyOperationRecursive(Array leftArray, Array rightArray, Array resultArray, ArithmeticOperator op, int[] indices = null, int dimension = 0)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        if (indices == null)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices = new int[leftArray.Rank];");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        int length = leftArray.GetLength(dimension);");
+            result.AppendLine("\t        for (int i = 0; i < length; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices[dimension] = i;");
+            result.AppendLine("\t            if (dimension < leftArray.Rank - 1)");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                ApplyOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            else");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                object leftValue = leftArray.GetValue(indices);");
+            result.AppendLine("\t                object rightValue = rightArray.GetValue(indices);");
+            result.AppendLine("\t                int leftNumber = Convert.ToInt32(leftValue);");
+            result.AppendLine("\t                int rightNumber = Convert.ToInt32(rightValue);");
+            result.AppendLine("\t                int resultValue;");
+            result.AppendLine("\t                switch (op)");
+            result.AppendLine("\t                {");
+            result.AppendLine("\t                    case ArithmeticOperator.add:");
+            result.AppendLine("\t                        resultValue = leftNumber + rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case ArithmeticOperator.sub:");
+            result.AppendLine("\t                        resultValue = leftNumber - rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case ArithmeticOperator.mult:");
+            result.AppendLine("\t                        resultValue = leftNumber * rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case ArithmeticOperator.div:");
+            result.AppendLine("\t                        resultValue = leftNumber / rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    default:");
+            result.AppendLine("\t                        throw new ArgumentException(\"Invalid operator.\");");
+            result.AppendLine("\t                }");
+            result.AppendLine("\t                resultArray.SetValue(resultValue, indices);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    private static void ApplyOperationRecursive(Array leftArray, Array rightArray, Array resultArray, RelationalOperator op, int[] indices = null, int dimension = 0)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        if (indices == null)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices = new int[leftArray.Rank];");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        int length = leftArray.GetLength(dimension);");
+            result.AppendLine("\t        for (int i = 0; i < length; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices[dimension] = i;");
+            result.AppendLine("\t            if (dimension < leftArray.Rank - 1)");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                ApplyOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            else");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                object leftValue = leftArray.GetValue(indices);");
+            result.AppendLine("\t                object rightValue = rightArray.GetValue(indices);");
+            result.AppendLine("\t                int leftNumber = Convert.ToInt32(leftValue);");
+            result.AppendLine("\t                int rightNumber = Convert.ToInt32(rightValue);");
+            result.AppendLine("\t                bool resultValue;");
+            result.AppendLine("\t                switch (op)");
+            result.AppendLine("\t                {");
+            result.AppendLine("\t                    case RelationalOperator.eq:");
+            result.AppendLine("\t                        resultValue = leftNumber == rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case RelationalOperator.geq:");
+            result.AppendLine("\t                        resultValue = leftNumber >= rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case RelationalOperator.greater:");
+            result.AppendLine("\t                        resultValue = leftNumber > rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case RelationalOperator.leq:");
+            result.AppendLine("\t                        resultValue = leftNumber <= rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case RelationalOperator.less:");
+            result.AppendLine("\t                        resultValue = leftNumber < rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case RelationalOperator.neq:");
+            result.AppendLine("\t                        resultValue = leftNumber != rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    default:");
+            result.AppendLine("\t                        throw new ArgumentException(\"Invalid operator.\");");
+            result.AppendLine("\t                }");
+            result.AppendLine("\t                resultArray.SetValue(resultValue, indices);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    private static void ApplyOperationRecursive(Array leftArray, Array rightArray, Array resultArray, BooleanOperator op, int[] indices = null, int dimension = 0)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        if (indices == null)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices = new int[leftArray.Rank];");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        int length = leftArray.GetLength(dimension);");
+            result.AppendLine("\t        for (int i = 0; i < length; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices[dimension] = i;");
+            result.AppendLine("\t            if (dimension < leftArray.Rank - 1)");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                ApplyOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            else");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                object leftValue = leftArray.GetValue(indices);");
+            result.AppendLine("\t                object rightValue = rightArray.GetValue(indices);");
+            result.AppendLine("\t                bool leftNumber = Convert.ToBoolean(leftValue);");
+            result.AppendLine("\t                bool rightNumber = Convert.ToBoolean(rightValue);");
+            result.AppendLine("\t                bool resultValue;");
+            result.AppendLine("\t                switch (op)");
+            result.AppendLine("\t                {");
+            result.AppendLine("\t                    case BooleanOperator.and:");
+            result.AppendLine("\t                        resultValue = leftNumber && rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    case BooleanOperator.or:");
+            result.AppendLine("\t                        resultValue = leftNumber || rightNumber;");
+            result.AppendLine("\t                        break;");
+            result.AppendLine("\t                    default:");
+            result.AppendLine("\t                        throw new ArgumentException(\"Invalid operator.\");");
+            result.AppendLine("\t                }");
+            result.AppendLine("\t                resultArray.SetValue(resultValue, indices);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    ");
+            result.AppendLine("\t    public static void AssignOperation(Array leftArray, Array rightArray, int[] offset)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        if (leftArray.Rank < rightArray.Rank)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            throw new ArgumentException(\"rightArray must less or equal amount of dimensions as leftArray.\");");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        if (leftArray.Rank != offset.Length)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            throw new ArgumentException(\"Offset must have the same number of entries as dimensions in leftArray.\");");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            if (leftArray.GetLength(i) < rightArray.GetLength(i) + offset[i])");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                throw new ArgumentException(\"The inserted array can not be assigned outside leftArray.\");");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            if (offset[i] < 0) {");
+            result.AppendLine("\t                throw new ArgumentException(\"Offset can not be negative.\");");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        AssignOperationRecursive(leftArray, rightArray, offset);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static void AssignOperation(Array leftArray, int rightValue)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array rightArray = Array.CreateInstance(rightValue.GetType(), dimensionSizes);");
+            result.AppendLine("\t        FillArrayRecursive(rightArray, rightValue);");
+            result.AppendLine("\t        AssignOperationRecursive(leftArray, rightArray);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    public static void AssignOperation(Array leftArray, bool rightValue)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
+            result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        Array rightArray = Array.CreateInstance(rightValue.GetType(), dimensionSizes);");
+            result.AppendLine("\t        FillArrayRecursive(rightArray, rightValue);");
+            result.AppendLine("\t        AssignOperationRecursive(leftArray, rightArray);");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    private static void FillArrayRecursive (Array arrToFill, object val, int[] indices = null, int dimension = 0) {");
+            result.AppendLine("\t        if (indices == null)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices = new int[arrToFill.Rank];");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        int length = arrToFill.GetLength(dimension);");
+            result.AppendLine("\t        for (int i = 0; i < length; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices[dimension] = i;");
+            result.AppendLine("\t            if (dimension < arrToFill.Rank - 1)");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                FillArrayRecursive(arrToFill, val, indices, dimension + 1);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            else");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                arrToFill.SetValue(val, indices);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t    private static void AssignOperationRecursive(Array leftArray, Array rightArray, int[] offset = null, int[] indices = null, int[] inputIndicies = null , int dimension = 0)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        if (offset == null)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            offset = new int[leftArray.Rank];");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        if (indices == null)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices = new int[leftArray.Rank];");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        if (inputIndicies == null)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            inputIndicies = new int[rightArray.Rank];");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        int length = rightArray.GetLength(dimension);");
+            result.AppendLine("\t        for (int i = 0; i < length; i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            indices[dimension] = i;");
+            result.AppendLine("\t            inputIndicies[dimension] = i;");
+            result.AppendLine("\t            if (dimension < rightArray.Rank - 1)");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                AssignOperationRecursive(leftArray, rightArray, offset, indices, inputIndicies, dimension + 1);");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t            else");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                object rightValue = rightArray.GetValue(inputIndicies);");
+            result.AppendLine("\t                leftArray.SetValue(rightValue, (int[])ApplyOperation(indices, offset, ArithmeticOperator.add));");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t    }");
+            result.AppendLine("\t}");
+
             result.AppendLine("\tclass Program");
             result.AppendLine("\t{");
             foreach (LibraryNode library in context.libraryNodes) {
@@ -71,7 +430,7 @@ namespace Antlr_language
             
             result.AppendLine("\t\tpublic class MLCGRandom");
             result.AppendLine("\t\t{");
-            result.AppendLine("\t\t    //private int a= 1664525; //Knuth");
+            //result.AppendLine("\t\t    //private int a= 1664525; //Knuth");
             result.AppendLine("\t\t    private  int a = 69069; //Marsagli");
             result.AppendLine("\t\t    private int c = 1;");
             result.AppendLine("\t\t    private long m = (long)Math.Pow(2,32);");
@@ -100,10 +459,10 @@ namespace Antlr_language
             result.AppendLine("\t\tstatic void Main(string[] args)");
             result.AppendLine("\t\t{");
             foreach (LineNode line in context.Statements) {
-                indentation++;
+                Indentation++;
                 result.Append(Visit(line));
                 result.AppendLine();
-                indentation--;
+                Indentation--;
             }
             result.AppendLine("\t\t}");
             result.AppendLine("\t}");
@@ -128,15 +487,23 @@ namespace Antlr_language
         
         
         public override StringBuilder Visit(StatementNode context) {
+            string indent = "";
             StringBuilder result = new StringBuilder();
+            for (int i = 0; i < Indentation; i++)
+                indent +="\t";
+            
             if (context.varDecl != null) {
+                result.Append(indent);
                 result.Append(Visit(context.varDecl) + ";");
             } else if (context.assign != null) {
+                result.Append(indent);
                 result.Append(Visit(context.assign) + ";");
             } else if (context.expression != null) {
+                result.Append(indent);
                 result.Append(Visit(context.expression) + ";");
             } else if (context.returnStatement != null) {
-                result.Append(Visit(context.returnStatement));
+                result.Append(indent);
+                result.Append(Visit(context.returnStatement) + ";");
             } else if (context.block != null) {
                 result.Append(Visit(context.block));
             } else if (context.ifNode != null) {
@@ -155,11 +522,7 @@ namespace Antlr_language
             return result;
         }
         public override StringBuilder Visit(VariableDeclarationNode context) {
-            string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-            result.Append(indent);
             result.Append(Visit(context.Type));
             result.Append(" ");
             result.Append(context.identifier);
@@ -170,14 +533,20 @@ namespace Antlr_language
                 if (context.Type.GetNodeType() == Enums.Types.INTEGER) {
                     if (context.Type.IsArray) {
                         result.Append(" = new ");
-                        result.Append(context.Type);
+                        bool tmp = context.Type.WriteArraySizes;
+                        context.Type.WriteArraySizes = true;
+                        result.Append(Visit(context.Type));
+                        context.Type.WriteArraySizes = tmp;
                     } else {
                         result.Append(" = " + Constants.INTEGER_DEFAULT);
                     }
                 } else if (context.Type.GetNodeType() == Enums.Types.BOOL) {
                     if (context.Type.IsArray) {
                         result.Append(" = new ");
+                        bool tmp = context.Type.WriteArraySizes;
+                        context.Type.WriteArraySizes = true;
                         result.Append(Visit(context.Type));
+                        context.Type.WriteArraySizes = tmp;
                     } else {
                         result.Append(" = " + Constants.BOOL_DEFAULT);
                     }
@@ -191,39 +560,62 @@ namespace Antlr_language
             return result;
         }
         public override StringBuilder Visit(AssignmentNode context) {
-            string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-            result.Append(indent);
-
-            result.Append(context.IDENTIFIER);
-            if (context.ArrayIndicies != null) {
-                result.Append("[");
-                if (context.ArrayIndicies.Count > 0) {
-                    foreach(var exp in context.ArrayIndicies) {
-                        result.Append(Visit(exp));
-                        result.Append(",");
+            if (context.IdentifierType != null) {
+                if (context.IdentifierType.DimensionRank != 0) {
+                    result.Append("ArrayCalculator.AssignOperation(");
+                    result.Append(context.IDENTIFIER);
+                    result.Append(", ");
+                    result.Append(Visit(context.expression));
+                    if (context.expression.type != null && context.expression.type.IsArray) {
+                        if (context.ArrayIndicies != null) {
+                            result.Append(", new int[]{");
+                            if (context.ArrayIndicies.Count > 0) {
+                                foreach(var exp in context.ArrayIndicies) {
+                                    result.Append(Visit(exp));
+                                    result.Append(",");
+                                }
+                                result.Length--;
+                            }
+                            result.Append("}");
+                        } else {
+                            result.Append(", new int[]{");
+                            for (int i = 0; i < context.expression.type.DimensionRank; i++) {
+                                result.Append(0);
+                                result.Append(",");
+                            }
+                            result.Length--;
+                            result.Append("}");
+                        }
                     }
-                    result.Length--;
+                    result.Append(")");
+                } else {
+                    result.Append(context.IDENTIFIER);
+                    if (context.ArrayIndicies != null) {
+                        result.Append("[");
+                        if (context.ArrayIndicies.Count > 0) {
+                            foreach(var exp in context.ArrayIndicies) {
+                                result.Append(Visit(exp));
+                                result.Append(",");
+                            }
+                            result.Length--;
+                        }
+                        result.Append("]");
+                    }
+                    result.Append(" = ");
+                    result.Append(Visit(context.expression));
                 }
-                result.Append("]");
+                
             }
-            result.Append(" = ");
-            result.Append(Visit(context.expression));
+            
             
             return result;
         }
         public override StringBuilder Visit(ReturnStatementNode context) {
-            string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
-                indent +="\t";
-            result.Append(indent);
             result.Append("return ");
             if (context.expression != null) {
                 result.Append(Visit(context.expression));
-                result.Append(";");
             } else {
                 throw new NotImplementedException();
             }
@@ -236,20 +628,20 @@ namespace Antlr_language
                 throw new NotImplementedException();
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             
             //if (elseIfNode != null) {
-            //    result.Append(indent);
             //}
+            result.Append(indent);
             result.Append("if (");
             result.Append(Visit(context.expression));
-            result.Append(")");
+            result.AppendLine(")");
             result.Append(Visit(context.block));
 
             if (context.elseBlock != null) {
                 result.Append(indent);
-                result.Append("else ");
+                result.AppendLine("else ");
                 result.Append(Visit(context.elseBlock));
             }
             return result;
@@ -260,7 +652,12 @@ namespace Antlr_language
             if (context.block == null)
                 throw new NotImplementedException();
             //Maybe string builder here?
-            StringBuilder result = new StringBuilder("while (");
+            string indent = "";
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < Indentation; i++)
+                indent +="\t";
+            result.Append(indent);
+            result.Append("while (");
             result.Append(Visit(context.expression));
             result.AppendLine(")");
             result.Append(Visit(context.block));
@@ -268,7 +665,12 @@ namespace Antlr_language
             return result;
         }
         public override StringBuilder Visit(ForNode context) {
-            StringBuilder result = new StringBuilder("for (");
+            string indent = "";
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < Indentation; i++)
+                indent +="\t";
+            result.Append(indent);
+            result.Append("for (");
             result.Append(Visit(context.declaration));
             result.Append(";");
             result.Append(Visit(context.expression));
@@ -281,7 +683,7 @@ namespace Antlr_language
         public override StringBuilder Visit(ChanceNode context) {
             StringBuilder result = new StringBuilder();
             string indent = "";
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
 
             
@@ -293,17 +695,17 @@ namespace Antlr_language
             for (int i = 0; i < context.weights.Count; i++) {
                 var weight = context.weights[i];
                 result.Append(indent);
-                indentation++;
+                Indentation++;
                 result.Append("_sum += ");
                 result.Append(Visit(weight));
                 result.AppendLine(";");
-                indentation--;
+                Indentation--;
                 result.Append(indent);
-                indentation++;
+                Indentation++;
                 result.Append("int _sum"+i+" = ");
                 result.Append(Visit(weight));
                 result.AppendLine(";");
-                indentation--;
+                Indentation--;
             }
             
             result.Append(indent);
@@ -312,16 +714,16 @@ namespace Antlr_language
                 var weight = context.weights[i];
                 var block = context.blocks[i];
                 result.Append(indent);
-                result.Append("if (_chance <_sum"+i+ ")");
+                result.AppendLine("if (_chance <_sum"+i+ ")");
                 //result.Append(indent);
-                indentation++;
+                Indentation++;
                 result.Append(Visit(block));
-                indentation--;
+                Indentation--;
                 result.Append(indent);
                 result.AppendLine("_chance = _chance<_sum"+i+"?_sum:_chance-_sum"+i+";");
             }
             indent = "";
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             result.Append(indent);
             result.AppendLine("}");
@@ -331,7 +733,7 @@ namespace Antlr_language
         public override StringBuilder Visit(StatementsNode context) {
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             foreach (StatementNode node in context.statements) {
                 result.Append(indent);
@@ -343,12 +745,12 @@ namespace Antlr_language
         public override StringBuilder Visit(FunctionDeclarationNode context) {
             StringBuilder result = new StringBuilder();
             string indent = "";
-            for (int i = 0; i < indentation; i++) {
+            for (int i = 0; i < Indentation; i++) {
                 indent += "\t";
             }
             result.AppendLine();
             result.Append(indent);
-            result.Append("static ");
+            result.Append("public static ");
             result.Append(Visit(context.Type));
             result.Append(" " + context.Identifier + " ");
             //System.Console.WriteLine("Test from: FunctionDeclarationNode");
@@ -410,9 +812,27 @@ namespace Antlr_language
                     result.Append(Visit(context.factor));
                 }
             } else if (context.Operator != null && context.expression1 != null && context.expression2 != null) {
-                result.Append(Visit(context.expression1));
-                result.Append(Enums.OperatorToString((Enums.Operators)context.Operator));
-                result.Append(Visit(context.expression2));
+                if ((context.expression1.type?.IsArray ?? false) == false && (context.expression2.type?.IsArray ?? false) == false) {
+                    result.Append(Visit(context.expression1));
+                    result.Append(Enums.OperatorToString((Enums.Operators)context.Operator));
+                    result.Append(Visit(context.expression2));
+                } else {
+                    if ((Enums.Operators)context.Operator == Enums.Operators.add || (Enums.Operators)context.Operator == Enums.Operators.sub || (Enums.Operators)context.Operator == Enums.Operators.mult || (Enums.Operators)context.Operator == Enums.Operators.div) {
+                        result.Append("((int[");
+                        result.Append(',', Math.Max(context.expression1.type.DimensionRank, context.expression2.type.DimensionRank) - 1);
+                        result.Append("])ArrayCalculator.ApplyOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", ArithmeticOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
+                    } else if ((Enums.Operators)context.Operator == Enums.Operators.greater || (Enums.Operators)context.Operator == Enums.Operators.geq || (Enums.Operators)context.Operator == Enums.Operators.less || (Enums.Operators)context.Operator == Enums.Operators.leq || (Enums.Operators)context.Operator == Enums.Operators.neq || (Enums.Operators)context.Operator == Enums.Operators.eq) {
+                        result.Append("((bool[");
+                        result.Append(',', Math.Max(context.expression1.type.DimensionRank, context.expression2.type.DimensionRank) - 1);
+                        result.Append("])ArrayCalculator.ApplyOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", RelationalOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
+                    } else if ((Enums.Operators)context.Operator == Enums.Operators.and || (Enums.Operators)context.Operator == Enums.Operators.or) {
+                        result.Append("((bool[");
+                        result.Append(',', Math.Max(context.expression1.type.DimensionRank, context.expression2.type.DimensionRank) - 1);
+                        result.Append("])ArrayCalculator.ApplyOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", BooleanOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
+                    } else {
+                        throw new Exception("Invalid operator.");
+                    }
+                }
             } else {
                 throw new NotImplementedException();
             }
@@ -451,7 +871,6 @@ namespace Antlr_language
             } else {
                 throw new NotImplementedException();
             }
-            System.Console.WriteLine(result);
             return result;
         }
         public override StringBuilder Visit(Factor2Node context) {
@@ -516,7 +935,7 @@ namespace Antlr_language
             //Map tempMap = new Map();
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
 
             result.Append("new Map(" + Visit(context.arrayDimensions).Replace("[", "").Replace("]","") + ",");
@@ -528,7 +947,7 @@ namespace Antlr_language
         public override StringBuilder Visit(ArrayDimensionsNode context) {
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             result.Append("["); 
             foreach (ExpressionNode size in context.expressions) {
@@ -543,7 +962,7 @@ namespace Antlr_language
         public override StringBuilder Visit(MapLayerNode context) {
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             
             
@@ -559,7 +978,7 @@ namespace Antlr_language
         public override StringBuilder Visit(IndividualLayerNode context) {
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             result.Append("new MapLayer (");
             result.Append("\"");
@@ -577,7 +996,7 @@ namespace Antlr_language
         public override StringBuilder Visit(ArrayAccessNode context) {
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
 
             result.Append(Visit(context.factor2));
@@ -588,7 +1007,7 @@ namespace Antlr_language
         public override StringBuilder Visit(MapAccessNode context) {
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             if (context.layerType == null)
                 throw new Exception("Missing Layer type.");
@@ -614,17 +1033,17 @@ namespace Antlr_language
         public override StringBuilder Visit(BlockNode context) {
             string indent = "";
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < indentation; i++)
+            for (int i = 0; i < Indentation; i++)
                 indent +="\t";
             result.Append(indent);
             result.AppendLine("{");
             foreach (StatementNode statement in context.statementNodes) {
                 //for (int i = 0; i < indentation; i++)
                     //result +="\t";
-                indentation++;
+                Indentation++;
                 result.Append(Visit(statement));
                 result.AppendLine();
-                indentation--;
+                Indentation--;
             }
             result.Append(indent);
             result.AppendLine("}");

@@ -33,9 +33,9 @@ AbstractNode AST = builder.Visit((vestaContext));
 ASTSemanticAnalysisVisitor TypeIdentifier = new ASTSemanticAnalysisVisitor();
 TypeIdentifier.Visit((dynamic)AST);
 
-CodeGenVisitor CodeGenerator = new CodeGenVisitor();
+CodeGenVisitor CodeGenerator = new CodeGenVisitor(2);
 
-CSB.InsertStringBuilder(CodeGenerator.Visit((dynamic)AST));
+CSB.AcceptStringBuilder(CodeGenerator.Visit((dynamic)AST));
 CSB.OutputResult();
 //CodeGenVisitor CodeGen = new CodeGenVisitor();
 //CodeGen.Visit((dynamic)AST);
