@@ -51,7 +51,7 @@ public class Store
 
 public class Map
 {
-    public Dictionary<string, object> layers { get; } = new();
+    public Dictionary<string, object> layers { get; set; } = new();
     public int d1;
     public int d2;
 
@@ -59,6 +59,12 @@ public class Map
     {
         this.d1 = d1;
         this.d2 = d2;
+    }
+    public Map clone()
+    {
+        Map returnMap = new Map(d1, d2);
+        returnMap.layers = layers.ToDictionary(entry => entry.Key, entry => entry.Value);
+        return returnMap;
     }
 }
 
@@ -179,10 +185,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return array;
     }
-    public override object? VisitReturnType(VestaParser.ReturnTypeContext context) {
-        throw new NotImplementedException();
-    }
-    /* functionDclr: identifierType IDENTIFIER '('(funcParams)?')' funcBody; */
+
+    /* functionDclr: returnType IDENTIFIER '('(funcParams)?')' funcBody; */
     public override object? VisitFunctionDecl(VestaParser.FunctionDeclContext context)
     {
         var funcName = context.IDENTIFIER().GetText();
@@ -246,10 +250,11 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             result = Visit(context.funcBody());
             
             //Check if result matches expected value.
-            
+            compareReturnResult(result, returnType);
             
             //Reset scope
             store = currentScope;
+            if (result is Map mapReturn) return mapReturn.clone();
             return result;
         };
 
@@ -257,7 +262,70 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         
         return null;
     }
-    
+
+    bool compareReturnResult(object result, object returnType)
+    {
+        //If array
+        if (returnType is ArrDesc arrDesc)
+        {
+            if (result is not Array arr) throw new Exception($"Expected return type to be an {arrDesc.typeBase.GetType()} array");
+            if (arrDesc.dimensions.Length != getDepth(arr)) throw new Exception($"Amount of dimensions does not match in return parameter");
+            if (arrDesc.typeBase.GetType()!=getBaseType(arr)) throw new Exception($"Expected return type to be an {arrDesc.typeBase.GetType()} array");
+
+            return true;
+        }
+        
+        //If map
+        if (returnType is Map returnMap)
+        {
+            if (result is not Map resultMap)
+                throw new Exception($"Expected return type of map, not {result.GetType()}");
+
+            foreach (var key in returnMap.layers.Keys)
+            {
+                if (!resultMap.layers.ContainsKey(key)) throw new Exception($"Returned map does not contain key {key}");
+                if (!compareType(resultMap.layers[key], returnMap.layers[key]))
+                    throw new Exception($"Types of layers do not match");
+            }
+
+            return true;
+        }
+        //If int or bool
+        if(result.GetType() != returnType.GetType()) throw new Exception($"Expected returnType {returnType.GetType()}, not {result.GetType()}");
+        return true;
+    }
+    //Only used for mapLayer comparisons
+    bool compareType(object mapObject, object returnObject)
+    {
+        //Get example from first index in map
+        for (int i = 0; i < 2; i++)
+        {
+            if (mapObject is Array arr)
+            {
+                mapObject = arr.GetValue(0);
+            }
+            else throw new Exception($"Error layer does not have 2 dimensions");
+        }
+
+        if (mapObject.GetType() != returnObject.GetType()) return false;
+        if (mapObject is Array arr1 && returnObject is Array arr2)
+        {
+            return checkDimensionsOfArrays(arr1, arr2);
+        }
+
+        return true;
+    }
+
+    bool checkDimensionsOfArrays(object? o1, object o2)
+    {
+        if (o1 is Array arr1 && o2 is Array arr2)
+        {
+            if (arr1.Length == arr2.Length) return compareReturnResult(arr1.GetValue(0), arr2.GetValue(0));
+            throw new Exception($"Lengths of arrays do not match {arr1.Length} and {arr2.Length}");
+        }
+        if (o1.GetType() == o2.GetType()) return true;
+        throw new Exception($"Type of layer did not match {o1.GetType()} and {o2.GetType()}");
+    }
 
     /* funcParams: parameter (',' parameter)* ; */
     public override object? VisitFuncParams(VestaParser.FuncParamsContext context)
@@ -314,6 +382,45 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         //if array, need to return arrDesc
         return new ArrDesc(result, (Array)Visit(context.parameterArr()));
     }
+    /*verboseComplextype: 'map' mapLayer; */
+    public override object? VisitVerboseComplextype(VestaParser.VerboseComplextypeContext context)
+    {
+        Map resultMap = new Map(1, 1);
+        
+        //Need to parse each array element.
+        var layerArr = (Array)Visit(context.mapLayer());
+        for (int i = 0; i < layerArr.Length; i++)
+        {
+            if (layerArr.GetValue(i) is not LayerDesc layerDesc)
+            { throw new Exception($"Layer not parsed correctly"); }
+
+            resultMap.layers[layerDesc.identifier] = layerDesc.value;
+        }
+        return resultMap;
+    }
+
+    /* returnType: TYPE (parameterArr)? | verboseComplextype;
+     Must return a type that can be comparable with */
+
+    public override object? VisitReturnType(VestaParser.ReturnTypeContext context)
+    {
+        if (context.verboseComplextype() is not null) return Visit(context.verboseComplextype());
+        object result;
+        string baseType = context.TYPE().GetText();
+        
+            
+        if (baseType == "int") { result= 0; }
+        else if (baseType == "bool") { result= false; }
+        else{ throw new Exception($"type {baseType} undefined"); }
+        if (context.parameterArr() is null)
+        {
+            return result;
+        }
+        //if array, need to return arrDesc
+        return new ArrDesc(result, (Array)Visit(context.parameterArr())); 
+       
+    }
+
     /* funcBody: '{' line*  returnStmt '}'; */
     public override object? VisitFuncBody(VestaParser.FuncBodyContext context)
     {
@@ -412,6 +519,10 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                 return value;
             }
         }
+        //Since semantics do not allow this, if assigned to array and not immediaitely inserted, throw error
+        if (value is Array valueArr)
+            throw new Exception($"Cannot quickAssign an array with another array, must be with a basic type.");
+        
         if (ass is Array arrAss2)
         {
             object[] result = new Object[arrAss2.Length]; 
@@ -502,7 +613,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         else if (type is Map map)
         {
             checkType<Map>(value);
-            store.variables[varName] = value;
+            store.variables[varName] = ((Map)value).clone();
         }
         else if (type is int n) //If type is int
         {
@@ -578,7 +689,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             if (layerArr.GetValue(i) is not LayerDesc layerDesc)
             { throw new Exception($"Layer not parsed correctly"); }
 
-            resultMap.layers[layerDesc.identifier] = multiDimensionArrGen(dimensionsArr, layerDesc.value, 2);
+            resultMap.layers[layerDesc.identifier] = mapLayerGen(dimensionsArr, layerDesc.value, 2);
         }
         return resultMap;
     }
@@ -614,7 +725,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             {
                 if (getBaseType(value)== arrDesc.typeBase.GetType())
                 {
-                    result = value;
+                    result = multiDimensionArrGen(arrDesc.dimensions, value, arrDesc.dimensions.Length);
                 }
                 else
                 {
@@ -646,7 +757,24 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         return new LayerDesc(identifier, result);
     }
+    object? mapLayerGen(Array dimensions, object? assignValue, int dimensionsLength)
+    {
+        if (dimensionsLength == 0)  //if no more arrays, return assignValue
+        {
+            return assignValue;
+        }
+        if (dimensions.GetValue(dimensions.Length-dimensionsLength) is int n)   
+        {//Calculates current dimension to work on
+            object[] result = new object[n];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = mapLayerGen(dimensions, assignValue, dimensionsLength - 1);
+            } //Calls itself with -1 dimensions
 
+            return result;
+        }
+        throw new Exception($"Must describe index with type int");
+    }
     object? multiDimensionArrGen(Array dimensions, object? assignValue, int dimensionsLength)
     {
         if (assignValue is Array arrAss)
@@ -656,15 +784,17 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                 return assignValue;
             }
             //Deal with error case
-            if (getDepth(arrAss) > dimensionsLength)
+            //if (getDepth(arrAss) > dimensionsLength)
+            else
             {
-                throw new Exception($"Cannot assign an array with {getDepth(arrAss)} dimensions to an array with {dimensionsLength}");
+                throw new Exception($"Cannot assign an array with {getDepth(arrAss)} dimensions to an array with {dimensionsLength} dimensions");
             }
         }
         if (dimensionsLength == 0)  //if no more arrays, return assignValue
         {
             return assignValue;
         }
+
         if (dimensions.GetValue(dimensions.Length-dimensionsLength) is int n)   
         {//Calculates current dimension to work on
             object[] result = new object[n];
@@ -788,6 +918,18 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         //Handle not array
         
+        //If Maps
+        if (originalValue is Map map)
+        {
+            if (value is Map assignMap)
+            {
+                relevantStore.variables[varName] = handleAssignMap(map, assignMap);
+                return null;
+            }
+
+            throw new Exception($"Cannot assign map to non map type");
+        }
+        
         if (originalValue is Array arr) //if array need array Assign
         {
             if (getBaseType(arr) == getBaseType(value))
@@ -809,6 +951,22 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return null;
     }
 
+    Map handleAssignMap(Map map, Map assignMap)
+    {
+        if (map.d1 != assignMap.d1 || map.d2 != assignMap.d2)
+            throw new Exception($"Dimensions of maps must match to assign");
+        
+        //If dimensions match start assignning layers
+        foreach (string key in assignMap.layers.Keys)
+        {
+            if (map.layers.ContainsKey(key))
+            {
+                map.layers[key] = assignMap.layers[key];
+            }
+            else throw new Exception($"Cannot assign as map is missing {key} layer");
+        }
+        return map;
+    }
     object insertPrefab(object bigArray, object insertArray, Array indexList, int indexCounter)
     {
 
