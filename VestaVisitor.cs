@@ -51,7 +51,7 @@ public class Store
 
 public class Map
 {
-    public Dictionary<string, object> layers { get; } = new();
+    public Dictionary<string, object> layers { get; set; } = new();
     public int d1;
     public int d2;
 
@@ -59,6 +59,12 @@ public class Map
     {
         this.d1 = d1;
         this.d2 = d2;
+    }
+    public Map clone()
+    {
+        Map returnMap = new Map(d1, d2);
+        returnMap.layers = layers.ToDictionary(entry => entry.Key, entry => entry.Value);
+        return returnMap;
     }
 }
 
@@ -248,6 +254,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             
             //Reset scope
             store = currentScope;
+            if (result is Map mapReturn) return mapReturn.clone();
             return result;
         };
 
@@ -606,7 +613,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         else if (type is Map map)
         {
             checkType<Map>(value);
-            store.variables[varName] = value;
+            store.variables[varName] = ((Map)value).clone();
         }
         else if (type is int n) //If type is int
         {
