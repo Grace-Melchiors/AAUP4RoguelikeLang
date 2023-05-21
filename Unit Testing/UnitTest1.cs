@@ -261,7 +261,7 @@ public class CodeGenerationTest
     [Test] //The function Body is used as it returns the desired value
     public void TestArrayIdentifierExpression()
     {
-        VestaParser parser = Setup("{int[3,3] myVar = {1,2,3}; return myVar[2,2];}");
+        VestaParser parser = Setup("{int[3,3] myVar = 3; return myVar[2,2];}");
     
         VestaParser.FuncBodyContext context = parser.funcBody();
         var visitor = new VestaVisitor();
@@ -529,12 +529,12 @@ public class ParserTest
     [Test]
     public void TestMapExpression()
     {
-        VestaParser parser = Setup("myMap = [3,3]{int counter; bool walkable=true}; myMap.counter = {1,2,3};");
+        VestaParser parser = Setup("myMap = [3,3]{int counter, bool walkable=true}; myMap.counter = {1,2,3};");
 
         VestaParser.AssignmentContext context = parser.assignment();
 
         string content = context.GetText();
-        string result = "myMap=[3,3]{intcounter;boolwalkable=true}";
+        string result = "myMap=[3,3]{intcounter,boolwalkable=true}";
 
         Assert.AreEqual(result, content);
     }
