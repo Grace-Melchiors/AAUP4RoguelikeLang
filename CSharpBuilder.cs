@@ -8,10 +8,6 @@ public class CSharpBuilder {
     string OutputFile;
     StringBuilder Output = new StringBuilder();
 
-    public CSharpBuilder() {
-        OutputFolder = "Content/output";
-        OutputFile = "output" + /*DateTime.Now.ToShortDateString() +*/ ".txt";
-    }
     public CSharpBuilder(string outputFolder, string outputFile) {
         OutputFolder = outputFolder;
         OutputFile = outputFile;
