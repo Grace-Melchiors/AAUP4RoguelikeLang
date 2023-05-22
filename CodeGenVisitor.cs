@@ -86,7 +86,7 @@ namespace Antlr_language
             result.AppendLine("\t}");
             result.AppendLine("\tpublic class ArrayCalculator");
             result.AppendLine("\t{");
-            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, int rightValue, ArithmeticOperator op) {");
+            result.AppendLine("\t    public static Array ComputeOperation(Array leftArray, int rightValue, ArithmeticOperator op) {");
             result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
             result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
             result.AppendLine("\t        {");
@@ -94,9 +94,9 @@ namespace Antlr_language
             result.AppendLine("\t        }");
             result.AppendLine("\t        Array rightArray = Array.CreateInstance(typeof(int), dimensionSizes);");
             result.AppendLine("\t        AssignOperation(rightArray, rightValue);");
-            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t        return ComputeOperation(leftArray, rightArray, op);");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    public static Array ApplyOperation(int leftValue, Array rightArray, ArithmeticOperator op) {");
+            result.AppendLine("\t    public static Array ComputeOperation(int leftValue, Array rightArray, ArithmeticOperator op) {");
             result.AppendLine("\t        int[] dimensionSizes = new int[rightArray.Rank];");
             result.AppendLine("\t        for (int i = 0; i < rightArray.Rank; i++)");
             result.AppendLine("\t        {");
@@ -104,9 +104,9 @@ namespace Antlr_language
             result.AppendLine("\t        }");
             result.AppendLine("\t        Array leftArray = Array.CreateInstance(typeof(int), dimensionSizes);");
             result.AppendLine("\t        AssignOperation(leftArray, leftValue);");
-            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t        return ComputeOperation(leftArray, rightArray, op);");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, int rightValue, RelationalOperator op) {");
+            result.AppendLine("\t    public static Array ComputeOperation(Array leftArray, int rightValue, RelationalOperator op) {");
             result.AppendLine("\t        int[] dimensionSizes = new int[leftArray.Rank];");
             result.AppendLine("\t        for (int i = 0; i < leftArray.Rank; i++)");
             result.AppendLine("\t        {");
@@ -114,9 +114,9 @@ namespace Antlr_language
             result.AppendLine("\t        }");
             result.AppendLine("\t        Array rightArray = Array.CreateInstance(typeof(int), dimensionSizes);");
             result.AppendLine("\t        AssignOperation(rightArray, rightValue);");
-            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t        return ComputeOperation(leftArray, rightArray, op);");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    public static Array ApplyOperation(int leftValue, Array rightArray, RelationalOperator op) {");
+            result.AppendLine("\t    public static Array ComputeOperation(int leftValue, Array rightArray, RelationalOperator op) {");
             result.AppendLine("\t        int[] dimensionSizes = new int[rightArray.Rank];");
             result.AppendLine("\t        for (int i = 0; i < rightArray.Rank; i++)");
             result.AppendLine("\t        {");
@@ -124,13 +124,13 @@ namespace Antlr_language
             result.AppendLine("\t        }");
             result.AppendLine("\t        Array leftArray = Array.CreateInstance(typeof(int), dimensionSizes);");
             result.AppendLine("\t        AssignOperation(leftArray, leftValue);");
-            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t        return ComputeOperation(leftArray, rightArray, op);");
             result.AppendLine("\t    }");
             result.AppendLine("\t    //Assuming all boolean operations are commutative.");
-            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, bool rightValue, BooleanOperator op) {");
-            result.AppendLine("\t        return ApplyOperation(rightValue, leftArray, op);");
+            result.AppendLine("\t    public static Array ComputeOperation(Array leftArray, bool rightValue, BooleanOperator op) {");
+            result.AppendLine("\t        return ComputeOperation(rightValue, leftArray, op);");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    public static Array ApplyOperation(bool leftValue, Array rightArray, BooleanOperator op) {");
+            result.AppendLine("\t    public static Array ComputeOperation(bool leftValue, Array rightArray, BooleanOperator op) {");
             result.AppendLine("\t        int[] dimensionSizes = new int[rightArray.Rank];");
             result.AppendLine("\t        for (int i = 0; i < rightArray.Rank; i++)");
             result.AppendLine("\t        {");
@@ -138,9 +138,9 @@ namespace Antlr_language
             result.AppendLine("\t        }");
             result.AppendLine("\t        Array leftArray = Array.CreateInstance(typeof(bool), dimensionSizes);");
             result.AppendLine("\t        AssignOperation(leftArray, leftValue);");
-            result.AppendLine("\t        return ApplyOperation(leftArray, rightArray, op);");
+            result.AppendLine("\t        return ComputeOperation(leftArray, rightArray, op);");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, Array rightArray, ArithmeticOperator op)");
+            result.AppendLine("\t    public static Array ComputeOperation(Array leftArray, Array rightArray, ArithmeticOperator op)");
             result.AppendLine("\t    {");
             result.AppendLine("\t        if (leftArray.Rank != rightArray.Rank)");
             result.AppendLine("\t        {");
@@ -156,10 +156,10 @@ namespace Antlr_language
             result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
             result.AppendLine("\t        }");
             result.AppendLine("\t        Array result = Array.CreateInstance(leftArray.GetType().GetElementType(), dimensionSizes);");
-            result.AppendLine("\t        ApplyOperationRecursive(leftArray, rightArray, result, op);");
+            result.AppendLine("\t        ComputeOperationRecursive(leftArray, rightArray, result, op);");
             result.AppendLine("\t        return result;");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, Array rightArray, RelationalOperator op)");
+            result.AppendLine("\t    public static Array ComputeOperation(Array leftArray, Array rightArray, RelationalOperator op)");
             result.AppendLine("\t    {");
             result.AppendLine("\t        if (leftArray.Rank != rightArray.Rank)");
             result.AppendLine("\t        {");
@@ -175,10 +175,10 @@ namespace Antlr_language
             result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
             result.AppendLine("\t        }");
             result.AppendLine("\t        Array result = Array.CreateInstance(typeof(bool), dimensionSizes);");
-            result.AppendLine("\t        ApplyOperationRecursive(leftArray, rightArray, result, op);");
+            result.AppendLine("\t        ComputeOperationRecursive(leftArray, rightArray, result, op);");
             result.AppendLine("\t        return result;");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    public static Array ApplyOperation(Array leftArray, Array rightArray, BooleanOperator op)");
+            result.AppendLine("\t    public static Array ComputeOperation(Array leftArray, Array rightArray, BooleanOperator op)");
             result.AppendLine("\t    {");
             result.AppendLine("\t        if (leftArray.Rank != rightArray.Rank)");
             result.AppendLine("\t        {");
@@ -194,10 +194,10 @@ namespace Antlr_language
             result.AppendLine("\t            dimensionSizes[i] = leftArray.GetLength(i);");
             result.AppendLine("\t        }");
             result.AppendLine("\t        Array result = Array.CreateInstance(leftArray.GetType().GetElementType(), dimensionSizes);");
-            result.AppendLine("\t        ApplyOperationRecursive(leftArray, rightArray, result, op);");
+            result.AppendLine("\t        ComputeOperationRecursive(leftArray, rightArray, result, op);");
             result.AppendLine("\t        return result;");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    private static void ApplyOperationRecursive(Array leftArray, Array rightArray, Array resultArray, ArithmeticOperator op, int[] indices = null, int dimension = 0)");
+            result.AppendLine("\t    private static void ComputeOperationRecursive(Array leftArray, Array rightArray, Array resultArray, ArithmeticOperator op, int[] indices = null, int dimension = 0)");
             result.AppendLine("\t    {");
             result.AppendLine("\t        if (indices == null)");
             result.AppendLine("\t        {");
@@ -209,7 +209,7 @@ namespace Antlr_language
             result.AppendLine("\t            indices[dimension] = i;");
             result.AppendLine("\t            if (dimension < leftArray.Rank - 1)");
             result.AppendLine("\t            {");
-            result.AppendLine("\t                ApplyOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
+            result.AppendLine("\t                ComputeOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
             result.AppendLine("\t            }");
             result.AppendLine("\t            else");
             result.AppendLine("\t            {");
@@ -239,7 +239,7 @@ namespace Antlr_language
             result.AppendLine("\t            }");
             result.AppendLine("\t        }");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    private static void ApplyOperationRecursive(Array leftArray, Array rightArray, Array resultArray, RelationalOperator op, int[] indices = null, int dimension = 0)");
+            result.AppendLine("\t    private static void ComputeOperationRecursive(Array leftArray, Array rightArray, Array resultArray, RelationalOperator op, int[] indices = null, int dimension = 0)");
             result.AppendLine("\t    {");
             result.AppendLine("\t        if (indices == null)");
             result.AppendLine("\t        {");
@@ -251,7 +251,7 @@ namespace Antlr_language
             result.AppendLine("\t            indices[dimension] = i;");
             result.AppendLine("\t            if (dimension < leftArray.Rank - 1)");
             result.AppendLine("\t            {");
-            result.AppendLine("\t                ApplyOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
+            result.AppendLine("\t                ComputeOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
             result.AppendLine("\t            }");
             result.AppendLine("\t            else");
             result.AppendLine("\t            {");
@@ -287,7 +287,7 @@ namespace Antlr_language
             result.AppendLine("\t            }");
             result.AppendLine("\t        }");
             result.AppendLine("\t    }");
-            result.AppendLine("\t    private static void ApplyOperationRecursive(Array leftArray, Array rightArray, Array resultArray, BooleanOperator op, int[] indices = null, int dimension = 0)");
+            result.AppendLine("\t    private static void ComputeOperationRecursive(Array leftArray, Array rightArray, Array resultArray, BooleanOperator op, int[] indices = null, int dimension = 0)");
             result.AppendLine("\t    {");
             result.AppendLine("\t        if (indices == null)");
             result.AppendLine("\t        {");
@@ -299,7 +299,7 @@ namespace Antlr_language
             result.AppendLine("\t            indices[dimension] = i;");
             result.AppendLine("\t            if (dimension < leftArray.Rank - 1)");
             result.AppendLine("\t            {");
-            result.AppendLine("\t                ApplyOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
+            result.AppendLine("\t                ComputeOperationRecursive(leftArray, rightArray, resultArray, op, indices, dimension + 1);");
             result.AppendLine("\t            }");
             result.AppendLine("\t            else");
             result.AppendLine("\t            {");
@@ -413,7 +413,7 @@ namespace Antlr_language
             result.AppendLine("\t            else");
             result.AppendLine("\t            {");
             result.AppendLine("\t                object rightValue = rightArray.GetValue(inputIndicies);");
-            result.AppendLine("\t                leftArray.SetValue(rightValue, (int[])ApplyOperation(indices, offset, ArithmeticOperator.add));");
+            result.AppendLine("\t                leftArray.SetValue(rightValue, (int[])ComputeOperation(indices, offset, ArithmeticOperator.add));");
             result.AppendLine("\t            }");
             result.AppendLine("\t        }");
             result.AppendLine("\t    }");
@@ -820,15 +820,15 @@ namespace Antlr_language
                     if ((Enums.Operators)context.Operator == Enums.Operators.add || (Enums.Operators)context.Operator == Enums.Operators.sub || (Enums.Operators)context.Operator == Enums.Operators.mult || (Enums.Operators)context.Operator == Enums.Operators.div) {
                         result.Append("((int[");
                         result.Append(',', Math.Max(context.expression1.type.DimensionRank, context.expression2.type.DimensionRank) - 1);
-                        result.Append("])ArrayCalculator.ApplyOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", ArithmeticOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
+                        result.Append("])ArrayCalculator.ComputeOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", ArithmeticOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
                     } else if ((Enums.Operators)context.Operator == Enums.Operators.greater || (Enums.Operators)context.Operator == Enums.Operators.geq || (Enums.Operators)context.Operator == Enums.Operators.less || (Enums.Operators)context.Operator == Enums.Operators.leq || (Enums.Operators)context.Operator == Enums.Operators.neq || (Enums.Operators)context.Operator == Enums.Operators.eq) {
                         result.Append("((bool[");
                         result.Append(',', Math.Max(context.expression1.type.DimensionRank, context.expression2.type.DimensionRank) - 1);
-                        result.Append("])ArrayCalculator.ApplyOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", RelationalOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
+                        result.Append("])ArrayCalculator.ComputeOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", RelationalOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
                     } else if ((Enums.Operators)context.Operator == Enums.Operators.and || (Enums.Operators)context.Operator == Enums.Operators.or) {
                         result.Append("((bool[");
                         result.Append(',', Math.Max(context.expression1.type.DimensionRank, context.expression2.type.DimensionRank) - 1);
-                        result.Append("])ArrayCalculator.ApplyOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", BooleanOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
+                        result.Append("])ArrayCalculator.ComputeOperation(" + Visit(context.expression1) + ", " + Visit(context.expression2) + ", BooleanOperator." + ((Enums.Operators)context.Operator).ToString() + "))");
                     } else {
                         throw new Exception("Invalid operator.");
                     }
