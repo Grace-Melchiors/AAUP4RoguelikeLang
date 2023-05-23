@@ -2,6 +2,7 @@ namespace TestProject1;
 using Antlr_language;
 using Antlr_language.Content;
 using Antlr4.Runtime;
+using System.Text;
 
 public class CodeGenerationTest
 {
@@ -13,6 +14,25 @@ public class CodeGenerationTest
         VestaParser VestaParser = new VestaParser(commonTokenStream);
         return VestaParser;
     }
+    
+    [Test]
+    public void TestMismatchedTypes()
+    {
+        // Build input
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("int i = 5");
+        sb.AppendLine("i = true");
+        var visitor = new VestaVisitor();
+        VestaParser parser = Setup(sb.ToString());
+
+        // Assert that type checker throws an Exception
+        Assert.Throws<Exception>( delegate
+            {
+                object content = visitor.Visit(parser.program());
+            }
+        );
+    } 
+    
     [Test]
     public void TestIdentifierTypeInt()
     {
