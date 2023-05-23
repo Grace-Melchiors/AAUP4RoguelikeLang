@@ -9,12 +9,12 @@ namespace Antlr_language.ast.statement
     public class VariableDeclarationNode : AbstractNode
     {
         public TypeNode Type {get; private set;}
-        public string identifier {get; private set;}
+        public string Identifier {get; private set;}
         public ExpressionNode? expression {get; private set;}
         //private List<int>? ArraySizes;
         
         public string GetIdentifier() {
-            return identifier;
+            return Identifier;
         }
         public Enums.Types GetDataType() {
             return Type.GetDataType();
@@ -32,7 +32,7 @@ namespace Antlr_language.ast.statement
         public VariableDeclarationNode(TypeNode type, string identifier, ExpressionNode? expression)
         {
             Type = type;
-            this.identifier = identifier;
+            this.Identifier = identifier;
             this.expression = expression;
             //ArraySizes = null;
         }

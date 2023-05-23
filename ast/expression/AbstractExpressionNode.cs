@@ -7,5 +7,6 @@ namespace Antlr_language.ast.expression
     abstract public class AbstractExpressionNode : AbstractNode
     {
         public TypeNode? type;
+        //public abstract T VisitChildren<T> ();
     }
 }

@@ -23,10 +23,16 @@ namespace Antlr_language
 
         public override TypeNode? Visit(VariableDeclarationNode context)
         {
-            symbolTable.EnterSymbol(context.identifier, context);
+            symbolTable.EnterSymbol(context.Identifier, context);
             return base.Visit(context);
         }
+
         public override TypeNode? Visit(FunctionDeclarationNode context)
+        {
+            symbolTable.EnterSymbol(context.Identifier, context);
+            return base.Visit(context);
+        }
+        public override TypeNode? Visit(FunctionParamNode context)
         {
             symbolTable.EnterSymbol(context.Identifier, context);
             return base.Visit(context);

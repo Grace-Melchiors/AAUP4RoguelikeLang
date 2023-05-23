@@ -525,7 +525,7 @@ namespace Antlr_language
             StringBuilder result = new StringBuilder();
             result.Append(Visit(context.Type));
             result.Append(" ");
-            result.Append(context.identifier);
+            result.Append(context.Identifier);
             if (context.expression != null) {
                 result.Append(" = ");
                 result.Append(Visit(context.expression));
@@ -756,7 +756,7 @@ namespace Antlr_language
             //System.Console.WriteLine("Test from: FunctionDeclarationNode");
             result.Append("(");
             if (context.funcParams.Count != 0) {
-                foreach (FunctionParamNode param in context.funcParams) {
+                foreach (var param in context.funcParams) {
                     if (param != null) {
                         result.Append(Visit(param));
                         result.Append(",");
@@ -987,6 +987,8 @@ namespace Antlr_language
             result.Append("\"" + context.IDENTIFIER + "\",");
             if (context.Expression != null) {
                 result.Append(Visit(context.Expression));
+            } else {
+                result.Append("null");
             }
             result.Append(")");
             
