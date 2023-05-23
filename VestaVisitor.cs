@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Xml.Schema;
 using Antlr_language.Content;
 using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace Antlr_language;
@@ -103,57 +104,38 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 {
     private Dictionary<string, object> Variables { get; } = new();
     private Store store = new Store();
-
-
+    public Dictionary<string, Dictionary<string, Func<object?[], object?>>> libraries { get; } = new();
+    
     private MLCGRandom random = new MLCGRandom();
 
     public VestaVisitor()
     {
-        store.variables["Write"] = new Func<object?[], object?>(Write);
-        store.variables["write"] = new Func<object?[], object?>(Write);
         
-        store.variables["WriteArr"] = new Func<object?[], object?>(WriteArray);
-        store.variables["writeArr"] = new Func<object?[], object?>(WriteArray);
-
-        store.variables["SetSeed"] = new Func<object?[], object?>(SetSeed);
-        store.variables["setSeed"] = new Func<object?[], object?>(SetSeed);
     }
 
-    private object? SetSeed(object[] args)
+    private object? Seed(object[] args)
     {
         if (args.Length != 1) throw new Exception($"This function only takes 1 parameter");
         if (args.GetValue(0) is not int n) throw new Exception($"Seed must be given with int not {args.GetValue(0).GetType()}");
         random = new MLCGRandom(n);
         return null;
     }
-    private object? WriteArray(Array arr)
+    
+    private object? Print(object arg)
     {
-        for (int i = 0; i < arr.Length; i++)
+        if (arg is Array arr)
         {
-            if (arr.GetValue(i) is Array arr2)
-            {
-                Console.WriteLine("");
-                WriteArray(arr2);
-            }
-            else
-            {
-                Console.Write(arr.GetValue(i) +" ");
-            }
+            foreach (object? o in arr) Print(o);
+            Console.WriteLine("");
         }
-
-        Console.WriteLine("");
+        else Console.Write(arg+" ");
 
         return null;
     }
 
-    private object? Write(object?[] args)
+    object? RandomFunc(object?[] args)
     {
-        foreach (var arg in args)
-        {
-            Console.WriteLine((arg));
-        }
-
-        return null;
+        return random.getRand((int)args[0], (int)args[1]);
     }
     T[] parseArray<T> (Array arrayToParse)
     {
@@ -169,6 +151,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
         return returnArr;
     }
+    
+
     object getElementFromIndex(int[] dimensions, object array)
     {
         for(int i=0; i<dimensions.Length; i++)
@@ -184,6 +168,27 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             }
         }
         return array;
+    }
+    /* library: 'using' IDENTIFIER ';'; */
+    public override object? VisitLibrary(VestaParser.LibraryContext context)
+    {
+        Dictionary<string, Func<object?[], object?>> newLib = new();
+        var libName = context.IDENTIFIER().GetText();
+        switch (libName)
+        {
+            case "Stdlib":
+                newLib["print"] = new Func<object?[], object?>(Print);
+                newLib["seed"] = new Func<object?[], object?>(Seed);
+                newLib["random"] = new Func<object?[], object?>(RandomFunc);
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+
+        libraries[libName] = newLib;
+        
+        
+        return base.VisitLibrary(context);
     }
 
     /* functionDclr: returnType IDENTIFIER '('(funcParams)?')' funcBody; */
@@ -449,7 +454,14 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         string name = "";
         if (identifierArr.Length == 2)  //If library call
         {
-            name = identifierArr[1].GetText();
+            var libName = identifierArr[0].GetText();
+            var funcName = identifierArr[1].GetText();
+
+            if (!libraries.ContainsKey(libName)) throw new Exception($"Unknown library \"{libName}\"");
+            if (!libraries[libName].ContainsKey(funcName))
+                throw new Exception($"Unknown function \"{funcName}\" in library {libName}");
+            var argsForFunc = context.expression().Select(e => Visit(e)).ToArray();
+            return libraries[libName][funcName](argsForFunc);
         }
         else
         {
@@ -1554,8 +1566,5 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
        
         throw new Exception($"$Cannot compare between types {left.GetType()} and {right.GetType()}");
-        
-        
-
     }
 }
