@@ -9,7 +9,7 @@ using Antlr4.Runtime.Misc;
 
 namespace Antlr_language
 {
-    public class ASTSemanticAnalysisVisitor : AstBaseVisitorBuilder<TypeNode?>
+    public class ASTDecorator : AstBaseVisitorBuilder<TypeNode?>
     {
         SymbolTable symbolTable = new SymbolTable();
         //SemanticAnalysis 

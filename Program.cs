@@ -47,8 +47,8 @@ namespace Antlr_language
             AbstractNode AST = builder.Visit((vestaContext));
 
 
-            ASTSemanticAnalysisVisitor TypeIdentifier = new ASTSemanticAnalysisVisitor();
-            TypeIdentifier.Visit((dynamic)AST);
+            ASTDecorator Decorator = new ASTDecorator();
+            Decorator.Visit((dynamic)AST);
 
             CodeGenVisitor CodeGenerator = new CodeGenVisitor(2);
 
