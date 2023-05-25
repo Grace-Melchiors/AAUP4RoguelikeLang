@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+//Build command: dotnet build --configuration Release --runtime linux-x64 --self-contained
 using System;
 using System.Text;
 using Antlr_language;

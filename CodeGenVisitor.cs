@@ -22,7 +22,8 @@ namespace Antlr_language
             StringBuilder result = new StringBuilder();
             for (int i = 0; i < Indentation; i++)
                 indent +="\t";
-            result.AppendLine("using System;\n");
+            result.AppendLine("using System;");
+            result.AppendLine("using System.Collections.Generic;");
             result.AppendLine("namespace " + context.nameSpace);
             result.AppendLine("{");
             
