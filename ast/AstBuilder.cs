@@ -9,9 +9,9 @@ using Antlr4.Runtime.Misc;
 
 namespace Antlr_language
 {
-    public class AstBuilder : VestaBaseVisitor<AbstractNode>
+    public class AstBuilder : MapGeniusBaseVisitor<AbstractNode>
     {
-        public override AbstractNode VisitProgram([NotNull] VestaParser.ProgramContext context)
+        public override AbstractNode VisitProgram([NotNull] MapGeniusParser.ProgramContext context)
         {
             ProgramNode AST = new ProgramNode();
             var libraryArr = context.library().ToArray();
@@ -27,7 +27,7 @@ namespace Antlr_language
 
             return AST;
         }
-        public override AbstractNode VisitLibrary([NotNull] VestaParser.LibraryContext context)
+        public override AbstractNode VisitLibrary([NotNull] MapGeniusParser.LibraryContext context)
         {
             LibraryNode result;
             if (context.IDENTIFIER().GetText() == "Stdlib") {
@@ -38,7 +38,7 @@ namespace Antlr_language
 
             return result;
         }
-        public override AbstractNode VisitLine([NotNull] VestaParser.LineContext context)
+        public override AbstractNode VisitLine([NotNull] MapGeniusParser.LineContext context)
         {
             var statement = context.statement();
             var functionDecl = context.functionDecl();
@@ -53,7 +53,7 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitStatement([NotNull] VestaParser.StatementContext context)
+        public override AbstractNode VisitStatement([NotNull] MapGeniusParser.StatementContext context)
         {
             StatementNode result;
             var VariableDecl = context.varDecl();
@@ -91,21 +91,21 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitIfStatement([NotNull] VestaParser.IfStatementContext context)
+        public override AbstractNode VisitIfStatement([NotNull] MapGeniusParser.IfStatementContext context)
         {
             return new IfNode((ExpressionNode)Visit(context.expression()), (BlockNode)Visit(context.block().ToArray()[0]), context.block().ToArray().Length == 2 ? (BlockNode)Visit(context.block().ToArray()[1]) : null);
         }
-        public override AbstractNode VisitWhileStatement([NotNull] VestaParser.WhileStatementContext context)
+        public override AbstractNode VisitWhileStatement([NotNull] MapGeniusParser.WhileStatementContext context)
         {
             return new WhileNode((ExpressionNode)Visit(context.expression()), (BlockNode)Visit(context.block()));
         }
-        public override AbstractNode VisitForStatement([NotNull] VestaParser.ForStatementContext context)
+        public override AbstractNode VisitForStatement([NotNull] MapGeniusParser.ForStatementContext context)
         {
             ForNode result = new ForNode((VariableDeclarationNode)Visit(context.varDecl()), (ExpressionNode)Visit(context.expression()),(AssignmentNode)Visit(context.assignment()),(BlockNode)Visit(context.block()));
             return result;
         }
 
-        public override AbstractNode VisitChance([NotNull] VestaParser.ChanceContext context)
+        public override AbstractNode VisitChance([NotNull] MapGeniusParser.ChanceContext context)
         {
             
             List<ExpressionNode> expressions = ContextToNode<ExpressionNode>(context.expression().ToArray());
@@ -114,11 +114,11 @@ namespace Antlr_language
 
         }
         
-        public override AbstractNode VisitVarDecl([NotNull] VestaParser.VarDeclContext context)
+        public override AbstractNode VisitVarDecl([NotNull] MapGeniusParser.VarDeclContext context)
         {
             return base.VisitVarDecl(context);
         }
-        public override AbstractNode VisitVarDeclaration([NotNull] VestaParser.VarDeclarationContext context)
+        public override AbstractNode VisitVarDeclaration([NotNull] MapGeniusParser.VarDeclarationContext context)
         {
             VariableDeclarationNode result;
             
@@ -127,7 +127,7 @@ namespace Antlr_language
             return result;
             //return base.VisitVarDeclaration(context);
         }
-        public override AbstractNode VisitVarInitialization([NotNull] VestaParser.VarInitializationContext context)
+        public override AbstractNode VisitVarInitialization([NotNull] MapGeniusParser.VarInitializationContext context)
         {
             VariableDeclarationNode result;
             var typeContext = context.allType();
@@ -137,7 +137,7 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitAssignment([NotNull] VestaParser.AssignmentContext context)
+        public override AbstractNode VisitAssignment([NotNull] MapGeniusParser.AssignmentContext context)
         {
             AssignmentNode result;
             var expressions = context.arrayDimensions()?.expression().ToArray();
@@ -157,7 +157,7 @@ namespace Antlr_language
 
 
         /// ---  Function  ---  ///
-        public override AbstractNode VisitFunctionDecl([NotNull] VestaParser.FunctionDeclContext context)
+        public override AbstractNode VisitFunctionDecl([NotNull] MapGeniusParser.FunctionDeclContext context)
         {
             FunctionDeclarationNode result;
             List<FunctionParamNode> parameters = new List<FunctionParamNode>();
@@ -173,14 +173,14 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitParameter([NotNull] VestaParser.ParameterContext context)
+        public override AbstractNode VisitParameter([NotNull] MapGeniusParser.ParameterContext context)
         {
             FunctionParamNode result;
             result = new FunctionParamNode((TypeNode)Visit(context.parameterType()), context.IDENTIFIER().GetText());
             return result;
         }
 
-        public override AbstractNode VisitReturnType([NotNull] VestaParser.ReturnTypeContext context)
+        public override AbstractNode VisitReturnType([NotNull] MapGeniusParser.ReturnTypeContext context)
         {
             TypeNode result;
             
@@ -209,7 +209,7 @@ namespace Antlr_language
 
             return result;
         }
-        public override AbstractNode VisitParameterType([NotNull] VestaParser.ParameterTypeContext context)
+        public override AbstractNode VisitParameterType([NotNull] MapGeniusParser.ParameterTypeContext context)
         {
             TypeNode result;
             
@@ -236,7 +236,7 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitVerboseComplextype([NotNull] VestaParser.VerboseComplextypeContext context)
+        public override AbstractNode VisitVerboseComplextype([NotNull] MapGeniusParser.VerboseComplextypeContext context)
         {
             TypeNode result;
             result = new TypeNode(Enums.Types.MAP, ContextToNode<IndividualLayerNode>(context.mapLayer().individualLayer().ToArray()), null, 0, true);
@@ -244,14 +244,14 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitFuncBody([NotNull] VestaParser.FuncBodyContext context)
+        public override AbstractNode VisitFuncBody([NotNull] MapGeniusParser.FuncBodyContext context)
         {
             List<StatementNode> statements = ContextToNode<StatementNode>(context.statement().ToArray());
             statements.Add(new StatementNode(null, null, null, (ReturnStatementNode)Visit(context.returnStmt()), null, null, null, null, null, null));
             return new BlockNode(statements);
         }
 
-        public override AbstractNode VisitReturnStmt([NotNull] VestaParser.ReturnStmtContext context)
+        public override AbstractNode VisitReturnStmt([NotNull] MapGeniusParser.ReturnStmtContext context)
         {
             ReturnStatementNode result;
 
@@ -260,7 +260,7 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitAllType([NotNull] VestaParser.AllTypeContext context)
+        public override AbstractNode VisitAllType([NotNull] MapGeniusParser.AllTypeContext context)
         {
             TypeNode result;
             if (context.COMPLEXTYPE() != null) {
@@ -278,7 +278,7 @@ namespace Antlr_language
             }
             return result;
         }
-        public override AbstractNode VisitIdentifierType([NotNull] VestaParser.IdentifierTypeContext context)
+        public override AbstractNode VisitIdentifierType([NotNull] MapGeniusParser.IdentifierTypeContext context)
         {
             TypeNode result;
             Enums.Types type;
@@ -309,49 +309,49 @@ namespace Antlr_language
             return result;
         }
 
-        public override AbstractNode VisitFactorExpression([NotNull] VestaParser.FactorExpressionContext context)
+        public override AbstractNode VisitFactorExpression([NotNull] MapGeniusParser.FactorExpressionContext context)
         {
             ExpressionNode result;
 
             result = new ExpressionNode(Enums.Operators.none, null,null, (FactorNode)Visit(context.factor()));
             return result;
         }
-        public override AbstractNode VisitNotExpression([NotNull] VestaParser.NotExpressionContext context)
+        public override AbstractNode VisitNotExpression([NotNull] MapGeniusParser.NotExpressionContext context)
         {
             ExpressionNode result;
 
             result = new ExpressionNode(Enums.Operators.not, null,null, (FactorNode)Visit(context.factor()));
             return result;
         }
-        public override AbstractNode VisitNegExpression([NotNull] VestaParser.NegExpressionContext context)
+        public override AbstractNode VisitNegExpression([NotNull] MapGeniusParser.NegExpressionContext context)
         {
             ExpressionNode result;
 
             result = new ExpressionNode(Enums.Operators.sub, null,null, (FactorNode)Visit(context.factor()));
             return result;
         }
-        public override AbstractNode VisitMultiplicationExpression([NotNull] VestaParser.MultiplicationExpressionContext context)
+        public override AbstractNode VisitMultiplicationExpression([NotNull] MapGeniusParser.MultiplicationExpressionContext context)
         {
             ExpressionNode result;
             var expressionContexts = context.expression().ToArray();
             result = new ExpressionNode(Enums.StringToOperator(context.multOp().GetText()), (ExpressionNode)Visit(expressionContexts[0]),(ExpressionNode)Visit(expressionContexts[1]), null);
             return result;
         }
-        public override AbstractNode VisitAdditionExpression([NotNull] VestaParser.AdditionExpressionContext context)
+        public override AbstractNode VisitAdditionExpression([NotNull] MapGeniusParser.AdditionExpressionContext context)
         {
             ExpressionNode result;
             var expressionContexts = context.expression().ToArray();
             result = new ExpressionNode(Enums.StringToOperator(context.addOp().GetText()), (ExpressionNode)Visit(expressionContexts[0]),(ExpressionNode)Visit(expressionContexts[1]), null);
             return result;
         }
-        public override AbstractNode VisitCompareExpression([NotNull] VestaParser.CompareExpressionContext context)
+        public override AbstractNode VisitCompareExpression([NotNull] MapGeniusParser.CompareExpressionContext context)
         {
             ExpressionNode result;
             var expressionContexts = context.expression().ToArray();
             result = new ExpressionNode(Enums.StringToOperator(context.compareOp().GetText()), (ExpressionNode)Visit(expressionContexts[0]),(ExpressionNode)Visit(expressionContexts[1]), null);
             return result;
         }
-        public override AbstractNode VisitBooleanExpression([NotNull] VestaParser.BooleanExpressionContext context)
+        public override AbstractNode VisitBooleanExpression([NotNull] MapGeniusParser.BooleanExpressionContext context)
         {
             ExpressionNode result;
             var expressionContexts = context.expression().ToArray();
@@ -360,11 +360,11 @@ namespace Antlr_language
         }
 
         //Factor
-        public override AbstractNode VisitParenthesizedExpression([NotNull] VestaParser.ParenthesizedExpressionContext context)
+        public override AbstractNode VisitParenthesizedExpression([NotNull] MapGeniusParser.ParenthesizedExpressionContext context)
         {
             return new FactorNode((ExpressionNode)Visit(context.expression()), null, null, null, null, null, null);
         }
-        public override AbstractNode VisitConstantExpression([NotNull] VestaParser.ConstantExpressionContext context)
+        public override AbstractNode VisitConstantExpression([NotNull] MapGeniusParser.ConstantExpressionContext context)
         {
             FactorNode result;
             ConstantNode temp;
@@ -380,12 +380,12 @@ namespace Antlr_language
             result = new FactorNode(null, temp, null, null, null, null, null);
             return result;
         }
-        public override AbstractNode VisitObjectExpression([NotNull] VestaParser.ObjectExpressionContext context)
+        public override AbstractNode VisitObjectExpression([NotNull] MapGeniusParser.ObjectExpressionContext context)
         {
             FactorNode result = new FactorNode(null, null, (Factor2Node)Visit(context.factor2()), null, null, null, null);
             return result;
         }
-        public override AbstractNode VisitArrayExpression([NotNull] VestaParser.ArrayExpressionContext context)
+        public override AbstractNode VisitArrayExpression([NotNull] MapGeniusParser.ArrayExpressionContext context)
         {
             List<ExpressionNode> expressions = new List<ExpressionNode>();
             var expressionContexts = context.expression().ToArray();
@@ -394,35 +394,35 @@ namespace Antlr_language
             }
             return new FactorNode(null, null, null, new ArrayExpressionNode(expressions), null, null, null);
         }
-        public override AbstractNode VisitMapExpression([NotNull] VestaParser.MapExpressionContext context)
+        public override AbstractNode VisitMapExpression([NotNull] MapGeniusParser.MapExpressionContext context)
         {
             return new FactorNode (null, null, null, null, new MapExpressionNode((ArrayDimensionsNode)Visit(context.arrayDimensions()), (MapLayerNode)Visit(context.mapLayer())), null, null);
         }
-        public override AbstractNode VisitArrayAccess([NotNull] VestaParser.ArrayAccessContext context)
+        public override AbstractNode VisitArrayAccess([NotNull] MapGeniusParser.ArrayAccessContext context)
         {
             return new FactorNode (null, null, null, null, null, new ArrayAccessNode((Factor2Node)Visit(context.factor2()), (ArrayDimensionsNode)Visit(context.arrayDimensions())), null);
         }
-        public override AbstractNode VisitMapAccess([NotNull] VestaParser.MapAccessContext context)
+        public override AbstractNode VisitMapAccess([NotNull] MapGeniusParser.MapAccessContext context)
         {
             return new FactorNode (null, null, null, null, null, null, new MapAccessNode((Factor2Node)Visit(context.factor2()), context.IDENTIFIER().GetText(), (ArrayDimensionsNode)Visit(context.arrayDimensions())));
         }
 
 
         //Factor2
-        public override AbstractNode VisitIdentifierAccess([NotNull] VestaParser.IdentifierAccessContext context)
+        public override AbstractNode VisitIdentifierAccess([NotNull] MapGeniusParser.IdentifierAccessContext context)
         {
             Factor2Node result = new Factor2Node(context.IDENTIFIER().GetText(), null);
             return result;
         }
-        public override AbstractNode VisitFunctionAccess([NotNull] VestaParser.FunctionAccessContext context)
+        public override AbstractNode VisitFunctionAccess([NotNull] MapGeniusParser.FunctionAccessContext context)
         {
             Factor2Node result = new Factor2Node(null, (FunctionCallNode)Visit(context.functionCall()));
             return result;
         }
-        public override AbstractNode VisitFunctionCall([NotNull] VestaParser.FunctionCallContext context)
+        public override AbstractNode VisitFunctionCall([NotNull] MapGeniusParser.FunctionCallContext context)
         {
             FunctionCallNode result;
-            VestaParser.ExpressionContext[] parameters = context.expression().ToArray();
+            MapGeniusParser.ExpressionContext[] parameters = context.expression().ToArray();
             List<ExpressionNode> expParams = new List<ExpressionNode>();
             foreach (var parameter in parameters)
                 expParams.Add((ExpressionNode)Visit(parameter));
@@ -439,25 +439,25 @@ namespace Antlr_language
         }
 
 
-        public override AbstractNode VisitArrayDimensions([NotNull] VestaParser.ArrayDimensionsContext context)
+        public override AbstractNode VisitArrayDimensions([NotNull] MapGeniusParser.ArrayDimensionsContext context)
         {
-            VestaParser.ExpressionContext[] parameters = context.expression().ToArray();
+            MapGeniusParser.ExpressionContext[] parameters = context.expression().ToArray();
             List<ExpressionNode> expParams = new List<ExpressionNode>();
             foreach (var parameter in parameters)
                 expParams.Add((ExpressionNode)Visit(parameter));
             return new ArrayDimensionsNode(expParams);
         }
-        public override AbstractNode VisitMapLayer([NotNull] VestaParser.MapLayerContext context)
+        public override AbstractNode VisitMapLayer([NotNull] MapGeniusParser.MapLayerContext context)
         {
             List<IndividualLayerNode> individualLayers = ContextToNode<IndividualLayerNode>(context.individualLayer().ToArray());
             return new MapLayerNode(individualLayers);
         }
-        public override AbstractNode VisitIndividualLayer([NotNull] VestaParser.IndividualLayerContext context)
+        public override AbstractNode VisitIndividualLayer([NotNull] MapGeniusParser.IndividualLayerContext context)
         {
             return new IndividualLayerNode((TypeNode)Visit(context.identifierType()), context.IDENTIFIER().GetText(), context.expression() == null ? null : (ExpressionNode)Visit(context.expression()));
         }
 
-        public override AbstractNode VisitBlock(VestaParser.BlockContext context)
+        public override AbstractNode VisitBlock(MapGeniusParser.BlockContext context)
         {
             List<StatementNode> statementNodes = ContextToNode<StatementNode>(context.statement().ToArray());
             BlockNode result = new BlockNode(statementNodes);

@@ -630,9 +630,6 @@ namespace Antlr_language
             StringBuilder result = new StringBuilder();
             for (int i = 0; i < Indentation; i++)
                 indent +="\t";
-            
-            //if (elseIfNode != null) {
-            //}
             result.Append(indent);
             result.Append("if (");
             result.Append(Visit(context.expression));

@@ -48,24 +48,24 @@ namespace Antlr_language
             
             var fileContents = File.ReadAllText(filePath);
             AntlrInputStream inputStream = new AntlrInputStream(fileContents);
-            var vestaLexer = new VestaLexer(inputStream);
-            CommonTokenStream commonTokenStream = new CommonTokenStream(vestaLexer);
-            VestaParser vestaParser = new VestaParser(commonTokenStream);
-            var vestaContext = vestaParser.program();
+            var MapGeniusLexer = new MapGeniusLexer(inputStream);
+            CommonTokenStream commonTokenStream = new CommonTokenStream(MapGeniusLexer);
+            MapGeniusParser MapGeniusParser = new MapGeniusParser(commonTokenStream);
+            var MapGeniusContext = MapGeniusParser.program();
             
             if (debugMode) {
-                var visitor = new VestaVisitor(true);
-                visitor.Visit((vestaContext));
+                var visitor = new MapGeniusVisitor(true);
+                visitor.Visit((MapGeniusContext));
             } else {
-                var visitor = new VestaVisitor(false);
+                var visitor = new MapGeniusVisitor(false);
                 AstBuilder builder = new AstBuilder();
                 ASTDecorator Decorator = new ASTDecorator(new SymbolTable(verbose));
                 CodeGenVisitor CodeGenerator = new CodeGenVisitor(2);
                 
                 //Semantic analysis
-                visitor.Visit((vestaContext));
+                visitor.Visit((MapGeniusContext));
 
-                AbstractNode AST = builder.Visit((vestaContext));
+                AbstractNode AST = builder.Visit((MapGeniusContext));
                 Decorator.Visit((dynamic)AST);
                 CSharpBuilder CSB = new CSharpBuilder(outputFileName);
                 CSB.AcceptStringBuilder(CodeGenerator.Visit((dynamic)AST));

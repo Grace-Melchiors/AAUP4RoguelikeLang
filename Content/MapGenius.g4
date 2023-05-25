@@ -1,4 +1,4 @@
-grammar Vesta;
+grammar MapGenius;
 
 program: library* line* EOF;
 

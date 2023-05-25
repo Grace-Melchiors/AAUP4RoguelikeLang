@@ -100,7 +100,7 @@ public class MLCGRandom
     }
 }
 
-public class VestaVisitor : VestaBaseVisitor<object?>
+public class MapGeniusVisitor : MapGeniusBaseVisitor<object?>
 {
     private Dictionary<string, object> Variables { get; } = new();
     private Store store = new Store();
@@ -110,7 +110,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     bool verbose = false;
 
-    public VestaVisitor(bool verbose)
+    public MapGeniusVisitor(bool verbose)
     {
         this.verbose = verbose;
     }
@@ -174,7 +174,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return array;
     }
     /* library: 'using' IDENTIFIER ';'; */
-    public override object? VisitLibrary(VestaParser.LibraryContext context)
+    public override object? VisitLibrary(MapGeniusParser.LibraryContext context)
     {
         Dictionary<string, Func<object?[], object?>> newLib = new();
         var libName = context.IDENTIFIER().GetText();
@@ -196,7 +196,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /* functionDclr: returnType IDENTIFIER '('(funcParams)?')' funcBody; */
-    public override object? VisitFunctionDecl(VestaParser.FunctionDeclContext context)
+    public override object? VisitFunctionDecl(MapGeniusParser.FunctionDeclContext context)
     {
         var funcName = context.IDENTIFIER().GetText();
 
@@ -337,7 +337,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /* funcParams: parameter (',' parameter)* ; */
-    public override object? VisitFuncParams(VestaParser.FuncParamsContext context)
+    public override object? VisitFuncParams(MapGeniusParser.FuncParamsContext context)
     {
         var paramContextArr = context.parameter().ToArray();
         ParamDesc[] paramsArr = new ParamDesc[paramContextArr.Length];
@@ -352,12 +352,12 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return paramsArr;
     }
 
-    public override object? VisitParameterArr(VestaParser.ParameterArrContext context)
+    public override object? VisitParameterArr(MapGeniusParser.ParameterArrContext context)
     {
         return new object[1 + context.paramaterArrayDenoter().ToArray().Length];
     }
 
-    public override object? VisitParameter(VestaParser.ParameterContext context)
+    public override object? VisitParameter(MapGeniusParser.ParameterContext context)
     {
         var parameterName = context.IDENTIFIER().GetText();
         var resultType = Visit(context.parameterType());
@@ -366,7 +366,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     /* parameter: (TYPE | COMPLEXTYPE) ('[' (paramaterArrayDenoter)* ']')? IDENTIFIER;
     paramaterArrayDenoter: ','; */
-    public override object? VisitParameterType(VestaParser.ParameterTypeContext context)
+    public override object? VisitParameterType(MapGeniusParser.ParameterTypeContext context)
     {
         object? result;
         string baseType = "";
@@ -392,7 +392,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return new ArrDesc(result, (Array)Visit(context.parameterArr()));
     }
     /*verboseComplextype: 'map' mapLayer; */
-    public override object? VisitVerboseComplextype(VestaParser.VerboseComplextypeContext context)
+    public override object? VisitVerboseComplextype(MapGeniusParser.VerboseComplextypeContext context)
     {
         Map resultMap = new Map(1, 1);
         
@@ -411,7 +411,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     /* returnType: TYPE (parameterArr)? | verboseComplextype;
      Must return a type that can be comparable with */
 
-    public override object? VisitReturnType(VestaParser.ReturnTypeContext context)
+    public override object? VisitReturnType(MapGeniusParser.ReturnTypeContext context)
     {
         if (context.verboseComplextype() is not null) return Visit(context.verboseComplextype());
         object result;
@@ -431,7 +431,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /* funcBody: '{' line*  returnStmt '}'; */
-    public override object? VisitFuncBody(VestaParser.FuncBodyContext context)
+    public override object? VisitFuncBody(MapGeniusParser.FuncBodyContext context)
     {
         //Visit all lines
         var lineArr = context.statement().ToArray();
@@ -444,7 +444,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /* returnStmt:  'return' expression';'; */
-    public override object? VisitReturnStmt(VestaParser.ReturnStmtContext context) 
+    public override object? VisitReturnStmt(MapGeniusParser.ReturnStmtContext context) 
     {
         return Visit(context.expression());
     }
@@ -452,7 +452,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         
     /* functionCall: (IDENTIFIER'.')? IDENTIFIER '(' (expression (',' expression)*)? ')'; */
 
-    public override object? VisitFunctionCall(VestaParser.FunctionCallContext context)
+    public override object? VisitFunctionCall(MapGeniusParser.FunctionCallContext context)
     {
         var identifierArr = context.IDENTIFIER().ToArray();
         string name = "";
@@ -489,7 +489,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         throw new Exception($"{name} is not a function");
     }
-    public override object? VisitBlock(VestaParser.BlockContext context)
+    public override object? VisitBlock(MapGeniusParser.BlockContext context)
     {
         /* New scope */
         Store tempStore = new Store();
@@ -585,7 +585,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /* identifierType IDENTIFIER        #varDeclaration */
-    public override object? VisitVarDeclaration(VestaParser.VarDeclarationContext context)
+    public override object? VisitVarDeclaration(MapGeniusParser.VarDeclarationContext context)
     {
         var varName = context.IDENTIFIER().GetText();
 
@@ -622,7 +622,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
      identifierType: TYPE ('[' expression ']')*;
      TYPE: 'int' | 'bool' | 'map' ;
      */
-    public override object? VisitVarInitialization(VestaParser.VarInitializationContext context)
+    public override object? VisitVarInitialization(MapGeniusParser.VarInitializationContext context)
     {
         var varName = context.assignment().IDENTIFIER().GetText();
 
@@ -666,7 +666,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /* factor2 '.' IDENTIFIER arrayDimensions			#mapAccess */
-    public override object? VisitMapAccess(VestaParser.MapAccessContext context)
+    public override object? VisitMapAccess(MapGeniusParser.MapAccessContext context)
     {
         object myMap = Visit(context.factor2());
         var layerName = context.IDENTIFIER().GetText();
@@ -698,7 +698,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
        (';' identifierType IDENTIFIER ('=' expression)?)* '}' ;
  */
 
-    public override object? VisitMapExpression(VestaParser.MapExpressionContext context)
+    public override object? VisitMapExpression(MapGeniusParser.MapExpressionContext context)
     {
         var expressionContextArr = context.arrayDimensions().expression().ToArray();
         if (expressionContextArr.Length != 2) throw new Exception($"Must have 2 indexes");
@@ -735,7 +735,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return o.GetType();
     }
 
-    public override object? VisitMapLayer(VestaParser.MapLayerContext context)
+    public override object? VisitMapLayer(MapGeniusParser.MapLayerContext context)
     {
         return context.individualLayer().Select(e => Visit(e)).ToArray();
     }
@@ -743,7 +743,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     //Returns layer identifier, and value to assign layer to
     /*mapLayer: '{' identifierType IDENTIFIER ('=' expression)?
        (';' identifierType IDENTIFIER ('=' expression)?)* '}' ;*/
-    public override object? VisitIndividualLayer(VestaParser.IndividualLayerContext context)
+    public override object? VisitIndividualLayer(MapGeniusParser.IndividualLayerContext context)
     {
         var type = Visit(context.identifierType());
         string identifier = context.IDENTIFIER().GetText();
@@ -850,13 +850,13 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
     
     
-    public override object? VisitArrayDimensions(VestaParser.ArrayDimensionsContext context)
+    public override object? VisitArrayDimensions(MapGeniusParser.ArrayDimensionsContext context)
     {
         //return an int array of dimensions
         return parseArray<int>(context.expression().Select(e=>Visit(e)).ToArray());
     }
 
-    public override object? VisitAllType(VestaParser.AllTypeContext context)
+    public override object? VisitAllType(MapGeniusParser.AllTypeContext context)
     {
         if (context.COMPLEXTYPE() != null)
         {
@@ -879,7 +879,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
     /* identifierType: TYPE (arrayDimensions)? ;*;
      TYPE: 'int' | 'bool' ; */
-    public override object? VisitIdentifierType(VestaParser.IdentifierTypeContext context)
+    public override object? VisitIdentifierType(MapGeniusParser.IdentifierTypeContext context)
     {
         
         object? result;
@@ -926,7 +926,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /*assignment: IDENTIFIER (arrayDimensions)? '=' expression | mapAssignment; */
-    public override object? VisitAssignment(VestaParser.AssignmentContext context)
+    public override object? VisitAssignment(MapGeniusParser.AssignmentContext context)
     {
         //If mapassignment is not null
         if (context.mapAssignment() is not null) return Visit(context.mapAssignment());
@@ -1072,7 +1072,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
    /*  mapAssignment: IDENTIFIER ',' IDENTIFIER (arrayDimensions)? '=' expression; */
     /* mapAssignment:  IDENTIFIER '.' IDENTIFIER ('[' expression (',' expression)* ']') '=' expression;*/
-    public override object? VisitMapAssignment(VestaParser.MapAssignmentContext context)
+    public override object? VisitMapAssignment(MapGeniusParser.MapAssignmentContext context)
     {
         var varName = context.IDENTIFIER(0).GetText();
         var layerName = context.IDENTIFIER(1).GetText();
@@ -1110,7 +1110,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
 
 
-    public override object? VisitConstant(VestaParser.ConstantContext context)
+    public override object? VisitConstant(MapGeniusParser.ConstantContext context)
     {
         if (context.INTEGER() is { } i)
         {
@@ -1130,7 +1130,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
     
     /* '{' (expression',')* '}' */
-    public override object? VisitArrayExpression(VestaParser.ArrayExpressionContext context)
+    public override object? VisitArrayExpression(MapGeniusParser.ArrayExpressionContext context)
     {
         
         var arr = context.expression().ToArray();
@@ -1158,7 +1158,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
     
 
-    public override object? VisitIdentifierAccess(VestaParser.IdentifierAccessContext context)
+    public override object? VisitIdentifierAccess(MapGeniusParser.IdentifierAccessContext context)
     {
         var varName = context.IDENTIFIER().GetText();
 
@@ -1181,7 +1181,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /*  factor2 arrayDimensions					#arrayAccess */
-    public override object? VisitArrayAccess(VestaParser.ArrayAccessContext context)
+    public override object? VisitArrayAccess(MapGeniusParser.ArrayAccessContext context)
     {
         var indexArr = parseArray<int>((Array)Visit(context.arrayDimensions()));
         object? myArray = Visit(context.factor2());
@@ -1200,7 +1200,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
             
 
 
-    public override object? VisitAdditionExpression(VestaParser.AdditionExpressionContext context)
+    public override object? VisitAdditionExpression(MapGeniusParser.AdditionExpressionContext context)
     {
         var left = Visit(context.expression(0));
         var right = Visit(context.expression(1));
@@ -1356,7 +1356,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
 
-    public override object? VisitMultiplicationExpression(VestaParser.MultiplicationExpressionContext context)
+    public override object? VisitMultiplicationExpression(MapGeniusParser.MultiplicationExpressionContext context)
     {
         var left = Visit(context.expression(0));
         var right = Visit(context.expression(1));
@@ -1417,7 +1417,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /* ifStatement: 'if' '(' expression')' block ('else' block)?; */
-    public override object? VisitIfStatement(VestaParser.IfStatementContext context)
+    public override object? VisitIfStatement(MapGeniusParser.IfStatementContext context)
     {
         if (isTrue(Visit(context.expression())))
         {
@@ -1430,7 +1430,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         return null;
     }
-    public override object? VisitWhileStatement(VestaParser.WhileStatementContext context)
+    public override object? VisitWhileStatement(MapGeniusParser.WhileStatementContext context)
     {
 
         while (isTrue(Visit(context.expression())))
@@ -1443,7 +1443,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
     
     /* 'chance{' (expression ':' block)+ '}' */
-    public override object? VisitChance(VestaParser.ChanceContext context)
+    public override object? VisitChance(MapGeniusParser.ChanceContext context)
     {
         var arrExpr = context.expression().ToArray();
         int[] arrVal = new int[arrExpr.Length];
@@ -1479,12 +1479,12 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception("Value is not boolean");
     }
 
-    public override object? VisitParenthesizedExpression(VestaParser.ParenthesizedExpressionContext context)
+    public override object? VisitParenthesizedExpression(MapGeniusParser.ParenthesizedExpressionContext context)
     {
         return Visit(context.expression());
     }
 
-    public override object? VisitCompareExpression(VestaParser.CompareExpressionContext context)
+    public override object? VisitCompareExpression(MapGeniusParser.CompareExpressionContext context)
     {
         var left = Visit(context.expression(0));
         var right = Visit(context.expression(1));
@@ -1502,7 +1502,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         };
     }
 
-    public override object? VisitNotExpression(VestaParser.NotExpressionContext context)
+    public override object? VisitNotExpression(MapGeniusParser.NotExpressionContext context)
     {
         if (Visit(context.factor()) is bool b)
         {
@@ -1512,7 +1512,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"Not exceptions must be with expressions of type bool");
     }
 /*forStatement: 'for' '(' varDecl ';'  expression ';' assignment ')' block; */
-    public override object? VisitForStatement(VestaParser.ForStatementContext context)
+    public override object? VisitForStatement(MapGeniusParser.ForStatementContext context)
     {
         var ass = context.assignment();
         var expression = context.expression();
@@ -1554,7 +1554,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return null;
     }
 
-    public override object? VisitNegExpression(VestaParser.NegExpressionContext context)
+    public override object? VisitNegExpression(MapGeniusParser.NegExpressionContext context)
     {
         if (Visit(context.factor()) is int n)
         {
@@ -1564,7 +1564,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         throw new Exception($"Not exceptions must be with expressions of type int");
     }
 
-    public override object? VisitBooleanExpression(VestaParser.BooleanExpressionContext context)
+    public override object? VisitBooleanExpression(MapGeniusParser.BooleanExpressionContext context)
     {
         var left = Visit(context.expression(0));
         var right = Visit(context.expression(1));
