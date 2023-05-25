@@ -31,7 +31,9 @@ public class CodeGenerationTest
                 object content = visitor.Visit(parser.program());
             }
         );
+
     } 
+    
     
     [Test]
     public void TestIdentifierTypeInt()
@@ -190,7 +192,7 @@ public class CodeGenerationTest
     [Test] //The function Body is used as it returns the desired value
     public void TestScope()
     {
-        VestaParser parser = Setup("{int var = 5; if(true){var=15; int var = 10;}; return var;}");
+        VestaParser parser = Setup("{int var = 5; if(true){var=15;}; return var;}");
     
         VestaParser.FuncBodyContext context = parser.funcBody();
         var visitor = new VestaVisitor();
@@ -437,7 +439,7 @@ public class CodeGenerationTest
     [Test] //The function Body is used as it returns the desired value
     public void TestForLoop()
     {
-        VestaParser parser = Setup("{for(int i=0; i<10; i=i+1){} return i;}");
+        VestaParser parser = Setup("{ int i=0; for(int j=0; i<10; i=i+1){} return i;}");
     
         VestaParser.FuncBodyContext context = parser.funcBody();
         var visitor = new VestaVisitor();
@@ -645,7 +647,7 @@ public class ParserTest
     [Test]
     public void TestIfBlock()
     {
-        VestaParser parser = Setup("if(5==1){int var=20;} write(10);");
+        VestaParser parser = Setup("if(5==1){int var=20;} Stdlib.print(10);");
 
         VestaParser.IfStatementContext context = parser.ifStatement();
 
@@ -657,7 +659,7 @@ public class ParserTest
     [Test]
     public void TestIfElseBlock()
     {
-        VestaParser parser = Setup("if(5==1){int var=20;}else{int var=5;} write(10);");
+        VestaParser parser = Setup("if(5==1){int var=20;}else{int var=5;} Stdlib.print(10);");
 
         VestaParser.IfStatementContext context = parser.ifStatement();
         
@@ -670,7 +672,7 @@ public class ParserTest
     [Test]
     public void TestWhileBlock()
     {
-        VestaParser parser = Setup("while(var){var = !var;} write(10);");
+        VestaParser parser = Setup("while(var){var = !var;} Stdlib.print(10);");
 
         VestaParser.WhileStatementContext context = parser.whileStatement();
 
@@ -682,7 +684,7 @@ public class ParserTest
     [Test]
     public void TestForLoopWithDclr()
     {
-        VestaParser parser = Setup("for(int i=5; i<10; i=i+1){write(i);} myVar=10; write(myVar);");
+        VestaParser parser = Setup("for(int i=5; i<10; i=i+1){write(i);} myVar=10; Stdlib.print(myVar);");
 
         VestaParser.ForStatementContext context = parser.forStatement();
         
@@ -694,7 +696,7 @@ public class ParserTest
     [Test]
     public void TestForLoopWithAssign()
     {
-        VestaParser parser = Setup("for(i=5; i<10; i=i+1){write(i);} myVar=10; write(myVar);");
+        VestaParser parser = Setup("for(i=5; i<10; i=i+1){write(i);} myVar=10; Stdlib.print(myVar);");
 
         VestaParser.ForStatementContext context = parser.forStatement();
         
@@ -706,7 +708,7 @@ public class ParserTest
     [Test]
     public void TestChance()
     {
-        VestaParser parser = Setup("chance{5:{var=10;}2:{var=100;}} write(var);");
+        VestaParser parser = Setup("chance{5:{var=10;}2:{var=100;}} Stdlib.print(var);");
 
         VestaParser.ChanceContext context = parser.chance();
         
@@ -719,7 +721,7 @@ public class ParserTest
     [Test]
     public void TestFunctionDclr()
     {
-        VestaParser parser = Setup("int double(int number){number = number*2; return number;} write(double(10));");
+        VestaParser parser = Setup("int double(int number){number = number*2; return number;} Stdlib.print(double(10));");
 
         VestaParser.FunctionDeclContext context = parser.functionDecl();
 
@@ -731,12 +733,12 @@ public class ParserTest
     [Test]
     public void TestFunctionCall()
     {
-        VestaParser parser = Setup("write(myVar+10); myVar = 10;");
+        VestaParser parser = Setup("someFunc(myVar+10); myVar = 10;");
 
         VestaParser.FunctionCallContext context = parser.functionCall();
         
         string content = context.GetText();
-        string result = "write(myVar+10)";
+        string result = "someFunc(myVar+10)";
 
         Assert.AreEqual(result,  content);
     }
@@ -767,7 +769,7 @@ public class ParserTest
     [Test]
     public void TestMapAssignment()
     {
-        VestaParser parser = Setup("myVar.region[2,3] = 10; writeArray(myVar.region);");
+        VestaParser parser = Setup("myVar.region[2,3] = 10; Stdlib.print(myVar.region);");
 
         VestaParser.MapAssignmentContext context = parser.mapAssignment();
         
