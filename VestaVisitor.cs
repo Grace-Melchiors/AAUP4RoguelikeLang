@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Data;
 using System.Diagnostics.Metrics;
 using System.Formats.Asn1;
@@ -440,7 +440,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     }
 
     /* returnStmt:  'return' expression';'; */
-    public override object? VisitReturnStmt(VestaParser.ReturnStmtContext context)
+    public override object? VisitReturnStmt(VestaParser.ReturnStmtContext context) 
     {
         return Visit(context.expression());
     }
@@ -560,16 +560,34 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         return count;
     }
 
+
+    bool checkIfInScope(string varName)
+    {
+        if (!store.variables.ContainsKey(varName))
+        {
+            Store tempStore = store;
+            while (tempStore.previous != null)
+            {
+                tempStore = tempStore.previous;
+                if (tempStore.variables.ContainsKey(varName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        return true;
+    }
+
     /* identifierType IDENTIFIER        #varDeclaration */
     public override object? VisitVarDeclaration(VestaParser.VarDeclarationContext context)
     {
         var varName = context.IDENTIFIER().GetText();
-        
-        if(store.variables.ContainsKey(varName))  //No overriding current variables
-        {
-            throw new Exception($"The variable {varName} is already defined");
-        }
 
+        //Check if is any scope
+        if (checkIfInScope(varName)) throw new Exception($"The variable {varName} is already defined");
+        
         var type = Visit(context.identifierType());
 
         if (type is ArrDesc arrDesc) //If is an array
@@ -606,10 +624,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
 
         var value = Visit(context.assignment().expression());
 
-        if (store.variables.ContainsKey(varName)) //No overriding current variables
-        {
-            throw new Exception($"The variable {varName} is already defined");
-        }
+        //Check if is any scope
+        if (checkIfInScope(varName)) throw new Exception($"The variable {varName} is already defined");
 
         var type = Visit(context.allType());
 
@@ -913,9 +929,10 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         
         //IF "normal" assignment
         var varName = context.IDENTIFIER().GetText();
-        var value = Visit(context.expression()); 
+        var value = Visit(context.expression());
 
         var relevantStore = getStoreForVar(varName);
+        
         var originalValue = relevantStore.variables[varName];
         if (context.arrayDimensions() is not null)//Handle arrayIndexes
         {
@@ -1165,7 +1182,7 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         var indexArr = parseArray<int>((Array)Visit(context.arrayDimensions()));
         object? myArray = Visit(context.factor2());
 
-        for(int i=0; i<indexArr.Length; i++)
+        for(int i = 0 ; i < indexArr.Length ; i++) 
         {
             if (myArray is Array arr)
             {
@@ -1495,18 +1512,29 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     {
         var ass = context.assignment();
         var expression = context.expression();
-        
-        //Start by visit dclr
-        Visit(context.varDecl());
 
         if(Visit(expression) is bool flag){}
         else
         {
             throw new Exception($"Must be a boolean value for for loops");
         }
+
+        var statementArr = context.block().statement().ToArray();
+        
+        /* New scope */
+        Store tempStore = new Store();
+        tempStore.previous = store;
+        store = tempStore;
+        
+        //Start by visit dclr
+        Visit(context.varDecl());
+        
         while (flag)
         {
-            Visit(context.block());
+            for (int i = 0; i < statementArr.Length; i++)
+            {
+                Visit(statementArr[i]);
+            }
             Visit(ass);
             if (Visit(expression) is bool b)
             {
@@ -1517,6 +1545,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
                 throw new Exception($"Must be a boolean value for for loops");
             }
         }
+        //Reset scope
+        store = store.previous;
         return null;
     }
 
@@ -1566,5 +1596,8 @@ public class VestaVisitor : VestaBaseVisitor<object?>
         }
        
         throw new Exception($"$Cannot compare between types {left.GetType()} and {right.GetType()}");
+        
+        
+
     }
 }
