@@ -108,9 +108,11 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     
     private MLCGRandom random = new MLCGRandom();
 
-    public VestaVisitor()
+    bool verbose = false;
+
+    public VestaVisitor(bool verbose)
     {
-        
+        this.verbose = verbose;
     }
 
     private object? Seed(object[] args)
@@ -123,12 +125,14 @@ public class VestaVisitor : VestaBaseVisitor<object?>
     
     private object? Print(object arg)
     {
-        if (arg is Array arr)
-        {
-            foreach (object? o in arr) Print(o);
-            Console.WriteLine("");
+        if (verbose) {
+            if (arg is Array arr)
+            {
+                foreach (object? o in arr) Print(o);
+                    Console.WriteLine("");
+            }
+            else Console.Write(arg+" ");
         }
-        else Console.Write(arg+" ");
 
         return null;
     }

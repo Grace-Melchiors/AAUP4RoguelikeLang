@@ -27,7 +27,7 @@ namespace Antlr_language
             result.AppendLine("namespace " + context.nameSpace);
             result.AppendLine("{");
             
-            result.AppendLine("\tclass Map {");
+            result.AppendLine("\tpublic class Map {");
             result.AppendLine("\t    public Dictionary<string, MapLayer> layers {get; private set;}");
             result.AppendLine("\t    public int d1Size;");
             result.AppendLine("\t    public int d2Size;");
@@ -43,16 +43,15 @@ namespace Antlr_language
             result.AppendLine("\t    }");
             result.AppendLine("\t}");
 
-            result.AppendLine("\tclass MapLayer {");
+            result.AppendLine("\tpublic class MapLayer {");
             result.AppendLine("\t    public object InitialValue {get; private set; }");
-            result.AppendLine("\t    public object[,]? LayerValue {get; private set; }");
+            result.AppendLine("\t    public object[,]? LayerValue {get; set; }");
             result.AppendLine("\t    public string Identifier {get; private set; }");
             result.AppendLine("\t    public void SetInitialValues (int size1, int size2) {");
             result.AppendLine("\t        LayerValue = new object[size1,size2];");
             result.AppendLine("\t        for (int i = 0; i < size1; i++)");
             result.AppendLine("\t            for (int j = 0; j < size2; j++)");
             result.AppendLine("\t                LayerValue[i,j] = InitialValue;");
-            result.AppendLine("\t                ");
             result.AppendLine("\t    }");
             result.AppendLine("\t    public MapLayer (string type, string identifier, object? InitialValue) {");
             result.AppendLine("\t        this.Identifier = identifier;");
@@ -754,7 +753,6 @@ namespace Antlr_language
             result.Append("public static ");
             result.Append(Visit(context.Type));
             result.Append(" " + context.Identifier + " ");
-            //System.Console.WriteLine("Test from: FunctionDeclarationNode");
             result.Append("(");
             if (context.funcParams.Count != 0) {
                 foreach (var param in context.funcParams) {

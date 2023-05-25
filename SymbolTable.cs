@@ -11,8 +11,10 @@ using Antlr_language.ast;
 
 public class SymbolTable
 {
-    public SymbolTable()
+    bool Verbose;
+    public SymbolTable(bool verbose)
     {
+        Verbose = verbose;
         InitialiseSymbolTable();
     }
 
@@ -35,7 +37,8 @@ public class SymbolTable
     { // Public for now
         Dictionary<string, object> NewSymbolTable = new Dictionary<string, object>();
         SymbolTableStack.Push(NewSymbolTable);
-        System.Console.WriteLine("Opening Scope");
+        if (Verbose)
+            System.Console.WriteLine("Opening Scope");
     }
 
     // Closes the scope by popping symbol table from the stack.
@@ -44,7 +47,8 @@ public class SymbolTable
     public void CloseScope()
     { // Public for now
         SymbolTableStack.Pop();
-        System.Console.WriteLine("Closing Scope");
+        if (Verbose)
+            System.Console.WriteLine("Closing Scope");
     }
 
     // Iterates all elements of the stacks. Prints each to std.out.
@@ -52,30 +56,37 @@ public class SymbolTable
     {
         int level = 0;
         int TotalLevels = SymbolTableStack.Count() - 1;
-        System.Console.WriteLine("-----");
-        System.Console.WriteLine("Top of stack");
+        if (Verbose) {
+            System.Console.WriteLine("-----");
+            System.Console.WriteLine("Top of stack");
+        }
 
         // Level 0 = top of stack
         while (level <= TotalLevels)
         {
-            System.Console.WriteLine("|---------- Level {0} ----------|");
+            if (Verbose)
+                System.Console.WriteLine("|---------- Level {0} ----------|");
 
 
             foreach (var kvp in SymbolTableStack.ElementAt(level))
             {
-                System.Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+                if (Verbose)
+                    System.Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
             }
 
 
             if (level == TotalLevels)
             {
-                System.Console.WriteLine("|-----------------------------|");
+                if (Verbose)
+                    System.Console.WriteLine("|-----------------------------|");
             }
             level++;
         }
 
-        System.Console.WriteLine("Bottom of stack");
-        System.Console.WriteLine("-----");
+        if (Verbose) {
+            System.Console.WriteLine("Bottom of stack");
+            System.Console.WriteLine("-----");
+        }
     }
 
     // Enters a new value into the symbol table located on top of the stack.
@@ -102,12 +113,14 @@ public class SymbolTable
 
             if (SymbolTableStack.ElementAt(CurrentLevelInStack).ContainsKey(name))
             {
-                System.Console.WriteLine("Found symbol at level {0}", CurrentLevelInStack);
+                if (Verbose)
+                    System.Console.WriteLine("Found symbol at level {0}", CurrentLevelInStack);
                 return SymbolTableStack.ElementAt(CurrentLevelInStack)[name];
             }
             else
             {
-                System.Console.WriteLine("Symbol not found, checking next level. Current level: {0}", CurrentLevelInStack);
+                if (Verbose)
+                    System.Console.WriteLine("Symbol not found, checking next level. Current level: {0}", CurrentLevelInStack);
                 CurrentLevelInStack++;
             }
 

@@ -15,55 +15,64 @@ namespace Antlr_language
         static void Main (string[] args) {
             var filePath = "";
             var outputFileName = "";
-            if (args.Length > 0 && args[0] != null) {
-                filePath = args[0];
-            } else {
-                filePath = "Content/input/addition.V";
+            bool debugMode = false;
+            bool verbose = false;
+            for (int i = 0; i < args.Length; i++) {
+                switch (args[i]) {
+                    case "-d":
+                        debugMode = true;
+                        break;
+                    case "-v":
+                        verbose = true;
+                        break;
+                    default:
+                        //Last argument must be outputPath except if only 1 none flag argument.
+                        if (i == args.Length - 1) {
+                            if (filePath == "") {
+                                filePath = Path.GetFullPath(args[i]);
+                            } else {
+                                outputFileName = args[i];
+                            }
+                        //Last argument must be outputPath
+                        } else if (i == args.Length - 2) {
+                            filePath = Path.GetFullPath(args[i]);
+                        } else {
+                            throw new ArgumentException("To many non defined flag arguments.");
+                        }
+                        break;
+                }
             }
-            if (args.Length > 1 && args[1] != null) {
-                outputFileName = args[1];
-            } else {
-                outputFileName = "Content/output/addition.cs";
-            }
+            if (File.Exists(filePath) == false)
+                throw new FileNotFoundException();
+            
+            
             var fileContents = File.ReadAllText(filePath);
-            string defaultOutputFolder = "Content/output";
-            string defaultOutputFile = "output" + /*DateTime.Now.ToShortDateString() +*/ ".cs";
-            CSharpBuilder CSB = new CSharpBuilder(Path.GetDirectoryName(outputFileName) ?? defaultOutputFolder, Path.GetFileName(outputFileName) ?? defaultOutputFile);
-
-
             AntlrInputStream inputStream = new AntlrInputStream(fileContents);
             var vestaLexer = new VestaLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(vestaLexer);
             VestaParser vestaParser = new VestaParser(commonTokenStream);
-            //vestaParser.AddErrorListener();
-
             var vestaContext = vestaParser.program();
+            
+            if (debugMode) {
+                var visitor = new VestaVisitor(true);
+                visitor.Visit((vestaContext));
+            } else {
+                var visitor = new VestaVisitor(false);
+                AstBuilder builder = new AstBuilder();
+                ASTDecorator Decorator = new ASTDecorator(new SymbolTable(verbose));
+                CodeGenVisitor CodeGenerator = new CodeGenVisitor(2);
+                
+                //Semantic analysis
+                visitor.Visit((vestaContext));
 
-            //var visitor = new VestaVisitor();
-            //visitor.Visit((vestaContext));
+                AbstractNode AST = builder.Visit((vestaContext));
+                Decorator.Visit((dynamic)AST);
+                CSharpBuilder CSB = new CSharpBuilder(outputFileName);
+                CSB.AcceptStringBuilder(CodeGenerator.Visit((dynamic)AST));
+                CSB.OutputResult();
+            }
 
-            AstBuilder builder = new AstBuilder();
-            //ProgramNode programNode = (ProgramNode) builder.VisitProgram(vestaContext);
-
-            AbstractNode AST = builder.Visit((vestaContext));
-
-
-            ASTDecorator Decorator = new ASTDecorator();
-            Decorator.Visit((dynamic)AST);
-
-            CodeGenVisitor CodeGenerator = new CodeGenVisitor(2);
-
-            CSB.AcceptStringBuilder(CodeGenerator.Visit((dynamic)AST));
-            CSB.OutputResult();
-            //CodeGenVisitor CodeGen = new CodeGenVisitor();
-            //CodeGen.Visit((dynamic)AST);
-
-
-
-            //SemanticAnalysis semanticAnalysis = new SemanticAnalysis();
-            //semanticAnalysis.VisitProgram((ProgramNode) AST);
-
-            Console.WriteLine("Press enter to continue...");
+            Console.WriteLine("Completed, press enter to continue...");
             Console.Read();
 
         }

@@ -11,8 +11,10 @@ namespace Antlr_language
 {
     public class ASTDecorator : AstBaseVisitorBuilder<TypeNode?>
     {
-        SymbolTable symbolTable = new SymbolTable();
-        //SemanticAnalysis 
+        SymbolTable symbolTable;
+        public ASTDecorator (SymbolTable symbolTable) {
+            this.symbolTable = symbolTable;
+        }
         public override TypeNode? Visit(BlockNode context)
         {
             symbolTable.OpenScope();
@@ -23,12 +25,16 @@ namespace Antlr_language
 
         public override TypeNode? Visit(VariableDeclarationNode context)
         {
+            if (symbolTable.RetrieveSymbol(context.Identifier) != null)
+                throw new VariableAlreadyDefinedException(context.Identifier);
             symbolTable.EnterSymbol(context.Identifier, context);
             return base.Visit(context);
         }
 
         public override TypeNode? Visit(FunctionDeclarationNode context)
         {
+            if (symbolTable.RetrieveSymbol(context.Identifier) != null)
+                throw new VariableAlreadyDefinedException(context.Identifier);
             symbolTable.EnterSymbol(context.Identifier, context);
             return base.Visit(context);
         }

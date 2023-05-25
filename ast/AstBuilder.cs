@@ -11,7 +11,6 @@ namespace Antlr_language
 {
     public class AstBuilder : VestaBaseVisitor<AbstractNode>
     {
-        
         public override AbstractNode VisitProgram([NotNull] VestaParser.ProgramContext context)
         {
             ProgramNode AST = new ProgramNode();
@@ -207,8 +206,6 @@ namespace Antlr_language
             } else {
                 throw new NotImplementedException();
             }
-            
-            System.Console.WriteLine("We need to create a new node and differentiate between eg. TYPE[,] and TYPE[2,3]");
 
             return result;
         }
@@ -235,8 +232,6 @@ namespace Antlr_language
             } else {
                 throw new NotImplementedException();
             }
-            
-            System.Console.WriteLine("We need to create a new node and differentiate between eg. TYPE[,] and TYPE[2,3]");
 
             return result;
         }
@@ -309,7 +304,7 @@ namespace Antlr_language
                     result = new TypeNode(type, null, sizes, sizes.Count, false);
                 }
             } catch (NullReferenceException e) {
-                System.Console.WriteLine("Error: " + e.Message);
+                //System.Console.WriteLine("Error: " + e.Message);
             }
             return result;
         }

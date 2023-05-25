@@ -4,13 +4,11 @@ using System.Text;
 namespace Antlr_language;
 
 public class CSharpBuilder {
-    string OutputFolder;
-    string OutputFile;
+    string OutputPath;
     StringBuilder Output = new StringBuilder();
 
-    public CSharpBuilder(string outputFolder, string outputFile) {
-        OutputFolder = outputFolder;
-        OutputFile = outputFile;
+    public CSharpBuilder(string outputPath) {
+        this.OutputPath = outputPath;
     }
 
     public void AppendLine (string line) {
@@ -25,7 +23,7 @@ public class CSharpBuilder {
     }
 
     public void OutputResult () {
-        using (StreamWriter outputFile = new StreamWriter(Path.Combine(OutputFolder, OutputFile)))
+        using (StreamWriter outputFile = new StreamWriter(Path.GetFullPath(OutputPath)))
         {
             outputFile.WriteLine(Output.ToString());
         }
