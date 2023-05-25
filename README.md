@@ -8,13 +8,12 @@ C#, Antlr4
 ### Packages
 To utilize MapGenius you must have the following packages downloaded:
 
-### Writing
-To write code in MapGenius refer to the text.V file in the file content/input/test.V
-After having written code, launch the program with:
+### How to run
+The program is used by calling the compiler from a console with two arguments, the first being the path to the input file, and the second argument being the path to the output file, that is about to be created.
+Additionally, two flags are available during compilation:
+- debug: Skips the CST to AST transformation, AST decoration and Code Generation phases. Allows for execution of the program with generating an output file.
+- verbose: Prints the contents of the symbol table repeatedly throughout the different the AST decoration.
 
-[INSERT CODE THINGY]
-
-Alternatively any other output can be chosen, as long as it it is referenced with the command.
 
 ## Credit
 Repository for our AAU 2023 P4 project. Designed and developed by 
