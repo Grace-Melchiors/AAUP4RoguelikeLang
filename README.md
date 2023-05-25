@@ -5,10 +5,10 @@ Centered around designing and implementing a programming language to create rogu
 C#, Antlr4
 
 ## How to use
-###Packages
+### Packages
 To utilize MapGenius you must have the following packages downloaded:
 
-###Writing
+### Writing
 To write code in MapGenius refer to the text.V file in the file content/input/test.V
 After having written code, launch the program with:
 
