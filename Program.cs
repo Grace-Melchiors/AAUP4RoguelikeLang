@@ -1,9 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 //Build command: dotnet build --configuration Release --runtime linux-x64 --self-contained
+//Windwos build command: dotnet build --configuration Release --runtime win-x64 --self-contained
 using System;
 using System.Text;
 using Antlr_language;
-using Antlr_language.Content;
+using Antlr_language.content;
 using Antlr4.Runtime;
 using Antlr_language.ast;
 using Antlr_language.ast.structure;
@@ -63,7 +64,7 @@ namespace Antlr_language
                 CodeGenVisitor CodeGenerator = new CodeGenVisitor(2);
                 
                 //Semantic analysis
-                visitor.Visit((MapGeniusContext));
+                //visitor.Visit((MapGeniusContext));
 
                 AbstractNode AST = builder.Visit((MapGeniusContext));
                 Decorator.Visit((dynamic)AST);

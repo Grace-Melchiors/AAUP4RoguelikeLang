@@ -3,7 +3,7 @@ using Antlr_language.ast.expression;
 using Antlr_language.ast.statement;
 using Antlr_language.ast.structure;
 using Antlr_language.ast;
-using Antlr_language.Content;
+using Antlr_language.content;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 
