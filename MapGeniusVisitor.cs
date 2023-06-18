@@ -1517,11 +1517,7 @@ public class MapGeniusVisitor : MapGeniusBaseVisitor<object?>
         var ass = context.assignment();
         var expression = context.expression();
 
-        if(Visit(expression) is bool flag){}
-        else
-        {
-            throw new Exception($"Must be a boolean value for for loops");
-        }
+
 
         var statementArr = context.block().statement().ToArray();
         
@@ -1532,6 +1528,12 @@ public class MapGeniusVisitor : MapGeniusBaseVisitor<object?>
         
         //Start by visit dclr
         Visit(context.varDecl());
+        
+        if(Visit(expression) is bool flag){}
+        else
+        {
+            throw new Exception($"Must be a boolean value for for loops");
+        }
         
         while (flag)
         {
