@@ -64,7 +64,7 @@ namespace Antlr_language
                 CodeGenVisitor CodeGenerator = new CodeGenVisitor(2);
                 
                 //Semantic analysis
-                //visitor.Visit((MapGeniusContext));
+                visitor.Visit((MapGeniusContext));
 
                 AbstractNode AST = builder.Visit((MapGeniusContext));
                 Decorator.Visit((dynamic)AST);
