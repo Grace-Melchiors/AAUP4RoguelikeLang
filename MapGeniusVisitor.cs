@@ -203,10 +203,15 @@ public class MapGeniusVisitor : MapGeniusBaseVisitor<object?>
         object returnType = Visit(context.returnType());
         
         //Gather arr of funcParams
-        var param = Visit(context.funcParams());
-        if (param is not Array paramArr) { throw new Exception($"Could not find parameters");}
-        //Parse it as paramDesc
-        ParamDesc[] paramDescs = parseArray<ParamDesc>(paramArr);
+        ParamDesc[] paramDescs = Array.Empty<ParamDesc>();
+        
+        if (context.funcParams() is not null)
+        {
+            var param = Visit(context.funcParams());
+            if (param is not Array paramArr) { throw new Exception($"Could not find parameters");}
+            //Parse it as paramDesc
+            paramDescs = parseArray<ParamDesc>(paramArr);
+        }
         
         //Find store of declaration
         Store storeOfDclr = store;
@@ -1425,7 +1430,7 @@ public class MapGeniusVisitor : MapGeniusBaseVisitor<object?>
         }
         else
         {
-            Visit(context.block(1));
+            if(context.block(1)!=null) Visit(context.block(1));
         }
 
         return null;
