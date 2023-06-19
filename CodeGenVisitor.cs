@@ -450,12 +450,23 @@ namespace Antlr_language
             result.AppendLine("\t\t        return (int)(min + getNext() % (max+1 - min));");
             result.AppendLine("\t\t    }");
             result.AppendLine("\t\t}");
+            foreach (LineNode line in context.GlobalVariables) {
+                //for (int i = 0; i < indentation; i++)
+                    //result +="\t";
+                result.Append("\t\tpublic static ");
+                int temp = Indentation;
+                Indentation = 0;
+                result.Append(Visit(line));
+                Indentation = temp;
+                result.AppendLine();
+            }
             foreach (LineNode line in context.FunctionDecls) {
                 //for (int i = 0; i < indentation; i++)
                     //result +="\t";
                 result.Append(Visit(line));
                 result.AppendLine();
             }
+            
             result.AppendLine("\t\tstatic void Main(string[] args)");
             result.AppendLine("\t\t{");
             foreach (LineNode line in context.Statements) {
@@ -565,6 +576,9 @@ namespace Antlr_language
                 if (context.IdentifierType.DimensionRank != 0) {
                     result.Append("ArrayCalculator.AssignOperation(");
                     result.Append(context.IDENTIFIER);
+                    if (context.PROPERTY != null) {
+                        result.Append("." + context.PROPERTY);
+                    }
                     result.Append(", ");
                     result.Append(Visit(context.expression));
                     if (context.expression.type != null && context.expression.type.IsArray) {
@@ -591,6 +605,9 @@ namespace Antlr_language
                     result.Append(")");
                 } else {
                     result.Append(context.IDENTIFIER);
+                    if (context.PROPERTY != null) {
+                        result.Append("." + context.PROPERTY);
+                    }
                     if (context.ArrayIndicies != null) {
                         result.Append("[");
                         if (context.ArrayIndicies.Count > 0) {

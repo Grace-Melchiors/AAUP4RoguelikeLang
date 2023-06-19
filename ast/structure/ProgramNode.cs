@@ -11,6 +11,7 @@ namespace Antlr_language.ast.structure
         public List<LibraryNode> libraryNodes { get; private set;} = new List<LibraryNode>();
         public List<LineNode> lineNodes  { get; private set;} = new List<LineNode>();
         public List<LineNode> FunctionDecls  { get; set;} = new List<LineNode>();
+        public List<LineNode> GlobalVariables { get; set;} = new List<LineNode>();
         public List<LineNode> Statements  { get; set;} = new List<LineNode>();
         
         public List<LineNode> retrieveLineNodes() {

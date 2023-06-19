@@ -9,6 +9,8 @@ namespace Antlr_language.ast.statement
     public class VariableDeclarationNode : AbstractNode
     {
         public TypeNode Type {get; private set;}
+        //If map hav layers as variable declarations
+        public List<VariableDeclarationNode>? layers {get; set;} = new List<VariableDeclarationNode>();
         public string Identifier {get; private set;}
         public ExpressionNode? expression {get; private set;}
         //private List<int>? ArraySizes;

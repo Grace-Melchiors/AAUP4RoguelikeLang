@@ -7,15 +7,17 @@ namespace Antlr_language.ast.statement
 {
     public class AssignmentNode : AbstractNode
     {
-        public TypeNode IdentifierType {get; set;}
+        public TypeNode? IdentifierType {get; set;}
         public string IDENTIFIER {get; private set;}
+        public string? PROPERTY {get; private set;}
         public List<ExpressionNode>? ArrayIndicies {get; private set;}
         public List<int>? ArraySizes {get; private set;}
         public ExpressionNode expression {get; private set;}
 
-        public AssignmentNode(string iDENTIFIER, List<ExpressionNode>? arrayIndicies, ExpressionNode expression)
+        public AssignmentNode(string iDENTIFIER, string? property, List<ExpressionNode>? arrayIndicies, ExpressionNode expression)
         {
             IDENTIFIER = iDENTIFIER;
+            PROPERTY = property;
             ArrayIndicies = arrayIndicies;
             this.expression = expression;
         }

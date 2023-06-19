@@ -10,8 +10,8 @@ namespace Antlr_language.ast.structure
         public Enums.Types Type {get; private set;}
         public List<IndividualLayerNode>? mapLayers {get; private set;}
         public bool IsArray => (ArraySizes != null || DimensionRank != 0) ? true : false;
-        public List<ExpressionNode>? ArraySizes {get; private set;}
-        public int DimensionRank {get; private set;}
+        public List<ExpressionNode>? ArraySizes {get;  set;}
+        public int DimensionRank {get; set;}
         public List<int>? ArrayExpressionDimensionSizes {get;set;}
         public bool OutMostArrayExpression {get;set;} = false;
         public bool WriteArraySizes {get; set;}

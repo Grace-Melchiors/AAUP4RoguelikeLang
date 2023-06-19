@@ -140,16 +140,45 @@ namespace Antlr_language
         public override AbstractNode VisitAssignment([NotNull] MapGeniusParser.AssignmentContext context)
         {
             AssignmentNode result;
+
+            if (context.mapAssignment() != null) {
+                return (AssignmentNode)Visit(context.mapAssignment());
+            }
+
             var expressions = context.arrayDimensions()?.expression().ToArray();
+            //If it is array assignment
             if (expressions != null) {
                 List<ExpressionNode> expressionNodes= new List<ExpressionNode>();
                 foreach (var val in expressions)
                 {
                     expressionNodes.Add((ExpressionNode)Visit(val));
                 }
-                result = new AssignmentNode(context.IDENTIFIER().GetText(),expressionNodes, (ExpressionNode)Visit(context.expression()));
+                result = new AssignmentNode(context.IDENTIFIER().GetText(), null, expressionNodes, (ExpressionNode)Visit(context.expression()));
             } else {
-                result = new AssignmentNode(context.IDENTIFIER().GetText(), null, (ExpressionNode)Visit(context.expression()));
+                string identifier = context.IDENTIFIER().GetText();
+                ExpressionNode expre = (ExpressionNode)Visit(context.expression());
+                result = new AssignmentNode(identifier, null, null, expre);
+            }
+
+            return result;
+        }
+        public override AbstractNode VisitMapAssignment([NotNull] MapGeniusParser.MapAssignmentContext context)
+        {
+            AssignmentNode result;
+            var identifiers = context.IDENTIFIER().ToArray();
+
+            var expressions = context.arrayDimensions()?.expression().ToArray();
+            //If it is array assignment
+            if (expressions != null) {
+                List<ExpressionNode> expressionNodes= new List<ExpressionNode>();
+                foreach (var val in expressions)
+                {
+                    expressionNodes.Add((ExpressionNode)Visit(val));
+                }
+                result = new AssignmentNode(identifiers[0].GetText(), identifiers[1].GetText(), expressionNodes, (ExpressionNode)Visit(context.expression()));
+            } else {
+                ExpressionNode expre = (ExpressionNode)Visit(context.expression());
+                result = new AssignmentNode(identifiers[0].GetText(), identifiers[1].GetText(), null, expre);
             }
 
             return result;

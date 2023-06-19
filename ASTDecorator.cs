@@ -28,6 +28,26 @@ namespace Antlr_language
             if (symbolTable.RetrieveSymbol(context.Identifier) != null)
                 throw new VariableAlreadyDefinedException(context.Identifier);
             symbolTable.EnterSymbol(context.Identifier, context);
+            if (context.Type.Type == Enums.Types.MAP) {
+                if (context.expression?.factor?.mapExpression == null) {
+                    throw new ("Map declaration must have map expression.");
+                }
+                if (context.expression?.factor?.mapExpression.mapLayer.mapLayer.Count == 0) {
+                    throw new ("Map does not have any layers.");
+                }
+                foreach (var layer in context.expression.factor.mapExpression.mapLayer.mapLayer) {
+                    TypeNode? type = layer.LayerType;
+                    type.DimensionRank = 2;
+                    if (type.ArraySizes == null) {
+                        type.ArraySizes = new List<ExpressionNode>();
+                    }
+                    foreach (var expression in context.expression.factor.mapExpression.arrayDimensions.expressions) {
+                        type?.ArraySizes?.Add(expression);
+                    }
+
+                    context.layers.Add(new VariableDeclarationNode(type, layer.IDENTIFIER, layer.Expression));
+                }
+            }
             return base.Visit(context);
         }
 
@@ -49,8 +69,15 @@ namespace Antlr_language
                 VariableDeclarationNode? decl = (VariableDeclarationNode?)symbolTable.RetrieveSymbol(context.IDENTIFIER);
                 if (decl == null)
                     throw new UndefinedVariableException(context.IDENTIFIER);
-                
-                context.IdentifierType = decl.Type;
+                if (context.PROPERTY != null) {
+                    foreach (var layer in decl.layers) {
+                        if (context.PROPERTY == layer.Identifier) {
+                            context.IdentifierType = layer.Type;
+                        }
+                    }
+                } else {
+                    context.IdentifierType = decl.Type;
+                }
             }
             return base.Visit(context);
         }
@@ -309,7 +336,11 @@ namespace Antlr_language
                 if (line.funcDecl != null) {
                     context.FunctionDecls.Add(line);
                 } else if (line.statement != null) {
-                    context.Statements.Add(line);
+                    if (line.statement.varDecl != null) {
+                        context.GlobalVariables.Add(line);
+                    } else {
+                        context.Statements.Add(line);
+                    }
                 } else {
                     throw new NotImplementedException();
                 }

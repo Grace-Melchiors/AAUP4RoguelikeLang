@@ -43,6 +43,8 @@ namespace Antlr_language
                         break;
                 }
             }
+            //filePath = "content/input/input.MAP";
+            //outputFileName = "content/output/output.txt";
             if (File.Exists(filePath) == false)
                 throw new FileNotFoundException();
             
