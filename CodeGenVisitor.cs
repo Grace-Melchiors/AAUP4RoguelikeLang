@@ -13,6 +13,7 @@ namespace Antlr_language
     public class CodeGenVisitor : AstBaseVisitorBuilder<StringBuilder>
     {
         int Indentation = 2;
+        int NumberOfChanceTables = 0;
         public CodeGenVisitor (int indentation) {
             Indentation = indentation;
         }
@@ -573,11 +574,29 @@ namespace Antlr_language
         public override StringBuilder Visit(AssignmentNode context) {
             StringBuilder result = new StringBuilder();
             if (context.IdentifierType != null) {
-                if (context.IdentifierType.DimensionRank != 0) {
+                if (context.IdentifierType.DimensionRank == 0 || (context.ArrayIndicies != null && context.ArrayIndicies.Count > 0 && context.expression.type != null && context.expression.type.IsArray == false)) {
+                    result.Append(context.IDENTIFIER);
+                    if (context.PROPERTY != null) {
+                        result.Append(".layers[\"" + context.PROPERTY + "\"].LayerValue");
+                    }
+                    if (context.ArrayIndicies != null) {
+                        result.Append("[");
+                        if (context.ArrayIndicies.Count > 0) {
+                            foreach(var exp in context.ArrayIndicies) {
+                                result.Append(Visit(exp));
+                                result.Append(",");
+                            }
+                            result.Length--;
+                        }
+                        result.Append("]");
+                    }
+                    result.Append(" = ");
+                    result.Append(Visit(context.expression));
+                } else {
                     result.Append("ArrayCalculator.AssignOperation(");
                     result.Append(context.IDENTIFIER);
                     if (context.PROPERTY != null) {
-                        result.Append("." + context.PROPERTY);
+                        result.Append(".layers[\"" + context.PROPERTY + "\"].LayerValue");
                     }
                     result.Append(", ");
                     result.Append(Visit(context.expression));
@@ -603,26 +622,7 @@ namespace Antlr_language
                         }
                     }
                     result.Append(")");
-                } else {
-                    result.Append(context.IDENTIFIER);
-                    if (context.PROPERTY != null) {
-                        result.Append("." + context.PROPERTY);
-                    }
-                    if (context.ArrayIndicies != null) {
-                        result.Append("[");
-                        if (context.ArrayIndicies.Count > 0) {
-                            foreach(var exp in context.ArrayIndicies) {
-                                result.Append(Visit(exp));
-                                result.Append(",");
-                            }
-                            result.Length--;
-                        }
-                        result.Append("]");
-                    }
-                    result.Append(" = ");
-                    result.Append(Visit(context.expression));
                 }
-                
             }
             
             
@@ -695,6 +695,9 @@ namespace Antlr_language
             return result;
         }
         public override StringBuilder Visit(ChanceNode context) {
+            int thisChanceNumber = NumberOfChanceTables;
+            NumberOfChanceTables++;
+            
             StringBuilder result = new StringBuilder();
             string indent = "";
             for (int i = 0; i < Indentation; i++)
@@ -705,36 +708,36 @@ namespace Antlr_language
             result.AppendLine("{");
             indent +="\t";
             result.Append(indent);
-            result.AppendLine("int _sum = 0;");
+            result.AppendLine("int _sum_" + thisChanceNumber + " = 0;");
             for (int i = 0; i < context.weights.Count; i++) {
                 var weight = context.weights[i];
                 result.Append(indent);
                 Indentation++;
-                result.Append("_sum += ");
+                result.Append("_sum_" + thisChanceNumber + " += ");
                 result.Append(Visit(weight));
                 result.AppendLine(";");
                 Indentation--;
                 result.Append(indent);
                 Indentation++;
-                result.Append("int _sum"+i+" = ");
+                result.Append("int _sum_" + thisChanceNumber + "_" +i+" = ");
                 result.Append(Visit(weight));
                 result.AppendLine(";");
                 Indentation--;
             }
             
             result.Append(indent);
-            result.AppendLine("int _chance = rng.getRand(0,_sum);");
+            result.AppendLine("int _chance_" + thisChanceNumber + " = rng.getRand(0,_sum_" + thisChanceNumber + ");");
             for (int i = 0; i < context.weights.Count; i++) {
                 var weight = context.weights[i];
                 var block = context.blocks[i];
                 result.Append(indent);
-                result.AppendLine("if (_chance <_sum"+i+ ")");
+                result.AppendLine("if (_chance_" + thisChanceNumber + " <_sum_" + thisChanceNumber + "_"+i+ ")");
                 //result.Append(indent);
                 Indentation++;
                 result.Append(Visit(block));
                 Indentation--;
                 result.Append(indent);
-                result.AppendLine("_chance = _chance<_sum"+i+"?_sum:_chance-_sum"+i+";");
+                result.AppendLine("_chance_" + thisChanceNumber + " = _chance_" + thisChanceNumber + "<_sum_" + thisChanceNumber + "_"+i+"?_sum_" + thisChanceNumber + ":_chance_" + thisChanceNumber + "-_sum_" + thisChanceNumber + "_"+i+";");
             }
             indent = "";
             for (int i = 0; i < Indentation; i++)
