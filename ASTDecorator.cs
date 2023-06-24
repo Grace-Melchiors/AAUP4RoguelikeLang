@@ -227,10 +227,16 @@ namespace Antlr_language
             try {
                 if (context.expressions.Count <= 0)
                     throw new Exception("Empty array expression.");
-                List<int> DimensionSizes = new List<int>();
+                //List<int> DimensionSizes = new List<int>();
                 List<TypeNode?> expressionsTypes = new List<TypeNode?>();
                 
                 TypeNode? FirstType = Visit(context.expressions.First());
+                List<int> DimensionSizes = new List<int>();
+                if (FirstType?.ArrayExpressionDimensionSizes != null) {
+                    foreach (var size in FirstType?.ArrayExpressionDimensionSizes) {
+                        DimensionSizes.Add(size);
+                    }
+                }
                 if (FirstType == null)
                     throw new Exception("Unknown first type in array expression.");
                 context.type = new TypeNode(FirstType.Type, null, null, 0, false);
@@ -260,13 +266,11 @@ namespace Antlr_language
                     } else {
                         if (currentType.ArrayExpressionDimensionSizes.Count == FirstType.ArrayExpressionDimensionSizes.Count) {
                             for (int j = 0; j < currentType.ArrayExpressionDimensionSizes.Count; j++) {
-                                if (currentType.ArrayExpressionDimensionSizes[j] == FirstType.ArrayExpressionDimensionSizes[j]) {
-                                    DimensionSizes.Add(currentType.ArrayExpressionDimensionSizes[j]);
-                                    
-                                } else {
+                                if (currentType.ArrayExpressionDimensionSizes[j] != FirstType.ArrayExpressionDimensionSizes[j]) {
                                     throw new Exception("Dimension " + j + " is not the same size.");
                                 }
                             }
+                            //DimensionSizes.Add(currentType.ArrayExpressionDimensionSizes[0]);
                         }
                         else {
                             throw new Exception("Not same number of dimensions in all arrayExpressions.");
