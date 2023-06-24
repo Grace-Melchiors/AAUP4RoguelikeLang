@@ -51,12 +51,35 @@ namespace Antlr_language
             return base.Visit(context);
         }
 
+        public override TypeNode Visit(ForNode context)
+        {
+            symbolTable.OpenScope();
+            base.Visit(context);
+            symbolTable.CloseScope();
+            return null;
+        }
+
+
+
         public override TypeNode? Visit(FunctionDeclarationNode context)
         {
             if (symbolTable.RetrieveSymbol(context.Identifier) != null)
                 throw new VariableAlreadyDefinedException(context.Identifier);
             symbolTable.EnterSymbol(context.Identifier, context);
-            return base.Visit(context);
+
+            if (context.Type != null)
+                Visit(context.Type);
+            
+            symbolTable.OpenScope();
+            foreach (var funcParam in context.funcParams) {
+                Visit(funcParam);
+            }
+            if (context.body != null)
+                Visit(context.body);
+            
+            symbolTable.CloseScope();
+            
+            return default(TypeNode);
         }
         public override TypeNode? Visit(FunctionParamNode context)
         {
@@ -187,6 +210,10 @@ namespace Antlr_language
             }
             context.type = result;
             return result;
+        }
+
+        public override TypeNode? Visit(ArrayAccessNode context) {
+            return new TypeNode(Visit(context.factor2).Type, null, null, 0, false);
         }
 
         public override TypeNode? Visit(ConstantNode context) {

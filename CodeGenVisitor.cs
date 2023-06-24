@@ -418,6 +418,18 @@ namespace Antlr_language
             result.AppendLine("\t            }");
             result.AppendLine("\t        }");
             result.AppendLine("\t    }");
+            result.AppendLine("\t    public static T[,] ConvertArray<T>(object[,] array)");
+            result.AppendLine("\t    {");
+            result.AppendLine("\t        T[,] newArray = new T[array.GetLength(0), array.GetLength(1)];");
+            result.AppendLine("\t        for (int i = 0; i < newArray.GetLength(0); i++)");
+            result.AppendLine("\t        {");
+            result.AppendLine("\t            for (int j = 0; j < newArray.GetLength(1); j++)");
+            result.AppendLine("\t            {");
+            result.AppendLine("\t                newArray[i, j] = (T)array[i,j];");
+            result.AppendLine("\t            }");
+            result.AppendLine("\t        }");
+            result.AppendLine("\t        return newArray;");
+            result.AppendLine("\t    }");
             result.AppendLine("\t}");
 
             result.AppendLine("\tclass Program");
@@ -998,7 +1010,13 @@ namespace Antlr_language
                 indent +="\t";
             result.Append("new MapLayer (");
             result.Append("\"");
+            List<ExpressionNode> list =context.LayerType.ArraySizes;
+            int temp = context.LayerType.DimensionRank;
+            context.LayerType.ArraySizes = null;
+            context.LayerType.DimensionRank = 0;
             result.Append(Visit(context.LayerType));
+            context.LayerType.ArraySizes = list;
+            context.LayerType.DimensionRank = temp;
             result.Append("\",");
             result.Append("\"" + context.IDENTIFIER + "\",");
             if (context.Expression != null) {
@@ -1029,15 +1047,29 @@ namespace Antlr_language
                 indent +="\t";
             if (context.layerType == null)
                 throw new Exception("Missing Layer type.");
-            result.Append("(");
-            result.Append(Visit(context.layerType));
-            result.Append(")");
+            if (context.arrayDimensions != null) {
+                result.Append("(");
+                result.Append(Visit(context.layerType));
+                result.Append(")");
+            } else {
+                result.Append("ArrayCalculator.ConvertArray<");
+                if (context.layerType.Type == Enums.Types.INTEGER) {
+                    result.Append("int");
+                } else if (context.layerType.Type == Enums.Types.BOOL) {
+                    result.Append("bool");
+                } else {
+                    throw new NotImplementedException();
+                }
+                result.Append(">(");
+            }
             result.Append(Visit(context.factor2));
             result.Append(".layers");
             result.Append("[\"" + context.IDENTIFIER + "\"]");
             result.Append(".LayerValue");
             if (context.arrayDimensions != null) {
                 result.Append(Visit(context.arrayDimensions));
+            } else {
+                result.Append(")");
             }
             return result;
         }

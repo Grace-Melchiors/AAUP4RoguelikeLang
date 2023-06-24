@@ -433,7 +433,12 @@ namespace Antlr_language
         }
         public override AbstractNode VisitMapAccess([NotNull] MapGeniusParser.MapAccessContext context)
         {
-            return new FactorNode (null, null, null, null, null, null, new MapAccessNode((Factor2Node)Visit(context.factor2()), context.IDENTIFIER().GetText(), (ArrayDimensionsNode)Visit(context.arrayDimensions())));
+            ArrayDimensionsNode dimensions = null;
+            if (context.arrayDimensions() != null) {
+                dimensions = (ArrayDimensionsNode)Visit(context.arrayDimensions());
+            }
+            MapAccessNode newMapAccess = new MapAccessNode((Factor2Node)Visit(context.factor2()), context.IDENTIFIER().GetText(), dimensions);
+            return new FactorNode (null, null, null, null, null, null, newMapAccess);
         }
 
 

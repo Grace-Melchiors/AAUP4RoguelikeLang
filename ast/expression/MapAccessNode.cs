@@ -13,7 +13,7 @@ namespace Antlr_language.ast.expression
         public ArrayDimensionsNode? arrayDimensions {get; private set;}
         public TypeNode? layerType;
 
-        public MapAccessNode(Factor2Node factor2, string iDENTIFIER, ArrayDimensionsNode arrayDimensions)
+        public MapAccessNode(Factor2Node factor2, string iDENTIFIER, ArrayDimensionsNode? arrayDimensions)
         {
             this.factor2 = factor2;
             IDENTIFIER = iDENTIFIER;

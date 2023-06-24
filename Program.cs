@@ -43,8 +43,8 @@ namespace Antlr_language
                         break;
                 }
             }
-            //filePath = "content/input/input.MAP";
-            //outputFileName = "content/output/output.txt";
+            //filePath = "C:/Users/theis/OneDrive/Programming/Unity Projects/MapGeniusDemo/Assets/Scripts/Input3.txt";
+            //outputFileName = "C:/Users/theis/OneDrive/Programming/Unity Projects/MapGeniusDemo/Assets/Scripts/output.cs";
             if (File.Exists(filePath) == false)
                 throw new FileNotFoundException();
             
