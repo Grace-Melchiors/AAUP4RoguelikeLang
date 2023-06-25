@@ -443,17 +443,21 @@ namespace Antlr_language
             
             result.AppendLine("\t\tpublic class MLCGRandom");
             result.AppendLine("\t\t{");
+            result.AppendLine("\t\t    private  Random rand;");
             //result.AppendLine("\t\t    //private int a= 1664525; //Knuth");
             result.AppendLine("\t\t    private  int a = 69069; //Marsagli");
             result.AppendLine("\t\t    private int c = 1;");
             result.AppendLine("\t\t    private long m = (long)Math.Pow(2,32);");
             result.AppendLine("\t\t    private long seed = 0;");
             result.AppendLine("\t\t    public MLCGRandom()");
-            result.AppendLine("\t\t    { seed = (long)(DateTime.Now.Ticks % m); }");
+            result.AppendLine("\t\t    { this.seed = (long)(DateTime.Now.Ticks % m);");
+            result.AppendLine("\t\t      this.rand = new Random(); }");
             result.AppendLine("\t\t    public MLCGRandom(long seed)");
-            result.AppendLine("\t\t    { this.seed = seed; }");
+            result.AppendLine("\t\t    { this.seed = seed; ");
+            result.AppendLine("\t\t      this.rand = new Random(); }");
             result.AppendLine("\t\t    public long getNext()");
             result.AppendLine("\t\t    {");
+            result.AppendLine("\t\t        return rand.Next();");
             result.AppendLine("\t\t        seed = (a * seed + 1) % m;");
             result.AppendLine("\t\t        return seed;");
             result.AppendLine("\t\t    }");
@@ -586,7 +590,7 @@ namespace Antlr_language
         public override StringBuilder Visit(AssignmentNode context) {
             StringBuilder result = new StringBuilder();
             if (context.IdentifierType != null) {
-                if (context.IdentifierType.DimensionRank == 0 || (context.ArrayIndicies != null && context.ArrayIndicies.Count > 0 && context.expression.type != null && context.expression.type.IsArray == false)) {
+                if (context.expression.type?.IsArray == false && context.IdentifierType.IsArray == false){//(context.IdentifierType.DimensionRank == 0 || (context.ArrayIndicies != null && context.ArrayIndicies.Count > 0 && context.expression.type != null && context.expression.type.IsArray == false)) {
                     result.Append(context.IDENTIFIER);
                     if (context.PROPERTY != null) {
                         result.Append(".layers[\"" + context.PROPERTY + "\"].LayerValue");
@@ -738,7 +742,7 @@ namespace Antlr_language
             }
             
             result.Append(indent);
-            result.AppendLine("int _chance_" + thisChanceNumber + " = rng.getRand(0,_sum_" + thisChanceNumber + ");");
+            result.AppendLine("int _chance_" + thisChanceNumber + " = rng.getRand(0,_sum_" + thisChanceNumber + "-1);");
             for (int i = 0; i < context.weights.Count; i++) {
                 var weight = context.weights[i];
                 var block = context.blocks[i];

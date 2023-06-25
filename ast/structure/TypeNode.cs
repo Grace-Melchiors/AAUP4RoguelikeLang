@@ -37,5 +37,37 @@ namespace Antlr_language.ast.structure
             return ArraySizes;
         }
 
+        public TypeNode clone () {
+            TypeNode node = new TypeNode(Type, null, null, DimensionRank, WriteArraySizes);
+            List<IndividualLayerNode>? newMapLayers = null;
+            if (mapLayers != null) {
+                newMapLayers = new();
+                foreach (var elem in mapLayers) {
+                    newMapLayers.Add(elem);
+                }
+            }
+            node.mapLayers = newMapLayers;
+            List<ExpressionNode>? newArraySizes = null;
+            if (ArraySizes != null) {
+                newArraySizes = new();
+                foreach (var elem in ArraySizes) {
+                    newArraySizes.Add(elem);
+                }
+            }
+            node.ArraySizes = newArraySizes;
+
+            List<int>? newArrayExpressionDimensionSizes = null;
+            if (ArrayExpressionDimensionSizes != null) {
+                newArrayExpressionDimensionSizes = new();
+                foreach (var elem in ArrayExpressionDimensionSizes) {
+                    newArrayExpressionDimensionSizes.Add(elem);
+                }
+            }
+            node.OutMostArrayExpression = OutMostArrayExpression;
+            node.ArrayExpressionDimensionSizes = newArrayExpressionDimensionSizes;
+
+            return node;
+        }
+
     }
 }

@@ -95,11 +95,19 @@ namespace Antlr_language
                 if (context.PROPERTY != null) {
                     foreach (var layer in decl.layers) {
                         if (context.PROPERTY == layer.Identifier) {
-                            context.IdentifierType = layer.Type;
+                            if (context.ArrayIndicies == null) {
+                                context.IdentifierType = layer.Type;
+                            } else {
+                                context.IdentifierType = new TypeNode(layer.Type.Type, null, null, 0, false);
+                            }
                         }
                     }
                 } else {
-                    context.IdentifierType = decl.Type;
+                    if (context.ArrayIndicies != null) {
+                        context.IdentifierType = new TypeNode(decl.Type.Type, null, null, 0, false);
+                    } else {
+                        context.IdentifierType = decl.Type.clone();
+                    }
                 }
             }
             return base.Visit(context);
@@ -242,7 +250,7 @@ namespace Antlr_language
                     }
                     context.type = decl.Type;
                 } else {
-                    context.type = null;
+                    context.type = new TypeNode(Enums.Types.INTEGER, null, null, 0, false);
                 }
             } else {
                 throw new Exception("Malformed factor2node.");
@@ -319,6 +327,8 @@ namespace Antlr_language
         public override TypeNode? Visit(MapAccessNode context)
         {
             List<IndividualLayerNode>? mapLayers;
+            TypeNode? FuncDeclType = null;
+            TypeNode? VarDeclType = null;
             if (context.factor2.functionCall != null) {
                 object? function = symbolTable.RetrieveSymbol(context.factor2.functionCall.IDENTIFIER);
                 if (function == null)
@@ -329,7 +339,7 @@ namespace Antlr_language
                 } catch (InvalidCastException) {
                     throw new UndefinedVariableException(context.factor2.functionCall.IDENTIFIER);
                 }
-                
+                FuncDeclType = funcDeclNode.Type;
                 mapLayers = funcDeclNode.Type.mapLayers;
 
                 //We would need to store the return type map with layers.
@@ -340,8 +350,9 @@ namespace Antlr_language
                 if (map == null)
                     throw new UndefinedVariableException(context.factor2.identifier);
                 VariableDeclarationNode mapnode = (VariableDeclarationNode)map;
+
+                VarDeclType = mapnode.Type;
                 mapLayers = mapnode.expression?.factor?.mapExpression?.mapLayer.mapLayer;
-                
             } else {
                 throw new Exception("Malformed MapAccessNode");
             }
@@ -356,7 +367,25 @@ namespace Antlr_language
                 }
             }
             Enums.Types type = layersMatchingName[0].LayerType.Type;
-            context.layerType = new TypeNode(type, mapLayers, null, 0, false);
+            if (context.arrayDimensions == null) {
+                if (FuncDeclType != null) {
+                    context.layerType = new TypeNode(type, mapLayers, FuncDeclType.ArraySizes, 2, false);
+                } else if (VarDeclType != null) {
+                    context.layerType = new TypeNode(type, mapLayers, VarDeclType.ArraySizes, 2, false);
+                } else {
+                    throw new Exception("Could not find type for either function call or varible decl in factor2.");
+                }
+                
+            } else {
+                if (FuncDeclType != null) {
+                    context.layerType = new TypeNode(type, mapLayers, null, 0, false);
+                } else if (VarDeclType != null) {
+                    context.layerType = new TypeNode(type, mapLayers, null, 0, false);
+                } else {
+                    throw new Exception("Could not find type for either function call or varible decl in factor2.");
+                }
+                
+            }
 
             return context.layerType;
         }
